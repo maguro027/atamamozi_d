@@ -1,0 +1,8 @@
+name: Atamamozi_D
+version: 1.9
+api-version: 1.13
+main: waterpunch.atamamozi_d.plugin.main.Core
+prefix: atamamozi_D
+
+commands:
+   atamamozi_d: null
