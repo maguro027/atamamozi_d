@@ -171,6 +171,9 @@ public class Core extends JavaPlugin {
       locationViewer.setLoc(player.getLocation());
       locationViewer.setr(Integer.parseInt(r));
       locationViewer.DrawCircle();
+
+      CountDownTimer time = new CountDownTimer(locationViewer, 5);
+      time.start();
     } catch (NumberFormatException xr) {
       player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r
           + ChatColor.GOLD + "> is Not Number");

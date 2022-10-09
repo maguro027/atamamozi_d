@@ -14,11 +14,13 @@ public class Hachitai {
 		double b = -Math.sin(PP);
 		double c = Math.cos(PP) * Math.cos(YY);
 
-		return (a * player.getLocation().getX()) + (b * player.getLocation().getY()) + (c + player.getLocation().getZ()) + -((a * player.getLocation().getX()) + (b * player.getLocation().getY()) + (c + player.getLocation().getZ()));
+		return ((a * x) + (b * y) + (c + z)) + -(a * player.getLocation().getX()) + (b * player.getLocation().getY())
+				+ (c + player.getLocation().getZ());
 	}
 
 	public static boolean CheckPlanePassed(Player player, Location oldLoc) {
-		float C = (float) PCalc(player, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+		float C = (float) PCalc(player, player.getLocation().getX(), player.getLocation().getY(),
+				player.getLocation().getZ());
 		float P = (float) PCalc(player, oldLoc.getX(), oldLoc.getY(), oldLoc.getZ());
 		return (C * P <= 0) && (C != P);
 	}
