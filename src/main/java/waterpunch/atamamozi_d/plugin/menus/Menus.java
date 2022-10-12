@@ -80,12 +80,12 @@ public class Menus {
           }
 
           List<String> lores = new ArrayList<String>();
-          lores.add(ChatColor.GOLD + "X        : " + ChatColor.RED + race.getCheckPoint().get(i).getX());
-          lores.add(ChatColor.GOLD + "Y        : " + ChatColor.RED + race.getCheckPoint().get(i).getY());
-          lores.add(ChatColor.GOLD + "Z        : " + ChatColor.RED + race.getCheckPoint().get(i).getZ());
-          lores.add(ChatColor.GOLD + "YAW     : " + ChatColor.RED + race.getCheckPoint().get(i).getYaw());
-          lores.add(ChatColor.GOLD + "PITCH  : " + ChatColor.RED + race.getCheckPoint().get(i).getPitch());
-          lores.add(ChatColor.GOLD + "r       : " + ChatColor.RED + race.getCheckPoint_R().get(i));
+          lores.add(ChatColor.GOLD + "X        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getX());
+          lores.add(ChatColor.GOLD + "Y        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getY());
+          lores.add(ChatColor.GOLD + "Z        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getZ());
+          lores.add(ChatColor.GOLD + "YAW     : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getYaw());
+          lores.add(ChatColor.GOLD + "PITCH  : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getPitch());
+          lores.add(ChatColor.GOLD + "r       : " + ChatColor.RED + race.getCheckPointLoc().get(i).r);
           CHECK_Meta.setLore(lores);
           CHECK.setItemMeta(CHECK_Meta);
 
@@ -195,8 +195,8 @@ public class Menus {
 
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getIcon().toString());
 
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size() >= 2) {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size());
+          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() >= 2) {
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size());
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED + "Need over 2");
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addErrorCount();
@@ -324,8 +324,7 @@ public class Menus {
 
           RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
 
-          //		for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint(player, i, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().get(i))));
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), i)));
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), i)));
 
           return RACE_CREATE_CHECKPOINT;
      }

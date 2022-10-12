@@ -14,8 +14,6 @@ public class Race {
      private Race_Type race_type;
      private Material icon;
      private int join_amount;
-     private ArrayList<Location> CheckPoint = new ArrayList<>();
-     private ArrayList<Integer> CheckPoint_R = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
      private int Error_Count;
 
@@ -26,7 +24,13 @@ public class Race {
           this.icon = Material.MAP;
      }
 
-     public void setCheckPointLoc(Location loc, int r) {}
+     public void setCheckPointLoc(Location loc, int r) {
+          CheckPoint_Loc.add(new CheckPointLoc(loc, r));
+     }
+
+     public ArrayList<CheckPointLoc> getCheckPointLoc() {
+          return CheckPoint_Loc;
+     }
 
      public Player getCreator() {
           return creator;
@@ -64,14 +68,6 @@ public class Race {
           return join_amount;
      }
 
-     public ArrayList<Location> getCheckPoint() {
-          return CheckPoint;
-     }
-
-     public ArrayList<Integer> getCheckPoint_R() {
-          return CheckPoint_R;
-     }
-
      public void setErrorCount(int i) {
           this.Error_Count = i;
      }
@@ -86,7 +82,7 @@ public class Race {
 
      @Override
      public String toString() {
-          String json = "RaceInfo{" + "creator='" + creator + '\'' + ", race_name=" + race_name + '\'' + ", race_type=" + race_type + ", icon=" + icon + '\'' + ", join_amount=" + join_amount + '\'' + ", race_loc=" + CheckPoint + '}';
+          String json = "RaceInfo{" + "creator='" + creator + '\'' + ", race_name=" + race_name + '\'' + ", race_type=" + race_type + ", icon=" + icon + '\'' + ", join_amount=" + join_amount + '\'' + ", race_loc=" + +'}';
 
           return json;
      }

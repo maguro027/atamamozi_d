@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import waterpunch.atamamozi_d.plugin.event.Event;
+import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
 import waterpunch.atamamozi_d.plugin.tool.Meta;
@@ -184,7 +185,7 @@ public class Core extends JavaPlugin {
                     return;
                }
 
-               if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size() > Integer.parseInt(No)) {
+               if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() > Integer.parseInt(No)) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Check Point<" + ChatColor.RED + r + ChatColor.GOLD + "> is Up Data");
 
                     setCheckPoint(player, Integer.parseInt(r), Integer.parseInt(No));
@@ -197,12 +198,10 @@ public class Core extends JavaPlugin {
      }
 
      void setCheckPoint(Player player, int r, int no) {
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().size() == 0) {
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().add(player.getLocation());
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint_R().add(r);
+          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() == 0) {
+               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).setCheckPointLoc(player.getLocation(), r);
           } else {
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().set((no), player.getLocation());
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint_R().set(no, r);
+               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
           }
           player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           LocationViewer locationViewer = new LocationViewer();
@@ -214,8 +213,7 @@ public class Core extends JavaPlugin {
      }
 
      void addCheckPoint(Player player, int r) {
-          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().add(player.getLocation());
-          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint_R().add(r);
+          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).setCheckPointLoc(player.getLocation(), r);
 
           player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           LocationViewer locationViewer = new LocationViewer();
@@ -227,7 +225,6 @@ public class Core extends JavaPlugin {
      }
 
      void remCheckPoint(Player player, int no) {
-          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint().remove(no);
-          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPoint_R().remove(no);
+          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().remove(no);
      }
 }

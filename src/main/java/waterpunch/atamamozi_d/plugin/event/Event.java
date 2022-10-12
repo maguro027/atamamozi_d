@@ -106,19 +106,18 @@ public class Event implements Listener {
                               ((Player) event.getWhoClicked()).sendMessage(event.getAction().toString());
                               if (event.getAction() == InventoryAction.CLONE_STACK) {
                                    //remove
-                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint().remove(event.getRawSlot() - 9);
-                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint_R().remove(event.getRawSlot() - 9);
+                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().remove(event.getRawSlot() - 9);
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_HALF) {
-                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint().set(event.getRawSlot() - 9, ((Player) event.getWhoClicked()).getLocation());
-                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint_R().set(event.getRawSlot() - 9, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint_R().get(event.getRawSlot() - 9));
+                                   //Update
+                                   waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().set(event.getRawSlot() - 9, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9));
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_ALL) {
                                    LocationViewer locationViewer = new LocationViewer();
-                                   locationViewer.setLoc(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint().get(event.getRawSlot() - 9));
-                                   locationViewer.setr(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPoint_R().get(event.getRawSlot() - 9));
+                                   locationViewer.setLoc(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).location);
+                                   locationViewer.setr(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).r);
                                    locationViewer.DrawCircle();
 
                                    CountDownTimer time = new CountDownTimer(locationViewer, 5);
