@@ -9,8 +9,7 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Race {
 
-     private Player creator;
-     private String race_name;
+     private String creator, race_name;
      private Race_Type race_type;
      private Material icon;
      private int join_amount;
@@ -18,10 +17,11 @@ public class Race {
      private int Error_Count;
 
      public Race(Player creator) {
-          this.creator = creator;
+          this.creator = creator.getName();
           this.race_name = "DEFAULT";
           this.race_type = Race_Type.RUN;
           this.icon = Material.MAP;
+          this.Error_Count = 0;
      }
 
      public void setCheckPointLoc(Location loc, int r) {
@@ -32,7 +32,11 @@ public class Race {
           return CheckPoint_Loc;
      }
 
-     public Player getCreator() {
+     public void setCheckPoints(ArrayList<CheckPointLoc> checkPointLoc) {
+          this.CheckPoint_Loc = checkPointLoc;
+     }
+
+     public String getCreator() {
           return creator;
      }
 
@@ -78,12 +82,5 @@ public class Race {
 
      public int getErrorCount() {
           return Error_Count;
-     }
-
-     @Override
-     public String toString() {
-          String json = "RaceInfo{" + "creator='" + creator + '\'' + ", race_name=" + race_name + '\'' + ", race_type=" + race_type + ", icon=" + icon + '\'' + ", join_amount=" + join_amount + '\'' + ", race_loc=" + +'}';
-
-          return json;
      }
 }

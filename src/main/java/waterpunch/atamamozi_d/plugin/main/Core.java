@@ -2,6 +2,7 @@ package waterpunch.atamamozi_d.plugin.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -25,6 +26,7 @@ public class Core extends JavaPlugin {
           new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
           waterpunch.atamamozi_d.plugin.race.Race_Core.clear();
+          for (Player p : this.getServer().getOnlinePlayers()) if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
      }
 
      @Override
@@ -122,7 +124,10 @@ public class Core extends JavaPlugin {
           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "You ");
      }
 
-     void onDebug2(Player player) {}
+     void onDebug2(Player player) {
+          System.out.println("w");
+          waterpunch.atamamozi_d.plugin.tool.CreateJson.RaceToJson(player);
+     }
 
      void onload(Player player) {}
 
@@ -135,11 +140,8 @@ public class Core extends JavaPlugin {
      }
 
      void onsetStartpoint(Player player, String r) {
+          if (!Areyouparticipatinginarace(player)) return;
           try {
-               if (!waterpunch.atamamozi_d.plugin.race.Editer.getCheckPoint_Editr().contains(player)) {
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "You don't Edit Race");
-                    return;
-               }
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
                     return;
@@ -156,18 +158,14 @@ public class Core extends JavaPlugin {
      }
 
      void onsetCheckpoint(Player player, String r) {
+          if (!Areyouparticipatinginarace(player)) return;
           try {
-               if (!waterpunch.atamamozi_d.plugin.race.Editer.getCheckPoint_Editr().contains(player)) {
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You don't Edit Race");
-                    return;
-               }
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
                     return;
                }
 
                addCheckPoint(player, Integer.parseInt(r));
-
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Check Point");
           } catch (NumberFormatException xr) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Not Number");
@@ -175,19 +173,15 @@ public class Core extends JavaPlugin {
      }
 
      void onupdatecheckpoint(Player player, String r, String No) {
+          if (!Areyouparticipatinginarace(player)) return;
           try {
-               if (!waterpunch.atamamozi_d.plugin.race.Editer.getCheckPoint_Editr().contains(player)) {
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "You don't Edit Race");
-                    return;
-               }
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
                     return;
                }
 
                if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() > Integer.parseInt(No)) {
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Check Point<" + ChatColor.RED + r + ChatColor.GOLD + "> is Up Data");
-
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Check Point<" + ChatColor.RED + r + ChatColor.GOLD + "> Up Data");
                     setCheckPoint(player, Integer.parseInt(r), Integer.parseInt(No));
                } else {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Over Number");
@@ -226,5 +220,13 @@ public class Core extends JavaPlugin {
 
      void remCheckPoint(Player player, int no) {
           waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().remove(no);
+     }
+
+     boolean Areyouparticipatinginarace(Player player) {
+          if (!waterpunch.atamamozi_d.plugin.race.Editer.getCheckPoint_Editr().contains(player)) {
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "You don't Edit Race");
+               return false;
+          }
+          return true;
      }
 }

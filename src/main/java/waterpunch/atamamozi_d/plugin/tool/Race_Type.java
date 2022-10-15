@@ -1,15 +1,15 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
-import org.bukkit.Material;
-
 public enum Race_Type {
+     RUN(1),
+     BOAT(2);
 
-	RUN(Material.TOTEM_OF_UNDYING), BOAT(Material.OAK_BOAT); // ELYTRA(2)
+     // RUN(Material.TOTEM_OF_UNDYING), BOAT(Material.OAK_BOAT);
 
-	@SuppressWarnings("unused")
-	private Material id;
+     @SuppressWarnings("unused")
+     private int id;
 
-	private Race_Type(Material id) {
-		this.id = id;
-	}
-};
+     private Race_Type(int id) {
+          this.id = id;
+     }
+}

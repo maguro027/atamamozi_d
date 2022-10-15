@@ -80,12 +80,12 @@ public class Menus {
           }
 
           List<String> lores = new ArrayList<String>();
-          lores.add(ChatColor.GOLD + "X        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getX());
-          lores.add(ChatColor.GOLD + "Y        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getY());
-          lores.add(ChatColor.GOLD + "Z        : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getZ());
-          lores.add(ChatColor.GOLD + "YAW     : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getYaw());
-          lores.add(ChatColor.GOLD + "PITCH  : " + ChatColor.RED + race.getCheckPointLoc().get(i).location.getPitch());
-          lores.add(ChatColor.GOLD + "r       : " + ChatColor.RED + race.getCheckPointLoc().get(i).r);
+          lores.add(ChatColor.GOLD + "X        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getX());
+          lores.add(ChatColor.GOLD + "Y        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getY());
+          lores.add(ChatColor.GOLD + "Z        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getZ());
+          lores.add(ChatColor.GOLD + "YAW     : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getYaw());
+          lores.add(ChatColor.GOLD + "PITCH  : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getPitch());
+          lores.add(ChatColor.GOLD + "r       : " + ChatColor.RED + race.getCheckPointLoc().get(i).getr());
           CHECK_Meta.setLore(lores);
           CHECK.setItemMeta(CHECK_Meta);
 
