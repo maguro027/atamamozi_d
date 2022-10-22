@@ -65,6 +65,26 @@ public class Menus {
           return race_CREATE;
      }
 
+     static ItemStack getRace(Race race) {
+          ItemStack race_item = new ItemStack(race.getIcon());
+          ItemMeta race_item_Meta = race_item.getItemMeta();
+          race_item_Meta.setDisplayName(race.getRace_name());
+          List<String> lores = new ArrayList<String>();
+
+          lores.add(ChatColor.GOLD + "Creator : " + ChatColor.RED + race.getCreator());
+          lores.add(ChatColor.GOLD + "Race Type : " + ChatColor.RED + race.getRace_Type());
+          if (race.getJoin_Amount() == 0) {
+               lores.add(ChatColor.GOLD + "Max Join : " + ChatColor.RED + "No Limit");
+          } else {
+               lores.add(ChatColor.GOLD + "Max Join : " + ChatColor.RED + race.getJoin_Amount());
+          }
+          lores.add(ChatColor.GOLD + "CheckPoint : " + ChatColor.RED + race.getCheckPointLoc().size());
+
+          race_item_Meta.setLore(lores);
+          race_item.setItemMeta(race_item_Meta);
+          return race_item;
+     }
+
      static ItemStack getRace_CheckPint(Race race, int i) {
           ItemStack CHECK = null;
           ItemMeta CHECK_Meta = null;
@@ -80,12 +100,12 @@ public class Menus {
           }
 
           List<String> lores = new ArrayList<String>();
-          lores.add(ChatColor.GOLD + "X        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getX());
-          lores.add(ChatColor.GOLD + "Y        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getY());
-          lores.add(ChatColor.GOLD + "Z        : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getZ());
-          lores.add(ChatColor.GOLD + "YAW     : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getYaw());
-          lores.add(ChatColor.GOLD + "PITCH  : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getPitch());
-          lores.add(ChatColor.GOLD + "r       : " + ChatColor.RED + race.getCheckPointLoc().get(i).getr());
+          lores.add(ChatColor.GOLD + "X : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getX());
+          lores.add(ChatColor.GOLD + "Y : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getY());
+          lores.add(ChatColor.GOLD + "Z : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getZ());
+          lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getYaw());
+          lores.add(ChatColor.GOLD + "PITCH : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getPitch());
+          lores.add(ChatColor.GOLD + "r  : " + ChatColor.RED + race.getCheckPointLoc().get(i).getr());
           CHECK_Meta.setLore(lores);
           CHECK.setItemMeta(CHECK_Meta);
 
@@ -103,6 +123,8 @@ public class Menus {
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
+
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i))));
           return RACE_LIST;
      }
 

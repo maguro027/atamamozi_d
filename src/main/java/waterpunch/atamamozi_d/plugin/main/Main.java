@@ -3,6 +3,8 @@ package waterpunch.atamamozi_d.plugin.main;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
@@ -10,10 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import waterpunch.atamamozi_d.plugin.race.Race;
 
 public class Main {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/waterpunch.atamamozi_d/");
+     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
      public static List<String> items = new ArrayList<String>();
 
      public static int fil_count = 0;
@@ -27,10 +30,8 @@ public class Main {
                File[] targetFile_dir_list = new File(file_.toString()).listFiles();
 
                if (targetFile_dir_list == null) return;
-               for (File targetFile : targetFile_dir_list) if (targetFile.getName().substring(targetFile.getName().lastIndexOf(".")).equals(".json")) fil_count++;
-
-               System.out.println("load " + fil_count + " File");
-               //
+               // for (File targetFile : targetFile_dir_list) if (targetFile.getName().substring(targetFile.getName().lastIndexOf(".")).equals(".json")) fil_count++;
+               // System.out.println("load " + fil_count + " File");
 
                Reader reader = Files.newBufferedReader(Paths.get(file_ + "/race_list.json"));
                items = new Gson().fromJson(reader, new TypeToken<List<String>>() {}.getType());
@@ -39,6 +40,28 @@ public class Main {
           } catch (IOException e) {
                e.printStackTrace();
           }
+          getRaces();
+     }
+
+     public static void getRaces() {
+          int fil_count = 0;
+          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_.listFiles();
+          if (files == null) return;
+          for (File tmpFile : files) {
+               if (tmpFile.isDirectory()) {
+                    getRaces();
+               } else {
+                    // System.out.println(tmpFile.getName());
+                    if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
+                         fil_count++;
+                         try (FileReader fileReader = new FileReader(tmpFile)) {
+                              Gson gson = new Gson();
+                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(gson.fromJson(fileReader, Race.class));
+                         } catch (FileNotFoundException e) {} catch (IOException e) {}
+                    }
+               }
+          }
+          System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + fil_count + "Race Load");
      }
 
      public static void createfile(String string) {

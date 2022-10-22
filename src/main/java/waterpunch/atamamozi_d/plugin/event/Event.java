@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -40,6 +41,17 @@ public class Event implements Listener {
                     case "RACE_LIST":
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
+                         if (event.getCurrentItem() == null) return;
+                         if (waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_players.containsKey((Player) event.getWhoClicked())) {
+                              ((Player) event.getWhoClicked()).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
+                              return;
+                         }
+                         for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) {
+                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(event.getCurrentItem().getItemMeta().getDisplayName())) {
+                                   waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_players.put(((Player) event.getWhoClicked()), waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i));
+                                   ((Player) event.getWhoClicked()).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Join Race : " + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
+                              }
+                         }
                          break;
                     case "RACE_EDIT":
                          event.setCancelled(true);
@@ -58,7 +70,7 @@ public class Event implements Listener {
                          } else {
                               waterpunch.atamamozi_d.plugin.race.Editer.setCheckPoint_Editr((Player) event.getWhoClicked());
                          }
-                         if (event.getRawSlot() == 49) waterpunch.atamamozi_d.plugin.tool.CreateJson.RaceToJson((Player) event.getWhoClicked());
+                         if (event.getRawSlot() == 49) waterpunch.atamamozi_d.plugin.tool.CreateJson.saveRace((Player) event.getWhoClicked());
                          break;
                     case "RACE_CREATE_TYPE":
                          event.setCancelled(true);
@@ -155,7 +167,7 @@ public class Event implements Listener {
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_Players().containsKey(event.getPlayer())) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_players.containsKey(event.getPlayer())) {
                if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getPlayer(), player_loc.get(event.getPlayer()))) {
                     player_loc.put(event.getPlayer(), event.getPlayer().getLocation());
                     Bukkit
@@ -174,5 +186,10 @@ public class Event implements Listener {
                          );
                }
           }
+     }
+
+     @EventHandler
+     public void SignChangeEvent(SignChangeEvent e) {
+          if (e.getLine(0).equals("[Race]") || e.getLine(0).equals("[race]")) e.setLine(0, "[Race]");
      }
 }

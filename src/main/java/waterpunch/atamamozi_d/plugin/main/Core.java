@@ -2,9 +2,7 @@ package waterpunch.atamamozi_d.plugin.main;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -126,7 +124,7 @@ public class Core extends JavaPlugin {
 
      void onDebug2(Player player) {
           System.out.println("w");
-          waterpunch.atamamozi_d.plugin.tool.CreateJson.RaceToJson(player);
+          waterpunch.atamamozi_d.plugin.tool.CreateJson.saveRace(player);
      }
 
      void onload(Player player) {}
