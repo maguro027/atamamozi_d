@@ -13,6 +13,7 @@ public class Race {
      private Race_Type race_type;
      private Material icon;
      private int join_amount;
+     private int rap;
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
      private int Error_Count;
 
@@ -21,7 +22,7 @@ public class Race {
           this.race_name = "DEFAULT";
           this.race_type = Race_Type.RUN;
           this.icon = Material.MAP;
-          this.Error_Count = 0;
+          this.rap = 1;
      }
 
      public void setCheckPointLoc(Location loc, int r) {
@@ -70,6 +71,14 @@ public class Race {
 
      public int getJoin_Amount() {
           return join_amount;
+     }
+
+     public void setRap(int Rap) {
+          this.rap = Rap;
+     }
+
+     public int getRap() {
+          return rap;
      }
 
      public void setErrorCount(int i) {

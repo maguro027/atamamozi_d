@@ -65,6 +65,22 @@ public class Menus {
           return race_CREATE;
      }
 
+     static ItemStack getUP() {
+          ItemStack UP = new ItemStack(Material.JACK_O_LANTERN);
+          ItemMeta UP_Meta = UP.getItemMeta();
+          UP_Meta.setDisplayName(ChatColor.GREEN + "UP");
+          UP.setItemMeta(UP_Meta);
+          return UP;
+     }
+
+     static ItemStack getDown() {
+          ItemStack DOWN = new ItemStack(Material.CARVED_PUMPKIN);
+          ItemMeta DOWN_Meta = DOWN.getItemMeta();
+          DOWN_Meta.setDisplayName(ChatColor.GREEN + "DOWN");
+          DOWN.setItemMeta(DOWN_Meta);
+          return DOWN;
+     }
+
      static ItemStack getRace(Race race) {
           ItemStack race_item = new ItemStack(race.getIcon());
           ItemMeta race_item_Meta = race_item.getItemMeta();
@@ -165,6 +181,9 @@ public class Menus {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRace_Type() + "] is ERR");
                     break;
           }
+          ItemStack RAP = new ItemStack(Material.COMPARATOR);
+          ItemMeta RAP_Meta = RAP.getItemMeta();
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap()));
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
@@ -214,7 +233,7 @@ public class Menus {
           } else {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount()));
           }
-
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap());
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getIcon().toString());
 
           if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() >= 2) {
@@ -233,6 +252,7 @@ public class Menus {
           SET_NAME.setItemMeta(SET_NAME_Meta);
           RACE_TYPE.setItemMeta(RACE_TYPE_Meta);
           AMOUNT.setItemMeta(AMOUNT_Meta);
+          RAP.setItemMeta(RAP_Meta);
           ICON.setItemMeta(ICON_Meta);
           CHECKPOINT.setItemMeta(CHECKPOINT_Meta);
           CREATE.setItemMeta(CREATE_Meta);
@@ -240,8 +260,9 @@ public class Menus {
           RACE_CREATE.setItem(10, new ItemStack(SET_NAME));
           RACE_CREATE.setItem(12, new ItemStack(RACE_TYPE));
           RACE_CREATE.setItem(14, new ItemStack(AMOUNT));
-          RACE_CREATE.setItem(16, new ItemStack(ICON));
-          RACE_CREATE.setItem(28, new ItemStack(CHECKPOINT));
+          RACE_CREATE.setItem(16, new ItemStack(RAP));
+          RACE_CREATE.setItem(28, new ItemStack(ICON));
+          RACE_CREATE.setItem(30, new ItemStack(CHECKPOINT));
           RACE_CREATE.setItem(49, new ItemStack(CREATE));
 
           return RACE_CREATE;
@@ -281,6 +302,26 @@ public class Menus {
           return RACE_CREATE_TYPE;
      }
 
+     public static Inventory getRaceRap(Player player) {
+          Inventory RACE_CREATE_RAP = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_RAP");
+          setBorder(RACE_CREATE_RAP);
+
+          ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
+          ItemMeta RAP_Meta = RAP.getItemMeta();
+          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount() == 1) {
+               RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + "No Limit");
+          } else {
+               RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap()));
+          }
+          RAP.setItemMeta(RAP_Meta);
+
+          RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));
+          RACE_CREATE_RAP.setItem(20, new ItemStack(getUP()));
+          RACE_CREATE_RAP.setItem(24, new ItemStack(getDown()));
+
+          return RACE_CREATE_RAP;
+     }
+
      public static Inventory getRaceAmount(Player player) {
           Inventory RACE_CREATE_AMOUNT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_AMOUNT");
           setBorder(RACE_CREATE_AMOUNT);
@@ -294,24 +335,9 @@ public class Menus {
           }
           AMOUNT.setItemMeta(AMOUNT_Meta);
 
-          ItemStack UP = new ItemStack(Material.JACK_O_LANTERN);
-          ItemMeta UP_Meta = UP.getItemMeta();
-          UP_Meta.setDisplayName(ChatColor.GREEN + "UP");
-          UP.setItemMeta(UP_Meta);
-
-          ItemStack DOWN = new ItemStack(Material.CARVED_PUMPKIN);
-          ItemMeta DOWN_Meta = DOWN.getItemMeta();
-          DOWN_Meta.setDisplayName(ChatColor.GREEN + "DOWN");
-          DOWN.setItemMeta(DOWN_Meta);
-
-          ItemStack I = new ItemStack(Material.LIME_DYE);
-          ItemMeta I_Meta = I.getItemMeta();
-          I_Meta.setDisplayName(ChatColor.GREEN + "This Active");
-          I.setItemMeta(I_Meta);
-
           RACE_CREATE_AMOUNT.setItem(22, new ItemStack(AMOUNT));
-          RACE_CREATE_AMOUNT.setItem(20, new ItemStack(UP));
-          RACE_CREATE_AMOUNT.setItem(24, new ItemStack(DOWN));
+          RACE_CREATE_AMOUNT.setItem(20, new ItemStack(getUP()));
+          RACE_CREATE_AMOUNT.setItem(24, new ItemStack(getDown()));
 
           return RACE_CREATE_AMOUNT;
      }

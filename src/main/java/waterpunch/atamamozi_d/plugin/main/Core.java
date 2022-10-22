@@ -12,7 +12,6 @@ import waterpunch.atamamozi_d.plugin.event.Event;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
-import waterpunch.atamamozi_d.plugin.tool.Meta;
 
 public class Core extends JavaPlugin {
 
@@ -20,7 +19,6 @@ public class Core extends JavaPlugin {
      public void onEnable() {
           System.out.println("ATAMAMOZI-D ENGINE START");
           new Event(this);
-          new Meta(this);
           new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
           waterpunch.atamamozi_d.plugin.race.Race_Core.clear();
@@ -131,7 +129,9 @@ public class Core extends JavaPlugin {
 
      void onstop(Player player) {}
 
-     void onleave(Player player) {}
+     void onleave(Player player) {
+          waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
+     }
 
      void oncreate(Player player) {
           player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
