@@ -7,7 +7,12 @@ import org.bukkit.Particle;
 public class LocationViewer {
 
      private Location loc;
-     int r;
+     private int r;
+
+     public LocationViewer(Location loc, int r) {
+          this.loc = loc;
+          this.r = r;
+     }
 
      public void setLoc(Location loc) {
           this.loc = loc;
@@ -44,7 +49,7 @@ public class LocationViewer {
           double c = Math.cos(PP) * Math.cos(YY);
 
           double[] v = GetVerticalVector(loc, r, a, b, c);
-          int n = 10 * r;
+          int n = 5 * r;
           double theta = 2 * Math.PI / (double) n;
           double Cos = Math.cos(theta * 0.5);
           double Sin = Math.sin(theta * 0.5);

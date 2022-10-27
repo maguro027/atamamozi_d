@@ -4,29 +4,30 @@ import org.bukkit.entity.Player;
 
 public class Race_Runner {
 
-     private Player player;
-     private Race race;
-     private int CheckPoint, Rap, Now_Rap;
+     private Player Player;
+     private Race Race;
+     private int CheckPoint, Rap;
 
      public Race_Runner(Player player, Race race) {
-          this.player = player;
-          this.race = race;
-          this.Rap = race.getRap();
+          this.Player = player;
+          this.Race = race;
           waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
      }
 
-     public Race_Runner(String string, Player player2) {}
-
-     public Player getPlayer() {
-          return player;
+     public void UpdateScoreboard(Player player) {
+          waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
      }
 
-     public void setRace(Race race) {
-          this.race = race;
+     public Player getPlayer() {
+          return Player;
+     }
+
+     public void setRace(Race Race) {
+          this.Race = Race;
      }
 
      public Race getRace() {
-          return race;
+          return Race;
      }
 
      public int getCheckPoint() {
@@ -51,17 +52,5 @@ public class Race_Runner {
 
      public void setRap(int i) {
           Rap = i;
-     }
-
-     public int getNowRap() {
-          return Now_Rap;
-     }
-
-     public void addNowRap() {
-          Now_Rap++;
-     }
-
-     public void setNowRap(int i) {
-          Now_Rap = i;
      }
 }

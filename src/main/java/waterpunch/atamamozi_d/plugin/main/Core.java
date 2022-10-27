@@ -196,9 +196,7 @@ public class Core extends JavaPlugin {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
           }
           player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          LocationViewer locationViewer = new LocationViewer();
-          locationViewer.setLoc(player.getLocation());
-          locationViewer.setr(r);
+          LocationViewer locationViewer = new LocationViewer(player.getLocation(), r);
           locationViewer.DrawCircle();
           CountDownTimer time = new CountDownTimer(locationViewer, 5);
           time.start();
@@ -208,9 +206,7 @@ public class Core extends JavaPlugin {
           waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).setCheckPointLoc(player.getLocation(), r);
 
           player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          LocationViewer locationViewer = new LocationViewer();
-          locationViewer.setLoc(player.getLocation());
-          locationViewer.setr(r);
+          LocationViewer locationViewer = new LocationViewer(player.getLocation(), r);
           locationViewer.DrawCircle();
           CountDownTimer time = new CountDownTimer(locationViewer, 5);
           time.start();

@@ -25,12 +25,22 @@ public class Race {
           this.rap = 1;
      }
 
+     public Race(Race Race) {
+          this.creator = Race.getCreator();
+          this.race_name = Race.getRace_name();
+          this.race_type = Race.getRace_Type();
+          this.icon = Race.getIcon();
+          this.join_amount = Race.getJoin_Amount();
+          this.rap = Race.getRap();
+          this.CheckPoint_Loc = Race.getCheckPointLoc();
+     }
+
      public void setCheckPointLoc(Location loc, int r) {
           CheckPoint_Loc.add(new CheckPointLoc(loc, r));
      }
 
      public ArrayList<CheckPointLoc> getCheckPointLoc() {
-          return CheckPoint_Loc;
+          return this.CheckPoint_Loc;
      }
 
      public void setCheckPoints(ArrayList<CheckPointLoc> checkPointLoc) {
@@ -38,7 +48,7 @@ public class Race {
      }
 
      public String getCreator() {
-          return creator;
+          return this.creator;
      }
 
      public void setRace_name(String race_name) {
@@ -46,7 +56,7 @@ public class Race {
      }
 
      public Race_Type getRace_Type() {
-          return race_type;
+          return this.race_type;
      }
 
      public void setRace_Type(Race_Type race_type) {
@@ -54,7 +64,7 @@ public class Race {
      }
 
      public String getRace_name() {
-          return race_name;
+          return this.race_name;
      }
 
      public void setIcon(Material icon) {
@@ -62,7 +72,7 @@ public class Race {
      }
 
      public Material getIcon() {
-          return icon;
+          return this.icon;
      }
 
      public void setJoin_Amount(int join_amount) {
@@ -70,7 +80,7 @@ public class Race {
      }
 
      public int getJoin_Amount() {
-          return join_amount;
+          return this.join_amount;
      }
 
      public void setRap(int Rap) {
@@ -78,7 +88,7 @@ public class Race {
      }
 
      public int getRap() {
-          return rap;
+          return this.rap;
      }
 
      public void setErrorCount(int i) {
@@ -90,6 +100,6 @@ public class Race {
      }
 
      public int getErrorCount() {
-          return Error_Count;
+          return this.Error_Count;
      }
 }

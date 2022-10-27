@@ -18,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
@@ -47,14 +48,11 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
                          if (event.getCurrentItem() == null) return;
-                         if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getWhoClicked())) return;
+                         if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getWhoClicked())) return;
 
-                         for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) {
-                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(event.getCurrentItem().getItemMeta().getDisplayName())) {
-                                   waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i), (Player) event.getWhoClicked());
-                                   ((Player) event.getWhoClicked()).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Join Race : " + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
-                              }
-                         }
+                         waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()), waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()).getRap(), (Player) event.getWhoClicked());
+                         ((Player) event.getWhoClicked()).closeInventory();
+
                          break;
                     case "RACE_EDIT":
                          event.setCancelled(true);
@@ -140,9 +138,7 @@ public class Event implements Listener {
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                                   LocationViewer locationViewer = new LocationViewer();
-                                   locationViewer.setLoc(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getLocation());
-                                   locationViewer.setr(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getr());
+                                   LocationViewer locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getLocation(), waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getr());
                                    locationViewer.DrawCircle();
 
                                    CountDownTimer time = new CountDownTimer(locationViewer, 5);
@@ -183,14 +179,15 @@ public class Event implements Listener {
      public void SignChangeEvent(SignChangeEvent e) {
           if (e.getLine(0).equals("[race]")) e.setLine(0, "[Race]");
           if (!(e.getLine(0).equals("[Race]"))) return;
-          String cash = e.getLine(1);
+          String name_cash = e.getLine(1);
+          String rap_cash = e.getLine(2);
           e.setLine(1, "Loaging...");
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(cash)) {
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(name_cash)) {
                e.setLine(1, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
-               if (StringUtils.isNumeric(e.getLine(2))) e.setLine(2, e.getLine(2) + " : Rap"); else e.setLine(2, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRap() + " : Rap");
+               if (StringUtils.isEmpty(e.getLine(2)) || StringUtils.isNumeric(e.getLine(2))) e.setLine(2, rap_cash + " : Rap"); else e.setLine(2, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRap() + " : Rap");
                e.setLine(3, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getCreator());
           }
-          if (!(e.getLine(1).equals(cash))) {
+          if (!(e.getLine(1).equals(name_cash))) {
                e.setLine(1, ChatColor.RED + "Error");
                return;
           }
@@ -201,11 +198,24 @@ public class Event implements Listener {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign) || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock()) return;
           Sign signboard = (Sign) e.getClickedBlock().getState();
           if (!(signboard.getLine(0).equals("[Race]"))) return;
-          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(signboard.getLine(1).toString(), e.getPlayer());
+
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) return;
+          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)), Integer.parseInt(signboard.getLine(2).replace(" : Rap", "")), e.getPlayer());
      }
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list.isEmpty()) return;
+          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) {
+               if (run.getPlayer() == event.getPlayer()) {
+                    LocationViewer locationViewer = new LocationViewer(run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation(), run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr());
+                    locationViewer.DrawCircle();
+                    CountDownTimer time = new CountDownTimer(locationViewer, 1);
+                    time.start();
+                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getFrom(), event.getTo())) event.getPlayer().sendMessage("やったー");
+                    break;
+               }
+          }
           // if (waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_players.containsKey(event.getPlayer())) {
           //           if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getPlayer(), player_loc.get(event.getPlayer()))) {
           //                player_loc.put(event.getPlayer(), event.getPlayer().getLocation());

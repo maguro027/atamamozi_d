@@ -1,25 +1,23 @@
 package waterpunch.atamamozi_d.plugin.race.export;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class Hachitai {
 
-	static double PCalc(Player player, double x, double y, double z) {
+     static double PCalc(Location location) {
+          double PP = location.getPitch() * Math.PI * 0.0055555;
+          double YY = location.getYaw() * Math.PI * 0.0055555;
 
-		double PP = player.getLocation().getPitch() * Math.PI * 0.0055555;
-		double YY = player.getLocation().getYaw() * Math.PI * 0.0055555;
+          double a = -Math.cos(PP) * Math.sin(YY);
+          double b = -Math.sin(PP);
+          double c = Math.cos(PP) * Math.cos(YY);
 
-		double a = -Math.cos(PP) * Math.sin(YY);
-		double b = -Math.sin(PP);
-		double c = Math.cos(PP) * Math.cos(YY);
+          return (a * location.getX()) + (b * location.getY()) + (c + location.getZ()) + -((a * location.getX()) + (b * location.getY()) + (c + location.getZ()));
+     }
 
-		return (a * player.getLocation().getX()) + (b * player.getLocation().getY()) + (c + player.getLocation().getZ()) + -((a * player.getLocation().getX()) + (b * player.getLocation().getY()) + (c + player.getLocation().getZ()));
-	}
-
-	public static boolean CheckPlanePassed(Player player, Location oldLoc) {
-		float C = (float) PCalc(player, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
-		float P = (float) PCalc(player, oldLoc.getX(), oldLoc.getY(), oldLoc.getZ());
-		return (C * P <= 0) && (C != P);
-	}
+     public static boolean CheckPlanePassed(Location nowloc, Location oldLoc) {
+          float C = (float) PCalc(nowloc);
+          float P = (float) PCalc(oldLoc);
+          return (C * P <= 0) && (C != P);
+     }
 }

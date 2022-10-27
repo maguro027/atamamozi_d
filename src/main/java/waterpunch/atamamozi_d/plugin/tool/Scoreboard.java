@@ -15,9 +15,15 @@ public class Scoreboard {
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
           Score Name = objective.getScore("Race: " + runner.getRace().getRace_name());
-          Score Rap = objective.getScore("Rap : " + runner.getNowRap() + " / " + runner.getRap());
-          Name.setScore(1);
-          Rap.setScore(2);
+          Score Rap1 = objective.getScore("Rap : ");
+          Score Rap2 = objective.getScore(runner.getRap() + " / " + runner.getRace().getRap());
+          Score Check1 = objective.getScore("CheckPiont : ");
+          Score Check2 = objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size());
+          Name.setScore(9);
+          Rap1.setScore(8);
+          Rap2.setScore(7);
+          Check1.setScore(6);
+          Check2.setScore(5);
           runner.getPlayer().setScoreboard(board);
      }
 }
