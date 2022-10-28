@@ -1,23 +1,26 @@
 package waterpunch.atamamozi_d.plugin.race.export;
 
 import org.bukkit.Location;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class Hachitai {
 
-     static double PCalc(Location location) {
-          double PP = location.getPitch() * Math.PI * 0.0055555;
-          double YY = location.getYaw() * Math.PI * 0.0055555;
+     static float PCalc(Race_Runner Runner, Location location) {
+          Location CheckPoint = Runner.getRace().getCheckPointLoc().get(Runner.getCheckPoint()).getLocation();
+
+          double PP = CheckPoint.getPitch() * Math.PI * 0.0055555;
+          double YY = CheckPoint.getYaw() * Math.PI * 0.0055555;
 
           double a = -Math.cos(PP) * Math.sin(YY);
-          double b = -Math.sin(PP);
-          double c = Math.cos(PP) * Math.cos(YY);
+          double b = Math.cos(PP) * Math.cos(YY);
+          double c = Math.sin(PP);
 
-          return (a * location.getX()) + (b * location.getY()) + (c + location.getZ()) + -((a * location.getX()) + (b * location.getY()) + (c + location.getZ()));
+          return (float) ((a * location.getX()) + (b * location.getY()) + (c + location.getZ()) + (-(a * CheckPoint.getX()) + (b * CheckPoint.getY()) + (c + CheckPoint.getZ())));
      }
 
-     public static boolean CheckPlanePassed(Location nowloc, Location oldLoc) {
-          float C = (float) PCalc(nowloc);
-          float P = (float) PCalc(oldLoc);
+     public static boolean CheckPlanePassed(Race_Runner Runner, Location to, Location from) {
+          float C = PCalc(Runner, from);
+          float P = PCalc(Runner, to);
           return (C * P <= 0) && (C != P);
      }
 }

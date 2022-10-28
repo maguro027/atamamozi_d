@@ -35,7 +35,11 @@ public class Race_Runner {
      }
 
      public void addCheckPoint() {
-          CheckPoint++;
+          this.CheckPoint++;
+          if (Race.getCheckPointLoc().size() == CheckPoint) {
+               setCheckPoint(0);
+               addRap();
+          }
      }
 
      public void setCheckPoint(int i) {
@@ -47,10 +51,13 @@ public class Race_Runner {
      }
 
      public void addRap() {
-          Rap++;
+          this.Rap++;
+          if (Race.getRap() == Rap) {
+               Player.sendMessage("クリア");
+          }
      }
 
      public void setRap(int i) {
-          Rap = i;
+          this.Rap = i;
      }
 }

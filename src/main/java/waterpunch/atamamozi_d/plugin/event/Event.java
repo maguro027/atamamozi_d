@@ -205,6 +205,9 @@ public class Event implements Listener {
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
+          //To mae
+          event.getPlayer().sendMessage(event.getTo().getX() + ":" + event.getFrom().getX());
+
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list.isEmpty()) return;
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) {
                if (run.getPlayer() == event.getPlayer()) {
@@ -212,7 +215,8 @@ public class Event implements Listener {
                     locationViewer.DrawCircle();
                     CountDownTimer time = new CountDownTimer(locationViewer, 1);
                     time.start();
-                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getFrom(), event.getTo())) event.getPlayer().sendMessage("やったー");
+                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) event.getPlayer().sendMessage("やったー");
+                    run.addCheckPoint();
                     break;
                }
           }
