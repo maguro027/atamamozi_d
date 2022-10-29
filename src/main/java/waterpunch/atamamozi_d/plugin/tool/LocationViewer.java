@@ -63,7 +63,7 @@ public class LocationViewer {
           particleLoc1.setY(q1.y);
           particleLoc1.setZ(q1.z);
 
-          loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc1, 1, new Particle.DustOptions(Color.WHITE, 5));
+          loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc1, 1, new Particle.DustOptions(Color.RED, 1));
           for (int i = 1; i < n; i++) {
                Location particleLoc2 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
@@ -71,7 +71,7 @@ public class LocationViewer {
                particleLoc2.setX(q1.x + loc.getX());
                particleLoc2.setY(q1.y + loc.getY());
                particleLoc2.setZ(q1.z + loc.getZ());
-               loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 5));
+               loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
           }
      }
 }

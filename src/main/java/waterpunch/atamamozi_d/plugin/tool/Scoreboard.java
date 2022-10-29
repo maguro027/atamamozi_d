@@ -19,11 +19,13 @@ public class Scoreboard {
           Score Rap2 = objective.getScore(runner.getRap() + " / " + runner.getRace().getRap());
           Score Check1 = objective.getScore("CheckPiont : ");
           Score Check2 = objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size());
+
           Name.setScore(9);
           Rap1.setScore(8);
           Rap2.setScore(7);
           Check1.setScore(6);
           Check2.setScore(5);
+
           runner.getPlayer().setScoreboard(board);
      }
 }

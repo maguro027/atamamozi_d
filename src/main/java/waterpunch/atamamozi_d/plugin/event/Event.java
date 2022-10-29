@@ -130,6 +130,7 @@ public class Event implements Listener {
                               if (event.getAction() == InventoryAction.CLONE_STACK) {
                                    //remove
                                    waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().remove(event.getRawSlot() - 9);
+                                   ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_HALF) {
@@ -184,7 +185,11 @@ public class Event implements Listener {
           e.setLine(1, "Loaging...");
           for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(name_cash)) {
                e.setLine(1, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
-               if (StringUtils.isEmpty(e.getLine(2)) || StringUtils.isNumeric(e.getLine(2))) e.setLine(2, rap_cash + " : Rap"); else e.setLine(2, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRap() + " : Rap");
+               if (StringUtils.isEmpty(e.getLine(2)) || StringUtils.isNumeric(e.getLine(2))) {
+                    e.setLine(2, rap_cash + " : Rap");
+               } else {
+                    e.setLine(2, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRap() + " : Raps");
+               }
                e.setLine(3, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getCreator());
           }
           if (!(e.getLine(1).equals(name_cash))) {
@@ -206,38 +211,28 @@ public class Event implements Listener {
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
           //To mae
-          event.getPlayer().sendMessage(event.getTo().getX() + ":" + event.getFrom().getX());
+          // event.getPlayer().sendMessage(event.getTo().getX() + ":" + event.getFrom().getX());
 
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list.isEmpty()) return;
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) {
                if (run.getPlayer() == event.getPlayer()) {
-                    LocationViewer locationViewer = new LocationViewer(run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation(), run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr());
+                    Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
+                    int r = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr();
+
+                    LocationViewer locationViewer = new LocationViewer(chackpoint, r);
                     locationViewer.DrawCircle();
-                    CountDownTimer time = new CountDownTimer(locationViewer, 1);
-                    time.start();
-                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) event.getPlayer().sendMessage("やったー");
-                    run.addCheckPoint();
+                    // CountDownTimer time = new CountDownTimer(locationViewer, 1);
+                    // time.start();
+                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
+                         float[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(chackpoint, event.getTo(), event.getFrom());
+                         //
+                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) {
+                              event.getPlayer().sendMessage("test-");
+                              run.addCheckPoint();
+                         }
+                    }
                     break;
                }
           }
-          // if (waterpunch.atamamozi_d.plugin.race.Race_Core.race_join_players.containsKey(event.getPlayer())) {
-          //           if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getPlayer(), player_loc.get(event.getPlayer()))) {
-          //                player_loc.put(event.getPlayer(), event.getPlayer().getLocation());
-          //                Bukkit
-          //                     .getServer()
-          //                     .getScheduler()
-          //                     .scheduleSyncDelayedTask(
-          //                          plugin_data,
-          //                          new Runnable() {
-          //                               @Override
-          //                               public void run() {
-          //                                    waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(event.getPlayer(), player_loc.get(event.getPlayer()));
-          //                                    player_loc.remove(event.getPlayer());
-          //                               }
-          //                          },
-          //                          1L
-          //                     );
-          //           }
-          //      }
      }
 }

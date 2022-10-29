@@ -36,10 +36,12 @@ public class Race_Runner {
 
      public void addCheckPoint() {
           this.CheckPoint++;
+
           if (Race.getCheckPointLoc().size() == CheckPoint) {
                setCheckPoint(0);
                addRap();
           }
+          waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
      }
 
      public void setCheckPoint(int i) {

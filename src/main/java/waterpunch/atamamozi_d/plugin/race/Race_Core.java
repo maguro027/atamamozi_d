@@ -2,7 +2,6 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 
@@ -44,11 +43,10 @@ public class Race_Core {
 
      public static void removeRunner(Player player) {
           player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-          for (ArrayList<Race_Runner> val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.values()) for (Race_Runner run : val) if (run.getPlayer() == player) {
-               val.remove(run);
-               Race_Runner_list.remove(run);
-
-               for (Entry<Race, ArrayList<Race_Runner>> entry : Race_Run.entrySet()) if (entry.getValue().size() == 0) Race_Run.remove(entry.getKey());
+          for (Race_Runner val : Race_Runner_list) if (val.getPlayer() == player) {
+               Race_Runner_list.remove(val);
+               Race_Run.get(val.getRace()).remove(val);
+               // for (Entry<Race, ArrayList<Race_Runner>> entry : Race_Run.entrySet()) if (entry.getValue().size() == 0) Race_Run.remove(entry.getKey());
 
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "leave race");
                return;
@@ -57,9 +55,11 @@ public class Race_Core {
      }
 
      public static boolean isJoin(Player player) {
-          for (Race_Runner val : Race_Runner_list) if (val.getPlayer() == player) {
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
-               return false;
+          for (Race_Runner val : Race_Runner_list) {
+               if (val.getPlayer() == player) {
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
+                    return false;
+               }
           }
 
           return true;
