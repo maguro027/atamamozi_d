@@ -6,47 +6,34 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 public class Hachitai {
 
      static float PCalc(Race_Runner Runner, Location location) {
-          Location CheckPoint = Runner.getRace().getCheckPointLoc().get(Runner.getCheckPoint()).getLocation();
-
-          double PP = CheckPoint.getPitch() * Math.PI * 0.0055555;
-          double YY = CheckPoint.getYaw() * Math.PI * 0.0055555;
-
-          double a = -Math.cos(PP) * Math.sin(YY);
-          double b = -Math.sin(PP);
-          double c = Math.cos(PP) * Math.cos(YY);
-
-          return (float) ((a * location.getX()) + (b * location.getY()) + (c * location.getZ()) - ((a * CheckPoint.getX()) + (b * CheckPoint.getY()) + (c * CheckPoint.getZ())));
+          double[] abcd = Runner.getRace().getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
+          return (float) (((abcd[0] * location.getX()) + (abcd[1] * location.getY()) + (abcd[2] * location.getZ())) + abcd[3]);
      }
 
      public static boolean CheckPlanePassed(Race_Runner Runner, Location to, Location from) {
           float C = PCalc(Runner, to);
           float P = PCalc(Runner, from);
+          // System.out.println("--------------------------------");
+          // System.out.println(C);
 
           return (C * P <= 0) && (C != P);
      }
 
-     static float GetDot(float x1, float y1, float z1, float x2, float y2, float z2) {
+     static double GetDot(double x1, double y1, double z1, double x2, double y2, double z2) {
           return (x1 * x2 + y1 * y2 + z1 * z2);
      }
 
-     public static float[] GetIntersection(Location CheckPoint, Location to, Location from) {
-          float dirVecX = (float) (to.getX() - from.getX());
-          float dirVecY = (float) (to.getY() - from.getY());
-          float dirVecZ = (float) (to.getZ() - from.getZ());
+     public static double[] GetIntersection(Race_Runner Runner, Location CheckPoint, Location to, Location from) {
+          double dirVecX = to.getX() - from.getX();
+          double dirVecY = to.getY() - from.getY();
+          double dirVecZ = to.getZ() - from.getZ();
 
-          double PP = CheckPoint.getPitch() * Math.PI * 0.0055555;
-          double YY = CheckPoint.getYaw() * Math.PI * 0.0055555;
+          double[] abcd = Runner.getRace().getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
 
-          double a = -Math.cos(PP) * Math.sin(YY);
-          double b = -Math.sin(PP);
-          double c = Math.cos(PP) * Math.cos(YY);
+          double length = (-abcd[3] - GetDot(abcd[0], abcd[1], abcd[2], to.getX(), to.getY(), to.getZ()));
+          length /= GetDot(abcd[0], abcd[1], abcd[2], dirVecX, dirVecY, dirVecZ);
 
-          double d = -((a * CheckPoint.getX()) + (b * CheckPoint.getY()) + (c * CheckPoint.getZ()));
-
-          float length = ((float) -d - GetDot((float) a, (float) b, (float) c, (float) to.getX(), (float) to.getY(), (float) to.getZ()));
-          length /= GetDot((float) a, (float) b, (float) c, dirVecX, dirVecY, dirVecZ);
-
-          float[] rtn = new float[] { (float) to.getX() + dirVecX * length, (float) to.getY() + dirVecY * length, (float) to.getZ() + dirVecZ * length };
+          double[] rtn = new double[] { to.getX() + dirVecX * length, to.getY() + dirVecY * length, to.getZ() + dirVecZ * length };
           return rtn;
      }
 }

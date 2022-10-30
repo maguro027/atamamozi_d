@@ -1,6 +1,7 @@
 package waterpunch.atamamozi_d.plugin.event;
 
 import java.util.HashMap;
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,7 +18,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
@@ -139,7 +142,7 @@ public class Event implements Listener {
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                                   LocationViewer locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getLocation(), waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getCheckPointLoc().get(event.getRawSlot() - 9).getr());
+                                   LocationViewer locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())), event.getRawSlot() - 9);
                                    locationViewer.DrawCircle();
 
                                    CountDownTimer time = new CountDownTimer(locationViewer, 5);
@@ -183,18 +186,14 @@ public class Event implements Listener {
           String name_cash = e.getLine(1);
           String rap_cash = e.getLine(2);
           e.setLine(1, "Loaging...");
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(name_cash)) {
-               e.setLine(1, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
-               if (StringUtils.isEmpty(e.getLine(2)) || StringUtils.isNumeric(e.getLine(2))) {
-                    e.setLine(2, rap_cash + " : Rap");
-               } else {
-                    e.setLine(2, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRap() + " : Raps");
-               }
-               e.setLine(3, waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getCreator());
-          }
-          if (!(e.getLine(1).equals(name_cash))) {
+          Race Race = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(name_cash);
+          if (Race == null) {
                e.setLine(1, ChatColor.RED + "Error");
                return;
+          } else {
+               e.setLine(1, Race.getRace_name());
+               if (NumberUtils.isDigits(rap_cash)) e.setLine(2, rap_cash + " : Rap"); else e.setLine(2, Race.getRap() + " : Rap");
+               e.setLine(3, Race.getCreator());
           }
      }
 
@@ -205,34 +204,36 @@ public class Event implements Listener {
           if (!(signboard.getLine(0).equals("[Race]"))) return;
 
           if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) return;
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)) == null) e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "unknown Race");
           waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)), Integer.parseInt(signboard.getLine(2).replace(" : Rap", "")), e.getPlayer());
      }
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
-          //To mae
-          // event.getPlayer().sendMessage(event.getTo().getX() + ":" + event.getFrom().getX());
-
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list.isEmpty()) return;
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) {
                if (run.getPlayer() == event.getPlayer()) {
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
                     int r = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr();
 
-                    LocationViewer locationViewer = new LocationViewer(chackpoint, r);
+                    LocationViewer locationViewer = new LocationViewer(run.getRace(), run.getCheckPoint());
                     locationViewer.DrawCircle();
-                    // CountDownTimer time = new CountDownTimer(locationViewer, 1);
-                    // time.start();
+
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
-                         float[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(chackpoint, event.getTo(), event.getFrom());
+                         double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
                          //
                          if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) {
-                              event.getPlayer().sendMessage("test-");
+                              // event.getPlayer().sendMessage("test-");
                               run.addCheckPoint();
                          }
                     }
                     break;
                }
           }
+     }
+
+     @EventHandler
+     public void leave(PlayerQuitEvent event) {
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(event.getPlayer())) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
      }
 }

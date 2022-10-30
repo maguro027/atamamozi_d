@@ -1,6 +1,8 @@
 package waterpunch.atamamozi_d.plugin.race;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 
 public class Race_Runner {
 
@@ -40,8 +42,10 @@ public class Race_Runner {
           if (Race.getCheckPointLoc().size() == CheckPoint) {
                setCheckPoint(0);
                addRap();
+          } else {
+               this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+               waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
           }
-          waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
      }
 
      public void setCheckPoint(int i) {
@@ -54,8 +58,13 @@ public class Race_Runner {
 
      public void addRap() {
           this.Rap++;
+          this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           if (Race.getRap() == Rap) {
-               Player.sendMessage("クリア");
+               this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+               this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "CLEAR!!");
+               waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(Player);
+          } else {
+               waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
           }
      }
 

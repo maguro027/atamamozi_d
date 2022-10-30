@@ -190,14 +190,20 @@ public class Core extends JavaPlugin {
      }
 
      void setCheckPoint(Player player, int r, int no) {
+          LocationViewer locationViewer = null;
           if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() == 0) {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).setCheckPointLoc(player.getLocation(), r);
+               locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), 0);
+               locationViewer.DrawCircle();
+               CountDownTimer time = new CountDownTimer(locationViewer, 5);
+               time.start();
           } else {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
+               locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), no);
+               locationViewer.DrawCircle();
+               CountDownTimer time = new CountDownTimer(locationViewer, 5);
+               time.start();
           }
-          player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          LocationViewer locationViewer = new LocationViewer(player.getLocation(), r);
-          locationViewer.DrawCircle();
           CountDownTimer time = new CountDownTimer(locationViewer, 5);
           time.start();
      }
@@ -206,7 +212,7 @@ public class Core extends JavaPlugin {
           waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).setCheckPointLoc(player.getLocation(), r);
 
           player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          LocationViewer locationViewer = new LocationViewer(player.getLocation(), r);
+          LocationViewer locationViewer = new LocationViewer(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() - 1);
           locationViewer.DrawCircle();
           CountDownTimer time = new CountDownTimer(locationViewer, 5);
           time.start();

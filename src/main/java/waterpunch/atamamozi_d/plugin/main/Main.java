@@ -30,8 +30,6 @@ public class Main {
                File[] targetFile_dir_list = new File(file_.toString()).listFiles();
 
                if (targetFile_dir_list == null) return;
-               // for (File targetFile : targetFile_dir_list) if (targetFile.getName().substring(targetFile.getName().lastIndexOf(".")).equals(".json")) fil_count++;
-               // System.out.println("load " + fil_count + " File");
 
                Reader reader = Files.newBufferedReader(Paths.get(file_ + "/race_list.json"));
                items = new Gson().fromJson(reader, new TypeToken<List<String>>() {}.getType());
