@@ -67,14 +67,11 @@ public class Race_Core {
      }
 
      public static Race getRace(String race) {
-          Race rrace = null;
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(race)) rrace = waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i);
-          return rrace;
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name().equals(race)) {
+               return waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i);
+          }
+          return null;
      }
-
-     // public static void refreshLocation(Player player, Race Race) {
-     //      Race_Run.put(player, Race);
-     // }
 
      public static void clear() {
           Race_Run.clear();

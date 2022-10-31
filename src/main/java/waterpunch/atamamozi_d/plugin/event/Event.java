@@ -2,7 +2,6 @@ package waterpunch.atamamozi_d.plugin.event;
 
 import java.util.HashMap;
 import org.apache.commons.lang.NumberUtils;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -204,7 +203,10 @@ public class Event implements Listener {
           if (!(signboard.getLine(0).equals("[Race]"))) return;
 
           if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) return;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)) == null) e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "unknown Race");
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)) == null) {
+               e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "unknown Race");
+               return;
+          }
           waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)), Integer.parseInt(signboard.getLine(2).replace(" : Rap", "")), e.getPlayer());
      }
 
