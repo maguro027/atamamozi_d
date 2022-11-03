@@ -21,6 +21,10 @@ public class CreateJson {
      }
 
      public static void saveRace(Player player) {
+          if (!(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getErrorCount() == 0)) {
+               player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
+               return;
+          }
           if (!(file_.exists())) file_.mkdir();
           waterpunch.atamamozi_d.plugin.main.Main.createfile("/plugins/atamamozi_D/Race/" + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRace_name() + ".json");
           String relativePath = "";

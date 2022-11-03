@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
+import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Race {
@@ -14,7 +15,9 @@ public class Race {
      private Material icon;
      private int join_amount;
      private int rap;
+     private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
+
      private int Error_Count;
 
      public Race(Player creator) {
@@ -35,16 +38,20 @@ public class Race {
           this.CheckPoint_Loc = Race.getCheckPointLoc();
      }
 
-     public void setCheckPointLoc(Location loc, int r) {
+     public void addStartPointLoc(Location loc) {
+          StartPoint.add(new Loc_parts(loc));
+     }
+
+     public ArrayList<Loc_parts> getStartPointLoc() {
+          return this.StartPoint;
+     }
+
+     public void addCheckPointLoc(Location loc, int r) {
           CheckPoint_Loc.add(new CheckPointLoc(loc, r));
      }
 
      public ArrayList<CheckPointLoc> getCheckPointLoc() {
           return this.CheckPoint_Loc;
-     }
-
-     public void setCheckPoints(ArrayList<CheckPointLoc> checkPointLoc) {
-          this.CheckPoint_Loc = checkPointLoc;
      }
 
      public String getCreator() {

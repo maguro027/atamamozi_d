@@ -101,19 +101,27 @@ public class Menus {
           return race_item;
      }
 
-     static ItemStack getRace_CheckPint(Race race, int i) {
-          ItemStack CHECK = null;
-          ItemMeta CHECK_Meta = null;
+     static ItemStack getRace_StartPint_Item(Race race, int i) {
+          ItemStack START = new ItemStack(Material.EMERALD_BLOCK);
+          ItemMeta START_Meta = START.getItemMeta();
+          START_Meta.setDisplayName(ChatColor.GOLD + "Start Point : " + ChatColor.RED + i);
 
-          if (i == 0) {
-               CHECK = new ItemStack(Material.EMERALD_BLOCK);
-               CHECK_Meta = CHECK.getItemMeta();
-               CHECK_Meta.setDisplayName(ChatColor.GOLD + "Start : " + ChatColor.RED + i);
-          } else {
-               CHECK = new ItemStack(Material.MAP, i);
-               CHECK_Meta = CHECK.getItemMeta();
-               CHECK_Meta.setDisplayName(ChatColor.GOLD + "Check Point : " + ChatColor.RED + i);
-          }
+          List<String> lores = new ArrayList<String>();
+          lores.add(ChatColor.GOLD + "X : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getX());
+          lores.add(ChatColor.GOLD + "Y : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getY());
+          lores.add(ChatColor.GOLD + "Z : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getZ());
+          lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getYaw());
+          lores.add(ChatColor.GOLD + "PITCH : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getPitch());
+          START_Meta.setLore(lores);
+          START.setItemMeta(START_Meta);
+
+          return START;
+     }
+
+     static ItemStack getRace_CheckPint_Item(Race race, int i) {
+          ItemStack CHECK = new ItemStack(Material.MAP, i);
+          ItemMeta CHECK_Meta = CHECK.getItemMeta();
+          CHECK_Meta.setDisplayName(ChatColor.GOLD + "Check Point : " + ChatColor.RED + i);
 
           List<String> lores = new ArrayList<String>();
           lores.add(ChatColor.GOLD + "X : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getX());
@@ -200,6 +208,14 @@ public class Menus {
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
           ItemMeta CHECKPOINT_Meta = CHECKPOINT.getItemMeta();
           CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Check Point");
+          List<String> CHECKPOINT_lores = new ArrayList<String>();
+          CHECKPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addCheckPoint");
+
+          ItemStack STARTPOINT = new ItemStack(Material.TARGET);
+          ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
+          STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Start Point");
+          List<String> STARTPOINT_lores = new ArrayList<String>();
+          STARTPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addStartPoint");
 
           ItemStack CREATE = new ItemStack(Material.WRITABLE_BOOK);
           ItemMeta CREATE_Meta = CREATE.getItemMeta();
@@ -248,12 +264,15 @@ public class Menus {
                lores.add(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getErrorCount() + "Error");
           }
 
+          STARTPOINT_Meta.setLore(STARTPOINT_lores);
+          CHECKPOINT_Meta.setLore(CHECKPOINT_lores);
           CREATE_Meta.setLore(lores);
           SET_NAME.setItemMeta(SET_NAME_Meta);
           RACE_TYPE.setItemMeta(RACE_TYPE_Meta);
           AMOUNT.setItemMeta(AMOUNT_Meta);
           RAP.setItemMeta(RAP_Meta);
           ICON.setItemMeta(ICON_Meta);
+          STARTPOINT.setItemMeta(STARTPOINT_Meta);
           CHECKPOINT.setItemMeta(CHECKPOINT_Meta);
           CREATE.setItemMeta(CREATE_Meta);
 
@@ -262,7 +281,8 @@ public class Menus {
           RACE_CREATE.setItem(14, new ItemStack(AMOUNT));
           RACE_CREATE.setItem(16, new ItemStack(RAP));
           RACE_CREATE.setItem(28, new ItemStack(ICON));
-          RACE_CREATE.setItem(30, new ItemStack(CHECKPOINT));
+          RACE_CREATE.setItem(30, new ItemStack(STARTPOINT));
+          RACE_CREATE.setItem(32, new ItemStack(CHECKPOINT));
           RACE_CREATE.setItem(49, new ItemStack(CREATE));
 
           return RACE_CREATE;
@@ -355,8 +375,30 @@ public class Menus {
           return RACE_CREATE_ICON;
      }
 
+     public static Inventory getRaceStartPoint(Player player) {
+          Inventory RACE_CREATE_STARTPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_STARTPOINT");
+          setBorder(RACE_CREATE_STARTPOINT);
+
+          ItemStack STARTPOINT = new ItemStack(Material.TARGET);
+          ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
+          STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Start Point Editor");
+          List<String> lores = new ArrayList<String>();
+          lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
+          lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
+          lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
+
+          STARTPOINT_Meta.setLore(lores);
+          STARTPOINT.setItemMeta(STARTPOINT_Meta);
+
+          RACE_CREATE_STARTPOINT.setItem(4, new ItemStack(STARTPOINT));
+
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getStartPointLoc().size(); i++) RACE_CREATE_STARTPOINT.setItem(i + 9, new ItemStack(getRace_StartPint_Item(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), i)));
+
+          return RACE_CREATE_STARTPOINT;
+     }
+
      public static Inventory getRaceCheckPoint(Player player) {
-          Inventory RACE_CREATE_CHECKPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_POINT");
+          Inventory RACE_CREATE_CHECKPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_CHECKPOINT");
           setBorder(RACE_CREATE_CHECKPOINT);
 
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
@@ -372,7 +414,7 @@ public class Menus {
 
           RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
 
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), i)));
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint_Item(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), i)));
 
           return RACE_CREATE_CHECKPOINT;
      }

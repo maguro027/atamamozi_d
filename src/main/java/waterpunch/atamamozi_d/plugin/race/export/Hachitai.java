@@ -1,9 +1,23 @@
 package waterpunch.atamamozi_d.plugin.race.export;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class Hachitai {
+
+     public static void setCircle(Location loc, int size) {
+          for (int d = 0; d <= 10; d += 1) {
+               Location particleLoc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
+               particleLoc.setYaw(loc.getYaw());
+               particleLoc.setPitch(loc.getPitch());
+
+               particleLoc.setX(loc.getX() + Math.cos(d) * size);
+               particleLoc.setZ(loc.getZ() + Math.sin(d) * size);
+               loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, new Particle.DustOptions(Color.WHITE, 5));
+          }
+     }
 
      static float PCalc(Race_Runner Runner, Location location) {
           double[] abcd = Runner.getRace().getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();

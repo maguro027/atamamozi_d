@@ -2,7 +2,6 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
 
 public class Race_Runner {
 
