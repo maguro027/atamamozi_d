@@ -3,6 +3,7 @@ package waterpunch.atamamozi_d.plugin.tool;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.Race;
 
 public class LocationViewer {
@@ -11,8 +12,10 @@ public class LocationViewer {
      private int r;
      private int CheckPoint;
      private Race Race;
+     private Player player;
 
-     public LocationViewer(Race Race, int CheckPoint) {
+     public LocationViewer(Player player, Race Race, int CheckPoint) {
+          this.player = player;
           this.loc = Race.getCheckPointLoc().get(CheckPoint).getLocation();
           this.r = Race.getCheckPointLoc().get(CheckPoint).getr();
           this.Race = Race;
@@ -47,7 +50,9 @@ public class LocationViewer {
                particleLoc2.setX(q1.x + loc.getX());
                particleLoc2.setY(q1.y + loc.getY());
                particleLoc2.setZ(q1.z + loc.getZ());
-               loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
+               player.spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
+               // Packet<?> packet = new PacketPlayOutWorldParticles(Particle.BLOCK_CRACK, false, x, y, z, 0f, 0f, 0f, 0.5f, 10, type.getId() + data * 4096);
+               // ((CraftPlayer) bukkitPlayer).getHandle().sendPacket(packet);
           }
      }
 
