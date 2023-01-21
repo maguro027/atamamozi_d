@@ -50,7 +50,10 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
                          if (event.getCurrentItem() == null) return;
-                         if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getWhoClicked())) return;
+                         if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(((Player) event.getWhoClicked()))) {
+                              ((Player) event.getWhoClicked()).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
+                              return;
+                         }
 
                          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()), waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()).getRap(), (Player) event.getWhoClicked());
                          ((Player) event.getWhoClicked()).closeInventory();
@@ -225,8 +228,10 @@ public class Event implements Listener {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign) || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock()) return;
           Sign signboard = (Sign) e.getClickedBlock().getState();
           if (!(signboard.getLine(0).equals("[Race]"))) return;
-
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) return;
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) {
+               e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
+               return;
+          }
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)) == null) {
                e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Unknown Race");
                signboard.setLine(1, ChatColor.RED + "Error");
@@ -250,9 +255,7 @@ public class Event implements Listener {
 
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
                          double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
-                         //
                          if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) {
-                              // event.getPlayer().sendMessage("test-");
                               run.addCheckPoint();
                          }
                     }
@@ -263,6 +266,6 @@ public class Event implements Listener {
 
      @EventHandler
      public void leave(PlayerQuitEvent event) {
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(event.getPlayer())) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
+          waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
      }
 }

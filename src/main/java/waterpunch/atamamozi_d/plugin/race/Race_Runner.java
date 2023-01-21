@@ -59,9 +59,7 @@ public class Race_Runner {
           this.Rap++;
           this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           if (Race.getRap() == Rap) {
-               this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "CLEAR!!");
-               waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(Player);
+               Goal();
           } else {
                waterpunch.atamamozi_d.plugin.tool.Scoreboard.setScoreboard(this);
           }
@@ -69,5 +67,10 @@ public class Race_Runner {
 
      public void setRap(int i) {
           this.Rap = i;
+     }
+
+     public void Goal() {
+          this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "GOAL!!");
      }
 }

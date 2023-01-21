@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import waterpunch.atamamozi_d.plugin.event.Event;
@@ -13,6 +14,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
+import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Core extends JavaPlugin {
 
@@ -77,6 +79,13 @@ public class Core extends JavaPlugin {
                     }
                     onupdatecheckpoint((Player) sender, args[1], args[2]);
                     break;
+               case "start":
+                    for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Wait_list) if (run.getPlayer() == ((Player) sender)) {
+                         waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
+                         break;
+                    }
+
+                    break;
                case "re":
                case "respawn":
                     onrespawn((Player) sender);
@@ -101,6 +110,7 @@ public class Core extends JavaPlugin {
                subcmd.add("addStartPoint");
                subcmd.add("addCheckPoint");
                subcmd.add("updateCheckPoint");
+               subcmd.add("start");
                subcmd.add("respawn");
 
                return subcmd;
@@ -139,7 +149,6 @@ public class Core extends JavaPlugin {
           player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
      }
 
-     //
      void onaddStartpoint(Player player) {
           if (!Areyouparticipatinginarace(player)) return;
 
@@ -148,7 +157,6 @@ public class Core extends JavaPlugin {
           waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(player.getLocation(), 1);
      }
 
-     //
      void onaddCheckpoint(Player player, String r) {
           if (!Areyouparticipatinginarace(player)) return;
           try {
@@ -215,7 +223,8 @@ public class Core extends JavaPlugin {
 
      void onrespawn(Player player) {
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) if (run.getPlayer() == player) {
-               player.teleport(run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation());
+               player.teleport(run.getRace().getCheckPointLoc().get(run.getCheckPoint() - 1).getLocation());
+               if (run.getRace().getRace_Type() == Race_Type.BOAT) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.BOAT).addPassenger(player);
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Respawn");
                return;
           }

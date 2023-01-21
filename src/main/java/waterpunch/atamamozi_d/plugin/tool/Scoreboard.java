@@ -1,5 +1,7 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -10,21 +12,23 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 public class Scoreboard {
 
      public static void setScoreboard(Race_Runner runner) {
+          ArrayList<Score> Scoreboards = new ArrayList<>();
+
           org.bukkit.scoreboard.Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-          Objective objective = board.registerNewObjective("Stats", "dummy");
+          Objective objective = board.registerNewObjective("Stats", "dummy", "a");
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-          Score Name = objective.getScore("Race: " + runner.getRace().getRace_name());
-          Score Rap1 = objective.getScore("Rap : ");
-          Score Rap2 = objective.getScore(runner.getRap() + " / " + runner.getRace().getRap());
-          Score Check1 = objective.getScore("CheckPiont : ");
-          Score Check2 = objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size());
 
-          Name.setScore(9);
-          Rap1.setScore(8);
-          Rap2.setScore(7);
-          Check1.setScore(6);
-          Check2.setScore(5);
+          Scoreboards.add(objective.getScore("Race: " + runner.getRace().getRace_name()));
+          Scoreboards.add(objective.getScore("Rap : "));
+          Scoreboards.add(objective.getScore(runner.getRap() + " / " + runner.getRace().getRap()));
+          Scoreboards.add(objective.getScore("CheckPiont : "));
+          Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size()));
+
+          Collections.reverse(Scoreboards);
+          for (int i = 0; i < Scoreboards.size(); i++) {
+               Scoreboards.get(i).setScore(i);
+          }
 
           runner.getPlayer().setScoreboard(board);
      }
