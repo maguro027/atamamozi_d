@@ -222,10 +222,8 @@ public class Core extends JavaPlugin {
      }
 
      void onrespawn(Player player) {
-          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) if (run.getPlayer() == player) {
-               player.teleport(run.getRace().getCheckPointLoc().get(run.getCheckPoint() - 1).getLocation());
-               if (run.getRace().getRace_Type() == Race_Type.BOAT) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.BOAT).addPassenger(player);
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Respawn");
+          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (run.getPlayer() == player) {
+               run.ReSpawn();
                return;
           }
           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You not join race");

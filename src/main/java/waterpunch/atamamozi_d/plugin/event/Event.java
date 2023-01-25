@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +19,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -28,8 +32,6 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 public class Event implements Listener {
 
      Plugin plugin_data = null;
-     HashMap<Player, Location> player_loc = new HashMap<>();
-     HashMap<LocationViewer, Integer> circle = new HashMap<>();
 
      public Event(Plugin plugin) {
           plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -158,7 +160,6 @@ public class Event implements Listener {
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate((Player) event.getWhoClicked()));
                          } else {
                               if (event.getCurrentItem() == null) return;
-
                               ((Player) event.getWhoClicked()).sendMessage(event.getAction().toString());
                               if (event.getAction() == InventoryAction.CLONE_STACK) {
                                    //remove
@@ -244,20 +245,16 @@ public class Event implements Listener {
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list.isEmpty()) return;
-          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_list) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) return;
+          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) {
                if (run.getPlayer() == event.getPlayer()) {
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
                     int r = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr();
-
                     LocationViewer locationViewer = new LocationViewer(event.getPlayer(), run.getRace(), run.getCheckPoint());
                     locationViewer.DrawCircle();
-
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
                          double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
-                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) {
-                              run.addCheckPoint();
-                         }
+                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) run.addCheckPoint();
                     }
                     break;
                }
@@ -267,5 +264,31 @@ public class Event implements Listener {
      @EventHandler
      public void leave(PlayerQuitEvent event) {
           waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
+     }
+
+     @EventHandler
+     public void AnitBoat_Damage(VehicleDestroyEvent event) {
+          if (!(event.getVehicle().getPassenger() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) {
+               event.setCancelled(true);
+               return;
+          }
+     }
+
+     @EventHandler
+     public void AnitBoat_Leave(VehicleExitEvent event) {
+          if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.equals((Player) event.getExited())) {
+               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.remove((Player) event.getExited());
+               event.setCancelled(false);
+               return;
+          }
+
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) {
+               event.setCancelled(true);
+               // event.getExited().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You Can't Exit Need Leave Race");
+               // event.getExited().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "[" + ChatColor.RED + "/atamamozi_d leave" + ChatColor.WHITE + "]");
+               return;
+          }
      }
 }
