@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import waterpunch.atamamozi_d.plugin.event.Event;
@@ -14,7 +13,6 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
-import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Core extends JavaPlugin {
 
@@ -24,13 +22,14 @@ public class Core extends JavaPlugin {
           new Event(this);
           new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
-          waterpunch.atamamozi_d.plugin.race.Race_Core.clear();
+
           for (Player p : this.getServer().getOnlinePlayers()) if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
      }
 
      @Override
      public void onDisable() {
           System.out.println("ATAMAMOZI-D ENGINE STOP");
+          waterpunch.atamamozi_d.plugin.race.Race_Core.clear();
      }
 
      @Override

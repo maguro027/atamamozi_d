@@ -1,6 +1,5 @@
 package waterpunch.atamamozi_d.plugin.event;
 
-import java.util.HashMap;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +18,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
@@ -286,8 +284,6 @@ public class Event implements Listener {
 
           if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) {
                event.setCancelled(true);
-               // event.getExited().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You Can't Exit Need Leave Race");
-               // event.getExited().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "[" + ChatColor.RED + "/atamamozi_d leave" + ChatColor.WHITE + "]");
                return;
           }
      }
