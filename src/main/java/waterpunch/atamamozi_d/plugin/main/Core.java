@@ -79,7 +79,7 @@ public class Core extends JavaPlugin {
                     onupdatecheckpoint((Player) sender, args[1], args[2]);
                     break;
                case "start":
-                    for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Wait_list) if (run.getPlayer() == ((Player) sender)) {
+                    for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (run.getPlayer() == ((Player) sender)) {
                          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
                          break;
                     }
