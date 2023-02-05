@@ -40,12 +40,6 @@ public class Core extends JavaPlugin {
                return false;
           }
           switch (args[0]) {
-               case "1":
-                    onDebug1((Player) sender);
-                    break;
-               case "2":
-                    onDebug2((Player) sender);
-                    break;
                case "help":
                     onhelp((Player) sender);
                     break;
@@ -124,16 +118,6 @@ public class Core extends JavaPlugin {
           player.sendMessage("[stop] /waterpunch.atamamozi_d stop 'race name' race stop");
           player.sendMessage("[leave] leave player");
           player.sendMessage("---------------------");
-     }
-
-     void onDebug1(Player player) {
-          player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "You ");
-     }
-
-     void onDebug2(Player player) {
-          System.out.println("w");
-          waterpunch.atamamozi_d.plugin.tool.CreateJson.saveRace(player);
      }
 
      void onload(Player player) {}

@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
+import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Race {
@@ -17,6 +18,8 @@ public class Race {
      private int rap;
      private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
+     private Race_Mode race_Mode;
+     private ArrayList<String> Score = new ArrayList<>();
 
      private int Error_Count;
 
@@ -26,6 +29,7 @@ public class Race {
           this.race_type = Race_Type.RUN;
           this.icon = Material.MAP;
           this.rap = 1;
+          this.race_Mode = Race_Mode.WAIT;
      }
 
      public Race(Race Race) {
@@ -108,5 +112,21 @@ public class Race {
 
      public int getErrorCount() {
           return this.Error_Count;
+     }
+
+     public void setMode(Race_Mode mode) {
+          this.race_Mode = mode;
+     }
+
+     public Race_Mode getMode() {
+          return this.race_Mode;
+     }
+
+     public void setScore(ArrayList<String> Score) {
+          this.Score = Score;
+     }
+
+     public ArrayList<String> getScore() {
+          return this.Score;
      }
 }

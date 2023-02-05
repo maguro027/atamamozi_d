@@ -139,7 +139,7 @@ public class Menus {
      public static Inventory getTop(Player player) {
           Inventory RACE_TOP_MENU = Bukkit.createInventory(player, 9, "RACE_TOP_MENU");
           RACE_TOP_MENU.setItem(1, new ItemStack(getRace_LIST()));
-          RACE_TOP_MENU.setItem(4, new ItemStack(getRace_EDIT()));
+          // RACE_TOP_MENU.setItem(4, new ItemStack(getRace_EDIT()));
           RACE_TOP_MENU.setItem(7, new ItemStack(getRace_CREATE()));
           return RACE_TOP_MENU;
      }

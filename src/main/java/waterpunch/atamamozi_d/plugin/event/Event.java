@@ -25,8 +25,8 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
+import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
-import waterpunch.atamamozi_d.plugin.tool.Runner_Mode;
 
 public class Event implements Listener {
 
@@ -51,7 +51,7 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
                          if (event.getCurrentItem() == null) return;
-                         if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(((Player) event.getWhoClicked()))) {
+                         if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(((Player) event.getWhoClicked()))) {
                               ((Player) event.getWhoClicked()).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
                               return;
                          }
@@ -228,7 +228,7 @@ public class Event implements Listener {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign) || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock()) return;
           Sign signboard = (Sign) e.getClickedBlock().getState();
           if (!(signboard.getLine(0).equals("[Race]"))) return;
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) {
                e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
                return;
           }
@@ -246,7 +246,7 @@ public class Event implements Listener {
      public void onPlayerMove(final PlayerMoveEvent event) {
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) return;
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) {
-               if (run.getPlayer() == event.getPlayer() && run.getMode() == Runner_Mode.RUN) {
+               if (run.getPlayer() == event.getPlayer() && run.getMode() == Race_Mode.RUN) {
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
                     int r = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr();
                     LocationViewer locationViewer = new LocationViewer(event.getPlayer(), run.getRace(), run.getCheckPoint());
@@ -268,7 +268,7 @@ public class Event implements Listener {
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
           if (!(event.getVehicle().getPassenger() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getVehicle() && val.getMode() == Runner_Mode.RUN) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getVehicle() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
                return;
           }
@@ -283,7 +283,7 @@ public class Event implements Listener {
                return;
           }
 
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Runner_Mode.RUN) {
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
                return;
           }

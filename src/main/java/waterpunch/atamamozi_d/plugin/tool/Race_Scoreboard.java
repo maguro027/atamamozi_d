@@ -24,14 +24,15 @@ public class Race_Scoreboard {
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-          Scoreboards.add(objective.getScore("[" + "RACE" + "]" + runner.getRace().getRace_name()));
+          Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "RACE" + ChatColor.WHITE + "]"));
+          Scoreboards.add(objective.getScore(runner.getRace().getRace_name()));
           switch (runner.getMode()) {
                case WAIT:
                     Scoreboards.add(objective.getScore(""));
                     Scoreboards.add(objective.getScore("Start Waiting..."));
                     Scoreboards.add(objective.getScore("/atamamozi_d " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
-                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Wait.get(runner.getRace())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
+                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(runner.getRace())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
 
                     break;
                case RUN:
@@ -41,11 +42,12 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size()));
                     break;
                case GOAL:
+                    Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "SCORE" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(runner.getRace())) {
                          Scoreboards.add(objective.getScore(ChatColor.AQUA + val.getPlayer().getName()));
-                         if (val.getMode() == Runner_Mode.RUN) {
+                         if (val.getMode() == Race_Mode.RUN) {
                               Scoreboards.add(objective.getScore("-Runnig..."));
-                         } else if (val.getMode() == Runner_Mode.GOAL) {
+                         } else if (val.getMode() == Race_Mode.GOAL) {
                               Scoreboards.add(objective.getScore(val.getTimest()));
                          }
                     }
