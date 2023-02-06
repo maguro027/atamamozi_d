@@ -111,7 +111,7 @@ public class Event implements Listener {
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceAmount(((Player) event.getWhoClicked())));
                          }
                          if (event.getRawSlot() == 24) {
-                              if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getJoin_Amount() == 0) return;
+                              if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getJoin_Amount() == 1) return;
                               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).setJoin_Amount(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(((Player) event.getWhoClicked())).getJoin_Amount() - 1);
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceAmount(((Player) event.getWhoClicked())));
                          }
@@ -226,20 +226,15 @@ public class Event implements Listener {
      @EventHandler(ignoreCancelled = true)
      public void onEnSignClick(PlayerInteractEvent e) {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign) || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock()) return;
-          Sign signboard = (Sign) e.getClickedBlock().getState();
-          if (!(signboard.getLine(0).equals("[Race]"))) return;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(e.getPlayer())) {
-               e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
-               return;
-          }
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)) == null) {
+          if (!(((Sign) e.getClickedBlock().getState()).getLine(0).equals("[Race]"))) return;
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(((Sign) e.getClickedBlock().getState()).getLine(1)) == null) {
                e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Unknown Race");
-               signboard.setLine(1, ChatColor.RED + "Error");
-               signboard.setLine(2, "");
-               signboard.setLine(3, "");
+               ((Sign) e.getClickedBlock().getState()).setLine(1, ChatColor.RED + "Error");
+               ((Sign) e.getClickedBlock().getState()).setLine(2, "");
+               ((Sign) e.getClickedBlock().getState()).setLine(3, "");
                return;
           }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(signboard.getLine(1)), Integer.parseInt(signboard.getLine(2).replace(" : Rap", "")), e.getPlayer());
+          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), Integer.parseInt(((Sign) e.getClickedBlock().getState()).getLine(2).replace(" : Rap", "")), e.getPlayer());
      }
 
      @EventHandler
@@ -283,7 +278,7 @@ public class Event implements Listener {
                return;
           }
 
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
                return;
           }

@@ -16,9 +16,10 @@ public class Race {
      private Material icon;
      private int join_amount;
      private int rap;
+     private Race_Mode race_Mode;
      private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
-     private Race_Mode race_Mode;
+
      private ArrayList<String> Score = new ArrayList<>();
 
      private int Error_Count;
@@ -30,16 +31,7 @@ public class Race {
           this.icon = Material.MAP;
           this.rap = 1;
           this.race_Mode = Race_Mode.WAIT;
-     }
-
-     public Race(Race Race) {
-          this.creator = Race.getCreator();
-          this.race_name = Race.getRace_name();
-          this.race_type = Race.getRace_Type();
-          this.icon = Race.getIcon();
-          this.join_amount = Race.getJoin_Amount();
-          this.rap = Race.getRap();
-          this.CheckPoint_Loc = Race.getCheckPointLoc();
+          this.join_amount = 1;
      }
 
      public void addStartPointLoc(Location loc) {

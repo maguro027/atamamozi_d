@@ -252,6 +252,18 @@ public class Menus {
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap());
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getIcon().toString());
 
+          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getStartPointLoc().size() == waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount()) {
+               if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount() == 0) {
+                    lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need  over 1");
+                    waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addErrorCount();
+               } else {
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getStartPointLoc().size());
+               }
+          } else {
+               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount());
+               waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addErrorCount();
+          }
+
           if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() >= 2) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size());
           } else {

@@ -1,9 +1,7 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,6 +30,17 @@ public class Race_Runner {
           this.st_Location = player.getLocation();
           this.Join_Count = Join_Count;
           this.scoreboard = new Race_Scoreboard();
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.add(this);
+     }
+
+     public void upDate(Race race, int Join_Count) {
+          this.Race = race;
+          this.Race_mode = Race_Mode.WAIT;
+          this.start_time = System.currentTimeMillis();
+          this.st_Location = Player.getLocation();
+          this.Join_Count = Join_Count;
+          this.Rap = 0;
+          this.CheckPoint = 0;
      }
 
      public void UpdateScoreboard() {
@@ -40,10 +49,6 @@ public class Race_Runner {
 
      public Player getPlayer() {
           return Player;
-     }
-
-     public void setRace(Race Race) {
-          this.Race = Race;
      }
 
      public Race getRace() {
@@ -115,7 +120,7 @@ public class Race_Runner {
 
      public void Start() {
           this.Race_mode = Race_Mode.RUN;
-          this.Player.getLocation(this.Race.getStartPointLoc().get(Join_Count).getLocation());
+          this.Player.getLocation(Race.getStartPointLoc().get(Join_Count).getLocation());
           if (Race.getRace_Type() == Race_Type.BOAT) this.Player.getLocation().getWorld().spawnEntity(this.Race.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
           this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "START");
           this.start_time = System.currentTimeMillis();
@@ -144,7 +149,7 @@ public class Race_Runner {
 
      public void Goal() {
           this.end_time = System.currentTimeMillis();
-          this.Race_mode = Race_Mode.GOAL;
+          setMode(Race_Mode.GOAL);
           Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "GOAL!!");
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race)) {
@@ -159,6 +164,7 @@ public class Race_Runner {
           if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race).size()) {
                ArrayList<String> Score = new ArrayList<>();
                Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
+
                Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race).stream().sorted(comparator).forEach(a -> Score.add("[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + a.getTimest()));
                Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
@@ -173,10 +179,7 @@ public class Race_Runner {
                val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamoazi_d leave");
                val.setMode(Race_Mode.GOAL);
           }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race).clear();
-     }
-
-     public int getJoin_Amount() {
-          return 0;
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(Race);
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(Race);
      }
 }

@@ -96,7 +96,6 @@ public class Core extends JavaPlugin {
                ArrayList<String> subcmd = new ArrayList<String>();
                subcmd.add("help");
                subcmd.add("load");
-               subcmd.add("help");
                subcmd.add("stop");
                subcmd.add("leave");
                subcmd.add("create");

@@ -1,9 +1,9 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
 public enum Race_Mode {
-     WAIT(1),
-     RUN(2),
-     GOAL(3);
+     WAIT(0),
+     RUN(1),
+     GOAL(2);
 
      @SuppressWarnings("unused")
      private int id;
