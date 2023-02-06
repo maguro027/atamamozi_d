@@ -13,6 +13,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
 import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
+import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 
 public class Core extends JavaPlugin {
 
@@ -74,6 +75,10 @@ public class Core extends JavaPlugin {
                     break;
                case "start":
                     for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (run.getPlayer() == ((Player) sender)) {
+                         if (run.getMode() == Race_Mode.GOAL) {
+                              run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
+                              return false;
+                         }
                          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
                          break;
                     }

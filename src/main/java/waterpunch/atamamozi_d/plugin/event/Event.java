@@ -243,13 +243,12 @@ public class Event implements Listener {
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) {
                if (run.getPlayer() == event.getPlayer() && run.getMode() == Race_Mode.RUN) {
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
-                    int r = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr();
-                    LocationViewer locationViewer = new LocationViewer(event.getPlayer(), run.getRace(), run.getCheckPoint());
-                    locationViewer.DrawCircle();
+                    run.getLocationViewer().DrawCircle();
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
                          double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
-                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < r * r) run.addCheckPoint();
+                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr() * run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr()) run.addCheckPoint();
                     }
+
                     break;
                }
           }

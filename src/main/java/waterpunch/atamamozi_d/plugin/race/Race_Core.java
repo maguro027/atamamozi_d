@@ -28,7 +28,7 @@ public class Race_Core {
                               val.setMode(Race_Mode.WAIT);
                               Race_Run.put(Race, new ArrayList<Race_Runner>());
                               Race_Run.get(Race).add(val);
-                              val.upDate(Race, 0);
+                              val.UPDate(Race, 0);
                               JoinMesseage(Race, player);
                               return;
                          }
@@ -45,12 +45,12 @@ public class Race_Core {
                               return;
                          }
                          if (Race.getJoin_Amount() == Race_Run.get(Race).size()) {
-                              player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Sorry " + Race.getRace_name() + "is Max Player");
+                              player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Sorry " + Race.getRace_name() + " is Max Player");
                               return;
                          }
                          if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getName().equals(player.getName())) {
                               Race_Run.get(Race).add(val);
-                              val.upDate(Race, Race_Run.get(key).size() - 1);
+                              val.UPDate(Race, Race_Run.get(key).size() - 1);
                               JoinMesseage(Race, player);
                               //////////////////////////
 
@@ -66,7 +66,7 @@ public class Race_Core {
                          val.setMode(Race_Mode.WAIT);
                          Race_Run.put(Race, new ArrayList<Race_Runner>());
                          Race_Run.get(Race).add(val);
-                         val.upDate(Race, 0);
+                         val.UPDate(Race, 0);
                          JoinMesseage(Race, player);
                          return;
                     }
@@ -87,7 +87,14 @@ public class Race_Core {
 
      public static void JoinMesseage(Race race, Player player) {
           for (Race_Runner runner : Race_Run.get(race)) {
-               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "]");
+               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
+               runner.UpdateScoreboard();
+          }
+     }
+
+     public static void LeaveMesseage(Race race, Player player) {
+          for (Race_Runner runner : Race_Run.get(race)) {
+               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Leave");
                runner.UpdateScoreboard();
           }
      }
@@ -107,16 +114,22 @@ public class Race_Core {
           if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
                if (val.getRace().getRace_Type() == Race_Type.BOAT && !(val.getPlayer().getVehicle() == null)) {
                     Race_Runner_Onetime.add(val.getPlayer());
+
                     val.getPlayer().getVehicle().remove();
                }
 
                val.getPlayer().teleport(val.getst_Location());
+               Race_Run.get(val.getRace()).remove(val);
                Race_Runner_List.remove(val);
+               if (!(Race_Run.get(val.getRace()).size() == 0)) {
+                    for (int i = 0; i == Race_Run.get(val.getRace()).size(); i++) Race_Run.get(val.getRace()).get(i).setJoin_Count(i);
+                    LeaveMesseage(val.getRace(), player);
+               }
 
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
+               player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                break;
           }
-          player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
-          player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
      }
 
      public static boolean isJoin(Player player) {

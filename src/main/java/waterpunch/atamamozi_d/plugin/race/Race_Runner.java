@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
 import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 import waterpunch.atamamozi_d.plugin.tool.Race_Scoreboard;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
@@ -21,6 +22,7 @@ public class Race_Runner {
      private long start_time, end_time;
      private Location st_Location;
      private Race_Scoreboard scoreboard;
+     private LocationViewer locationViewer;
 
      public Race_Runner(Player player, Race race, int Join_Count) {
           this.Player = player;
@@ -30,10 +32,11 @@ public class Race_Runner {
           this.st_Location = player.getLocation();
           this.Join_Count = Join_Count;
           this.scoreboard = new Race_Scoreboard();
+          this.locationViewer = new LocationViewer(player, race, CheckPoint);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.add(this);
      }
 
-     public void upDate(Race race, int Join_Count) {
+     public void UPDate(Race race, int Join_Count) {
           this.Race = race;
           this.Race_mode = Race_Mode.WAIT;
           this.start_time = System.currentTimeMillis();
@@ -41,6 +44,8 @@ public class Race_Runner {
           this.Join_Count = Join_Count;
           this.Rap = 0;
           this.CheckPoint = 0;
+          this.locationViewer.UPDataRace(race);
+          this.locationViewer.UPDataLoc(CheckPoint);
      }
 
      public void UpdateScoreboard() {
@@ -53,6 +58,14 @@ public class Race_Runner {
 
      public Race getRace() {
           return Race;
+     }
+
+     public void setJoin_Count(int i) {
+          this.Join_Count = i;
+     }
+
+     public int getJoin_Count() {
+          return Join_Count;
      }
 
      public void setMode(Race_Mode mode) {
@@ -96,6 +109,7 @@ public class Race_Runner {
           } else {
                this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                UpdateScoreboard();
+               UPdateViewLoc();
           }
      }
 
@@ -116,6 +130,14 @@ public class Race_Runner {
 
      public void setRap(int i) {
           this.Rap = i;
+     }
+
+     public void UPdateViewLoc() {
+          locationViewer.UPDataLoc(this.CheckPoint);
+     }
+
+     public LocationViewer getLocationViewer() {
+          return this.locationViewer;
      }
 
      public void Start() {

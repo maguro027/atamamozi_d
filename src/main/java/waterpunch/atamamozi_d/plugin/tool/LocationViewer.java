@@ -22,6 +22,15 @@ public class LocationViewer {
           this.CheckPoint = CheckPoint;
      }
 
+     public void UPDataLoc(int checkpoint) {
+          this.loc = Race.getCheckPointLoc().get(checkpoint).getLocation();
+          this.r = Race.getCheckPointLoc().get(checkpoint).getr();
+     }
+
+     public void UPDataRace(Race race) {
+          this.Race = race;
+     }
+
      public void DrawCircle() {
           Location particleLoc = loc;
 
