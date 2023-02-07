@@ -20,7 +20,7 @@ public class Race_Runner {
      private Race_Mode Race_mode;
      private int Join_Count, CheckPoint, Rap;
      private long start_time, end_time;
-     private Location st_Location;
+     private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
 
@@ -33,6 +33,8 @@ public class Race_Runner {
           this.Join_Count = Join_Count;
           this.scoreboard = new Race_Scoreboard();
           this.locationViewer = new LocationViewer(player, race, CheckPoint);
+          this.new_Location = player.getLocation();
+          this.old_Location = player.getLocation();
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.add(this);
      }
 
@@ -58,6 +60,22 @@ public class Race_Runner {
 
      public Race getRace() {
           return Race;
+     }
+
+     public void setnewLoc(Location loc) {
+          this.new_Location = loc;
+     }
+
+     public void setoldLoc(Location loc) {
+          this.old_Location = loc;
+     }
+
+     public Location getnewLoc() {
+          return new_Location;
+     }
+
+     public Location getoldLoc() {
+          return old_Location;
      }
 
      public void setJoin_Count(int i) {
@@ -142,7 +160,7 @@ public class Race_Runner {
 
      public void Start() {
           this.Race_mode = Race_Mode.RUN;
-          this.Player.getLocation(Race.getStartPointLoc().get(Join_Count).getLocation());
+          this.Player.teleport(Race.getStartPointLoc().get(Join_Count).getLocation());
           if (Race.getRace_Type() == Race_Type.BOAT) this.Player.getLocation().getWorld().spawnEntity(this.Race.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
           this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "START");
           this.start_time = System.currentTimeMillis();

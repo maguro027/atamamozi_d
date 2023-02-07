@@ -243,7 +243,10 @@ public class Event implements Listener {
           for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) {
                if (run.getPlayer() == event.getPlayer() && run.getMode() == Race_Mode.RUN) {
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
+                    run.setnewLoc(event.getTo());
+                    run.setoldLoc(event.getFrom());
                     run.getLocationViewer().DrawCircle();
+                    run.UpdateScoreboard();
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
                          double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
                          if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr() * run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr()) run.addCheckPoint();
@@ -262,7 +265,7 @@ public class Event implements Listener {
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
           if (!(event.getVehicle().getPassenger() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getVehicle() && val.getMode() == Race_Mode.RUN) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer().getUniqueId() == event.getVehicle().getPassenger().getUniqueId() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
                return;
           }

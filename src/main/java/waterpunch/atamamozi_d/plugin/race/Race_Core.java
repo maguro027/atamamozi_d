@@ -114,7 +114,6 @@ public class Race_Core {
           if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
                if (val.getRace().getRace_Type() == Race_Type.BOAT && !(val.getPlayer().getVehicle() == null)) {
                     Race_Runner_Onetime.add(val.getPlayer());
-
                     val.getPlayer().getVehicle().remove();
                }
 
@@ -124,6 +123,9 @@ public class Race_Core {
                if (!(Race_Run.get(val.getRace()).size() == 0)) {
                     for (int i = 0; i == Race_Run.get(val.getRace()).size(); i++) Race_Run.get(val.getRace()).get(i).setJoin_Count(i);
                     LeaveMesseage(val.getRace(), player);
+               } else {
+                    val.getRace().setMode(Race_Mode.WAIT);
+                    Race_Run.remove(val.getRace());
                }
 
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");

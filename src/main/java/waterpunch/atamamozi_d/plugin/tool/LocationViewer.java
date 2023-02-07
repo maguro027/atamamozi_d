@@ -60,8 +60,6 @@ public class LocationViewer {
                particleLoc2.setY(q1.y + loc.getY());
                particleLoc2.setZ(q1.z + loc.getZ());
                player.spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
-               // Packet<?> packet = new PacketPlayOutWorldParticles(Particle.BLOCK_CRACK, false, x, y, z, 0f, 0f, 0f, 0.5f, 10, type.getId() + data * 4096);
-               // ((CraftPlayer) bukkitPlayer).getHandle().sendPacket(packet);
           }
      }
 

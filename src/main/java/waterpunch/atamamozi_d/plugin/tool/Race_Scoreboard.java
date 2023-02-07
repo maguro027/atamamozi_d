@@ -1,5 +1,7 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bukkit.Bukkit;
@@ -40,6 +42,11 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore(runner.getRap() + " / " + runner.getRace().getRap()));
                     Scoreboards.add(objective.getScore("CheckPiont : "));
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size()));
+                    double dirVecX = runner.getnewLoc().getX() - runner.getoldLoc().getX();
+                    double dirVecZ = runner.getnewLoc().getZ() - runner.getoldLoc().getZ();
+                    double index = 2;
+                    int speed = new BigDecimal((Math.sqrt(Math.pow(dirVecX, index) + Math.pow(dirVecZ, index)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue();
+                    Scoreboards.add(objective.getScore("SPEED : " + speed));
                     break;
                case GOAL:
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "SCORE" + ChatColor.WHITE + "]"));
