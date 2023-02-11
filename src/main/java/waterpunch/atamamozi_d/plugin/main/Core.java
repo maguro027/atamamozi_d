@@ -154,10 +154,6 @@ public class Core extends JavaPlugin {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addCheckPointLoc(player.getLocation(), Integer.parseInt(r));
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               LocationViewer locationViewer = new LocationViewer(player, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() - 1);
-               locationViewer.DrawCircle();
-               CountDownTimer time = new CountDownTimer(locationViewer, 5);
-               time.start();
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Check Point");
           } catch (NumberFormatException xr) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Not Number");
@@ -165,17 +161,11 @@ public class Core extends JavaPlugin {
      }
 
      void onsetCheckPoint(Player player, int r, int no) {
-          LocationViewer locationViewer = null;
           if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() == 0) {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addCheckPointLoc(player.getLocation(), r);
-               locationViewer = new LocationViewer(player, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), 0);
           } else {
                waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
-               locationViewer = new LocationViewer(player, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), no);
           }
-          locationViewer.DrawCircle();
-          CountDownTimer time = new CountDownTimer(locationViewer, 5);
-          time.start();
      }
 
      void onupdatecheckpoint(Player player, String r, String No) {
@@ -189,17 +179,11 @@ public class Core extends JavaPlugin {
                if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() > Integer.parseInt(No)) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Check Point<" + ChatColor.RED + r + ChatColor.GOLD + "> Up Data");
                     onsetCheckPoint(player, Integer.parseInt(r), Integer.parseInt(No));
-                    LocationViewer locationViewer = null;
                     if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().size() == 0) {
                          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).addCheckPointLoc(player.getLocation(), Integer.parseInt(r));
-                         locationViewer = new LocationViewer(player, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), 0);
                     } else {
                          waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getCheckPointLoc().set(Integer.parseInt(No), new CheckPointLoc(player.getLocation(), Integer.parseInt(r)));
-                         locationViewer = new LocationViewer(player, waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player), Integer.parseInt(No));
                     }
-                    locationViewer.DrawCircle();
-                    CountDownTimer time = new CountDownTimer(locationViewer, 5);
-                    time.start();
                } else {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Over Number");
                }

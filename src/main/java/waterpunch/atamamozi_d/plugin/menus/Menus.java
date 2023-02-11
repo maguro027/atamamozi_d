@@ -195,11 +195,8 @@ public class Menus {
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount() == 0) {
-               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + "No Limit");
-          } else {
-               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount()));
-          }
+
+          AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount()));
 
           ItemStack ICON = new ItemStack(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getIcon());
           ItemMeta ICON_Meta = ICON.getItemMeta();
@@ -340,11 +337,8 @@ public class Menus {
 
           ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getJoin_Amount() == 1) {
-               RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + "No Limit");
-          } else {
-               RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap()));
-          }
+
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace().get(player).getRap()));
           RAP.setItemMeta(RAP_Meta);
 
           RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));

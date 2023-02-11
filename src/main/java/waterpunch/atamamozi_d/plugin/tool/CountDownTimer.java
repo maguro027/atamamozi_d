@@ -1,39 +1,44 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 
 public class CountDownTimer extends BukkitRunnable {
-  static Plugin plugin;
 
-  public CountDownTimer(Plugin plugindata) {
-    plugin = plugindata;
-  }
+     static Plugin plugin;
 
-  private int seconds;
-  private LocationViewer view;
+     public CountDownTimer(Plugin plugindata) {
+          plugin = plugindata;
+     }
 
-  public CountDownTimer(LocationViewer view, int seconds) {
-    this.seconds = seconds;
-    this.view = view;
-  }
+     private int seconds;
+     private CheckPointLoc CL;
 
-  public void start() {
-    this.runTaskTimer(plugin, 0, 20);
-  }
+     private Player player;
 
-  public void stop() {
-    this.cancel();
-  }
+     public CountDownTimer(CheckPointLoc CL, Player player, int seconds) {
+          this.seconds = seconds;
+          this.CL = CL;
+          this.player = player;
+     }
 
-  @Override
-  public void run() {
-    if (seconds <= 0) {
-      this.cancel();
-      return;
-    }
-    if (seconds % 1 == 0) view.DrawCircle();
+     public void start() {
+          this.runTaskTimer(plugin, 0, 20);
+     }
 
-    seconds--;
-  }
+     public void stop() {
+          this.cancel();
+     }
+
+     @Override
+     public void run() {
+          if (seconds <= 0) {
+               this.cancel();
+               return;
+          }
+
+          seconds--;
+     }
 }

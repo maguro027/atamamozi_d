@@ -42,11 +42,10 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore(runner.getRap() + " / " + runner.getRace().getRap()));
                     Scoreboards.add(objective.getScore("CheckPiont : "));
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + runner.getRace().getCheckPointLoc().size()));
-                    double dirVecX = runner.getnewLoc().getX() - runner.getoldLoc().getX();
-                    double dirVecZ = runner.getnewLoc().getZ() - runner.getoldLoc().getZ();
+
                     double index = 2;
-                    int speed = new BigDecimal((Math.sqrt(Math.pow(dirVecX, index) + Math.pow(dirVecZ, index)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue();
-                    Scoreboards.add(objective.getScore("SPEED : " + speed));
+
+                    Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), index) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), index)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
                     break;
                case GOAL:
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "SCORE" + ChatColor.WHITE + "]"));

@@ -4,66 +4,54 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import waterpunch.atamamozi_d.plugin.race.Race;
+import org.bukkit.plugin.Plugin;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 
 public class LocationViewer {
 
-     private Location loc;
-     private int r;
-     private int CheckPoint;
-     private Race Race;
-     private Player player;
+     private Race_Runner runner;
 
-     public LocationViewer(Player player, Race Race, int CheckPoint) {
-          this.player = player;
-          this.loc = Race.getCheckPointLoc().get(CheckPoint).getLocation();
-          this.r = Race.getCheckPointLoc().get(CheckPoint).getr();
-          this.Race = Race;
-          this.CheckPoint = CheckPoint;
-     }
-
-     public void UPDataLoc(int checkpoint) {
-          this.loc = Race.getCheckPointLoc().get(checkpoint).getLocation();
-          this.r = Race.getCheckPointLoc().get(checkpoint).getr();
-     }
-
-     public void UPDataRace(Race race) {
-          this.Race = race;
+     public LocationViewer(Race_Runner runner) {
+          this.runner = runner;
      }
 
      public void DrawCircle() {
-          Location particleLoc = loc;
+          Location particleLoc = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation();
 
-          double[] abcd = Race.getCheckPointLoc().get(CheckPoint).getabcd();
+          double PP = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getPitch() * Math.PI * 0.0055555;
+          double YY = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getYaw() * Math.PI * 0.0055555;
 
-          double[] v = GetVerticalVector(loc, r, abcd[0], abcd[1], abcd[2]);
-          int n = 5 * r;
+          double a = -Math.cos(PP) * Math.sin(YY);
+          double b = -Math.sin(PP);
+          double c = Math.cos(PP) * Math.cos(YY);
+
+          double[] v = GetVerticalVector(runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(), a, b, c);
+          int n = 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr();
           double theta = 2 * Math.PI / (double) n;
           double Cos = Math.cos(theta * 0.5);
           double Sin = Math.sin(theta * 0.5);
-          Quaternion q0 = new Quaternion(Cos, abcd[0] * Sin, abcd[1] * Sin, abcd[2] * Sin);
+          Quaternion q0 = new Quaternion(Cos, a * Sin, b * Sin, c * Sin);
           Quaternion q1 = new Quaternion(0, v[0], v[1], v[2]);
-          Quaternion q2 = new Quaternion(Cos, -abcd[0] * Sin, -abcd[1] * Sin, -abcd[2] * Sin);
+          Quaternion q2 = new Quaternion(Cos, -a * Sin, -b * Sin, -c * Sin);
 
           Location particleLoc1 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
           particleLoc1.setX(q1.x);
           particleLoc1.setY(q1.y);
           particleLoc1.setZ(q1.z);
-
-          loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc1, 1, new Particle.DustOptions(Color.RED, 1));
           for (int i = 1; i < n; i++) {
                Location particleLoc2 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
                q1 = Quaternion.Multiply(Quaternion.Multiply(q0, q1), q2);
-               particleLoc2.setX(q1.x + loc.getX());
-               particleLoc2.setY(q1.y + loc.getY());
-               particleLoc2.setZ(q1.z + loc.getZ());
-               player.spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
+               particleLoc2.setX(q1.x + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getX());
+               particleLoc2.setY(q1.y + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getY());
+               particleLoc2.setZ(q1.z + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getZ());
+               runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getWorld().spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
           }
      }
 
-     public double[] GetVerticalVector(Location loc, int r, double a, double b, double c) {
+     public static double[] GetVerticalVector(Location loc, int r, double a, double b, double c) {
           double[] rtn = new double[3];
           if (a == 0) {
                rtn[0] = r;
