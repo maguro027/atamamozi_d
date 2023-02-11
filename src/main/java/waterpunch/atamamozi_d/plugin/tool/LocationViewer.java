@@ -3,10 +3,7 @@ package waterpunch.atamamozi_d.plugin.tool;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 
 public class LocationViewer {
 
