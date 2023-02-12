@@ -44,12 +44,10 @@ public class LocationViewer {
                particleLoc0.setX(cos * u[0] + sin * v[0] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getX());
                particleLoc0.setY(cos * u[1] + sin * v[1] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getY());
                particleLoc0.setZ(cos * u[2] + sin * v[2] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getZ());
-               runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getWorld().spawnParticle(Particle.REDSTONE, runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), 1, new Particle.DustOptions(Color.RED, 5));
+               runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getWorld().spawnParticle(Particle.REDSTONE, runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), 1, new Particle.DustOptions(Color.RED, 1));
 
-               PP = cos * cosDelta - sin * sinDelta;
-               YY = cos * sinDelta + sin * cosDelta;
-               cos = PP;
-               sin = YY;
+               cos = cos * cosDelta - sin * sinDelta;
+               sin = cos * sinDelta + sin * cosDelta;
           }
      }
 
