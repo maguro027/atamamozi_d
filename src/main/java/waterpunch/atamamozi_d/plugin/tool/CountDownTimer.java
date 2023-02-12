@@ -14,14 +14,9 @@ public class CountDownTimer extends BukkitRunnable {
      }
 
      private int seconds;
-     private CheckPointLoc CL;
-
-     private Player player;
 
      public CountDownTimer(CheckPointLoc CL, Player player, int seconds) {
           this.seconds = seconds;
-          this.CL = CL;
-          this.player = player;
      }
 
      public void start() {

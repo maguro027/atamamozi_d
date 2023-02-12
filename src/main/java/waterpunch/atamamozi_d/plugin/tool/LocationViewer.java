@@ -24,27 +24,32 @@ public class LocationViewer {
           double c = Math.cos(PP) * Math.cos(YY);
 
           double[] v = GetVerticalVector(runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(), a, b, c);
+          double[] u = new double[3];
+
+          // ﾍﾞｸﾄﾙ(a,b,c)とvの外積
+          u[0] = v[1] * c - v[2] * b;
+          u[1] = v[2] * a - v[0] * c;
+          u[2] = v[0] * b - v[1] * a;
+
           int n = 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr();
           double theta = 2 * Math.PI / (double) n;
-          double Cos = Math.cos(theta * 0.5);
-          double Sin = Math.sin(theta * 0.5);
-          Quaternion q0 = new Quaternion(Cos, a * Sin, b * Sin, c * Sin);
-          Quaternion q1 = new Quaternion(0, v[0], v[1], v[2]);
-          Quaternion q2 = new Quaternion(Cos, -a * Sin, -b * Sin, -c * Sin);
+          double cos = 1;
+          double sin = 0;
+          double cosDelta = Math.cos(theta);
+          double sinDelta = Math.sin(theta);
 
-          Location particleLoc1 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
+          Location particleLoc0 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
-          particleLoc1.setX(q1.x);
-          particleLoc1.setY(q1.y);
-          particleLoc1.setZ(q1.z);
           for (int i = 1; i < n; i++) {
-               Location particleLoc2 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
+               particleLoc0.setX(cos * u[0] + sin * v[0] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getX());
+               particleLoc0.setY(cos * u[1] + sin * v[1] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getY());
+               particleLoc0.setZ(cos * u[2] + sin * v[2] + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getZ());
+               runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getWorld().spawnParticle(Particle.REDSTONE, runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), 1, new Particle.DustOptions(Color.RED, 5));
 
-               q1 = Quaternion.Multiply(Quaternion.Multiply(q0, q1), q2);
-               particleLoc2.setX(q1.x + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getX());
-               particleLoc2.setY(q1.y + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getY());
-               particleLoc2.setZ(q1.z + runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getZ());
-               runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getWorld().spawnParticle(Particle.REDSTONE, particleLoc2, 1, new Particle.DustOptions(Color.RED, 1));
+               PP = cos * cosDelta - sin * sinDelta;
+               YY = cos * sinDelta + sin * cosDelta;
+               cos = PP;
+               sin = YY;
           }
      }
 
