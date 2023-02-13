@@ -19,9 +19,9 @@ public class LocationViewer {
           double PP = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getPitch() * Math.PI * 0.0055555;
           double YY = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getYaw() * Math.PI * 0.0055555;
 
-          double a = -Math.cos(PP) * Math.sin(YY);
-          double b = -Math.sin(PP);
-          double c = Math.cos(PP) * Math.cos(YY);
+          double a = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[0];
+          double b = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[1];
+          double c = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[2];
 
           double[] v = GetVerticalVector(runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(), a, b, c);
           double[] u = new double[3];
@@ -30,7 +30,8 @@ public class LocationViewer {
           u[1] = v[2] * a - v[0] * c;
           u[2] = v[0] * b - v[1] * a;
 
-          double theta = 2 * Math.PI / (double) 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr();
+          double theta = 2 * Math.PI / (double) (10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr());
+          // 2 * Math.PI / (double) 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr();
           double cos = 1;
           double sin = 0;
           double cosDelta = Math.cos(theta);
@@ -38,14 +39,16 @@ public class LocationViewer {
 
           Location particleLoc0 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
-          for (int i = 1; i < 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(); i++) {
+          for (int i = 0; i < 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(); i++) {
                particleLoc0.setX(cos * u[0] + sin * v[0] + particleLoc.getX());
                particleLoc0.setY(cos * u[1] + sin * v[1] + particleLoc.getY());
                particleLoc0.setZ(cos * u[2] + sin * v[2] + particleLoc.getZ());
                particleLoc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc0, 1, new Particle.DustOptions(Color.RED, 1));
 
-               cos = cos * cosDelta - sin * sinDelta;
-               sin = cos * sinDelta + sin * cosDelta;
+               PP = cos * cosDelta - sin * sinDelta;
+               YY = cos * sinDelta + sin * cosDelta;
+               cos = PP;
+               sin = YY;
           }
      }
 
