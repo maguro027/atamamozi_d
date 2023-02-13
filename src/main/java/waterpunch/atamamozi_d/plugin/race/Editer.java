@@ -3,28 +3,31 @@ package waterpunch.atamamozi_d.plugin.race;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Server.Spigot;
 import org.bukkit.entity.Player;
 
 public class Editer {
 
-     public static HashMap<Player, Race> Race = new HashMap<>();
+     public static HashMap<Player, Race> Race_Editers = new HashMap<>();
 
      public static ArrayList<Player> CheckPoint_Editr = new ArrayList<>();
      public static ArrayList<Player> Name_Editr = new ArrayList<>();
 
      public static void StartCreate(Player player) {
-          if (!Race.containsKey(player)) {
-               Race.put(player, new Race(player));
+          if (!Race_Editers.containsKey(player)) {
+               Race_Editers.put(player, new Race(player));
                player.sendMessage(ChatColor.GOLD + "Race Create Start");
           }
      }
 
-     public static HashMap<Player, Race> getRace() {
-          return Race;
+     public static HashMap<Player, Race> getRace_Editers() {
+          return Race_Editers;
      }
 
      public static void DelCreate(Player player) {
-          Race.remove(player);
+          Race_Editers.remove(player);
      }
 
      public static void setName_editor(Player player) {
@@ -52,6 +55,13 @@ public class Editer {
 
      public static ArrayList<Player> getCheckPoint_Editr() {
           return CheckPoint_Editr;
+     }
+
+     public static void viewCheckPoint(Player player) {
+          if (!CheckPoint_Editr.contains(player)) return;
+          for (int i = 0; i == Race_Editers.get(player).getCheckPointLoc().size(); i++) {
+               Race_Editers.get(player).getCheckPointLoc().get(i);
+          }
      }
 
      public static void remCheckPoint_Editr(Player player) {
