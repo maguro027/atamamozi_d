@@ -10,6 +10,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Menus {
@@ -147,6 +149,7 @@ public class Menus {
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_LIST;
 
           for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i))));
           return RACE_LIST;
@@ -159,23 +162,30 @@ public class Menus {
      }
 
      public static Inventory getRaceCreate(Player player) {
-          waterpunch.atamamozi_d.plugin.race.Editer.StartCreate(player);
+          Race_Runner run = null;
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) {
+               run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
+          } else {
+               run = new Race_Runner(player, new Race(player), 0);
+          }
+          run.setMode(Race_Mode.EDIT);
+          run.UpdateScoreboard();
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");
           setBorder(RACE_CREATE);
 
           ItemStack SET_NAME = new ItemStack(Material.NAME_TAG);
           ItemMeta SET_NAME_Meta = SET_NAME.getItemMeta();
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_name().equals("DEFAULT")) {
+          if (run.getRace().getRace_name().equals("DEFAULT")) {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "EDIT NAME");
           } else {
-               SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_name());
+               SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED + run.getRace().getRace_name());
           }
 
           ItemStack RACE_TYPE = new ItemStack(Material.DIAMOND_AXE);
           ItemMeta RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
           RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "Loading...");
-          switch (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_Type()) {
-               case RUN:
+          switch (run.getRace().getRace_Type()) {
+               case WALK:
                     RACE_TYPE = new ItemStack(Material.TOTEM_OF_UNDYING);
                     RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
                     RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "RUN");
@@ -186,19 +196,19 @@ public class Menus {
                     RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "BOAT");
                     break;
                default:
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_Type() + "] is ERR");
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + run.getRace().getRace_Type() + "] is ERR");
                     break;
           }
           ItemStack RAP = new ItemStack(Material.COMPARATOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
-          RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRap()));
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED + String.valueOf(run.getRace().getRap()));
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
 
-          AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount()));
+          AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(run.getRace().getJoin_Amount()));
 
-          ItemStack ICON = new ItemStack(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getIcon());
+          ItemStack ICON = new ItemStack(run.getRace().getIcon());
           ItemMeta ICON_Meta = ICON.getItemMeta();
           ICON_Meta.setDisplayName(ChatColor.GOLD + "This item is Icon");
 
@@ -219,17 +229,17 @@ public class Menus {
           CREATE_Meta.setDisplayName(ChatColor.GOLD + "EDIT COMPLETE");
           List<String> lores = new ArrayList<String>();
 
-          waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).setErrorCount(0);
+          run.getRace().setErrorCount(0);
 
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_name().equals("DEFAULT")) {
+          if (run.getRace().getRace_name().equals("DEFAULT")) {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED + "<DEFAULT>");
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).addErrorCount();
+               run.getRace().addErrorCount();
           } else {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_name());
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + run.getRace().getRace_name());
           }
 
-          switch (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_Type()) {
-               case RUN:
+          switch (run.getRace().getRace_Type()) {
+               case WALK:
                     lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : RUN");
                     break;
                case BOAT:
@@ -237,40 +247,40 @@ public class Menus {
                     break;
                default:
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Type : " + ChatColor.RED + "NULL");
-                    waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).addErrorCount();
+                    run.getRace().addErrorCount();
                     break;
           }
 
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount() == 0) {
+          if (run.getRace().getJoin_Amount() == 0) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : No Limit");
           } else {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount()));
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.RED + String.valueOf(run.getRace().getJoin_Amount()));
           }
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRap());
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getIcon().toString());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + run.getRace().getRap());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + run.getRace().getIcon().toString());
 
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getStartPointLoc().size() == waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount()) {
-               if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount() == 0) {
+          if (run.getRace().getStartPointLoc().size() == run.getRace().getJoin_Amount()) {
+               if (run.getRace().getJoin_Amount() == 0) {
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need  over 1");
-                    waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).addErrorCount();
+                    run.getRace().addErrorCount();
                } else {
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getStartPointLoc().size());
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint : " + run.getRace().getStartPointLoc().size());
                }
           } else {
-               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount());
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).addErrorCount();
+               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need " + run.getRace().getJoin_Amount());
+               run.getRace().addErrorCount();
           }
 
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getCheckPointLoc().size() >= 2) {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getCheckPointLoc().size());
+          if (run.getRace().getCheckPointLoc().size() >= 2) {
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + run.getRace().getCheckPointLoc().size());
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED + "Need over 2");
-               waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).addErrorCount();
+               run.getRace().addErrorCount();
           }
 
-          if (!(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getErrorCount() == 0)) {
+          if (!(run.getRace().getErrorCount() == 0)) {
                lores.add("");
-               lores.add(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getErrorCount() + "Error");
+               lores.add(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + run.getRace().getErrorCount() + "Error");
           }
 
           STARTPOINT_Meta.setLore(STARTPOINT_lores);
@@ -303,7 +313,7 @@ public class Menus {
 
           ItemStack RUN = new ItemStack(Material.TOTEM_OF_UNDYING);
           ItemMeta RUN_Meta = RUN.getItemMeta();
-          RUN_Meta.setDisplayName(ChatColor.GOLD + "RUN");
+          RUN_Meta.setDisplayName(ChatColor.GOLD + "WALK");
           RUN.setItemMeta(RUN_Meta);
 
           ItemStack BOAT = new ItemStack(Material.OAK_BOAT);
@@ -325,20 +335,22 @@ public class Menus {
           RACE_CREATE_TYPE.setItem(24, new ItemStack(BOAT));
           RACE_CREATE_TYPE.setItem(29, new ItemStack(O));
           RACE_CREATE_TYPE.setItem(33, new ItemStack(O));
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_Type() == Race_Type.RUN) RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRace_Type() == Race_Type.BOAT) RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
+          if (run.getRace().getRace_Type() == Race_Type.WALK) RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
+          if (run.getRace().getRace_Type() == Race_Type.BOAT) RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
 
           return RACE_CREATE_TYPE;
      }
 
      public static Inventory getRaceRap(Player player) {
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           Inventory RACE_CREATE_RAP = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_RAP");
           setBorder(RACE_CREATE_RAP);
 
           ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
 
-          RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getRap()));
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(run.getRace().getRap()));
           RAP.setItemMeta(RAP_Meta);
 
           RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));
@@ -349,15 +361,16 @@ public class Menus {
      }
 
      public static Inventory getRaceAmount(Player player) {
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           Inventory RACE_CREATE_AMOUNT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_AMOUNT");
           setBorder(RACE_CREATE_AMOUNT);
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
-          if (waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount() == 0) {
+          if (run.getRace().getJoin_Amount() == 0) {
                AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + "No Limit");
           } else {
-               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getJoin_Amount()));
+               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(run.getRace().getJoin_Amount()));
           }
           AMOUNT.setItemMeta(AMOUNT_Meta);
 
@@ -369,10 +382,11 @@ public class Menus {
      }
 
      public static Inventory getRaceIcon(Player player) {
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           Inventory RACE_CREATE_ICON = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_ICON");
           setBorder(RACE_CREATE_ICON);
 
-          ItemStack ICOM = new ItemStack(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getIcon());
+          ItemStack ICOM = new ItemStack(run.getRace().getIcon());
           ItemMeta ICON_Meta = ICOM.getItemMeta();
           ICON_Meta.setDisplayName(ChatColor.GREEN + "Click to New Icon item on you Inventory");
           ICOM.setItemMeta(ICON_Meta);
@@ -382,6 +396,7 @@ public class Menus {
      }
 
      public static Inventory getRaceStartPoint(Player player) {
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           Inventory RACE_CREATE_STARTPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_STARTPOINT");
           setBorder(RACE_CREATE_STARTPOINT);
 
@@ -395,15 +410,15 @@ public class Menus {
 
           STARTPOINT_Meta.setLore(lores);
           STARTPOINT.setItemMeta(STARTPOINT_Meta);
-
           RACE_CREATE_STARTPOINT.setItem(4, new ItemStack(STARTPOINT));
 
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getStartPointLoc().size(); i++) RACE_CREATE_STARTPOINT.setItem(i + 9, new ItemStack(getRace_StartPint_Item(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player), i)));
+          for (int i = 0; i < run.getRace().getStartPointLoc().size(); i++) RACE_CREATE_STARTPOINT.setItem(i + 9, new ItemStack(getRace_StartPint_Item(run.getRace(), i)));
 
           return RACE_CREATE_STARTPOINT;
      }
 
      public static Inventory getRaceCheckPoint(Player player) {
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           Inventory RACE_CREATE_CHECKPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_CHECKPOINT");
           setBorder(RACE_CREATE_CHECKPOINT);
 
@@ -420,7 +435,7 @@ public class Menus {
 
           RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
 
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player).getCheckPointLoc().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint_Item(waterpunch.atamamozi_d.plugin.race.Editer.getRace_Editers().get(player), i)));
+          for (int i = 0; i < run.getRace().getCheckPointLoc().size(); i++) RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(getRace_CheckPint_Item(run.getRace(), i)));
 
           return RACE_CREATE_CHECKPOINT;
      }

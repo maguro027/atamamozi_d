@@ -1,43 +1,28 @@
 package waterpunch.atamamozi_d.plugin.main;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import waterpunch.atamamozi_d.plugin.race.Race;
 
 public class Main {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
-     public static List<String> items = new ArrayList<String>();
+     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Race/");
 
      public static int fil_count = 0;
 
      public static void loadconfig() {
-          if (!(file_.exists())) file_.mkdir();
+          file_.mkdirs();
+          File[] targetFile_dir_list = new File(file_.toString()).listFiles();
 
-          try {
-               createfile(file_ + "/race_list.json");
-               //
-               File[] targetFile_dir_list = new File(file_.toString()).listFiles();
+          if (targetFile_dir_list == null) return;
 
-               if (targetFile_dir_list == null) return;
-
-               Reader reader = Files.newBufferedReader(Paths.get(file_ + "/race_list.json"));
-               items = new Gson().fromJson(reader, new TypeToken<List<String>>() {}.getType());
-
-               reader.close();
-          } catch (IOException e) {
-               e.printStackTrace();
-          }
           getRaces();
      }
 
@@ -49,17 +34,20 @@ public class Main {
                if (tmpFile.isDirectory()) {
                     getRaces();
                } else {
-                    // System.out.println(tmpFile.getName());
                     if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
                          fil_count++;
                          try (FileReader fileReader = new FileReader(tmpFile)) {
                               Gson gson = new Gson();
                               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(gson.fromJson(fileReader, Race.class));
-                         } catch (FileNotFoundException e) {} catch (IOException e) {}
+                              System.out.println(tmpFile.getName());
+                         } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                              // TODO Auto-generated catch block
+                              e.printStackTrace();
+                         }
                     }
                }
           }
-          System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + fil_count + "Race Load");
+          System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + fil_count + " Race Load");
      }
 
      public static void createfile(String string) {

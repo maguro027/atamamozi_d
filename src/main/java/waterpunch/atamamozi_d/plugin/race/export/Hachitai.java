@@ -27,8 +27,6 @@ public class Hachitai {
      public static boolean CheckPlanePassed(Race_Runner Runner, Location to, Location from) {
           float C = PCalc(Runner, to);
           float P = PCalc(Runner, from);
-          // System.out.println("--------------------------------");
-          // System.out.println(C);
 
           return (C * P <= 0) && (C != P);
      }

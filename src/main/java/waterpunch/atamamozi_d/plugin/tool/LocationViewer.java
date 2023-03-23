@@ -31,7 +31,6 @@ public class LocationViewer {
           u[2] = v[0] * b - v[1] * a;
 
           double theta = 2 * Math.PI / (double) (10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr());
-          // 2 * Math.PI / (double) 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr();
           double cos = 1;
           double sin = 0;
           double cosDelta = Math.cos(theta);

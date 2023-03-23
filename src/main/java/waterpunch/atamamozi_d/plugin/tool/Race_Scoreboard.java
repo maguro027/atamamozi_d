@@ -58,10 +58,22 @@ public class Race_Scoreboard {
                          }
                     }
                     break;
+               case EDIT:
+                    Scoreboards.add(objective.getScore(""));
+                    Scoreboards.add(objective.getScore(ChatColor.RED + "EDITING"));
+                    Scoreboards.add(objective.getScore(""));
+                    Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "TYPE" + ChatColor.WHITE + "]"));
+                    Scoreboards.add(objective.getScore(runner.getRace().getRace_Type().toString()));
+                    Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "RAP" + ChatColor.WHITE + "]"));
+                    Scoreboards.add(objective.getScore(runner.getRace().getRap() + ""));
+                    Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "CHECKPOINT" + ChatColor.WHITE + "]"));
+                    Scoreboards.add(objective.getScore(runner.getRace().getCheckPointLoc().size() + ""));
+                    break;
           }
 
           Collections.reverse(Scoreboards);
           for (int i = 0; i < Scoreboards.size(); i++) Scoreboards.get(i).setScore(i);
+
           return board;
      }
 }

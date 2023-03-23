@@ -27,7 +27,7 @@ public class Race {
      public Race(Player creator) {
           this.creator = creator.getName();
           this.race_name = "DEFAULT";
-          this.race_type = Race_Type.RUN;
+          this.race_type = Race_Type.WALK;
           this.icon = Material.MAP;
           this.rap = 1;
           this.race_Mode = Race_Mode.WAIT;

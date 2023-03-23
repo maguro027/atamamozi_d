@@ -1,7 +1,7 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
 public enum Race_Type {
-     RUN(1),
+     WALK(1),
      BOAT(2);
 
      // RUN(Material.TOTEM_OF_UNDYING), BOAT(Material.OAK_BOAT);
