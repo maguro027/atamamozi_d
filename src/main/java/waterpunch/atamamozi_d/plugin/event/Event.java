@@ -196,16 +196,8 @@ public class Event implements Listener {
                     return;
                }
                run.getRace().setRace_name(event.getMessage());
-               run.UpdateScoreboard();
                run.setName_Editor(false);
-               Bukkit
-                    .getScheduler()
-                    .runTask(
-                         plugin_data,
-                         () -> {
-                              event.getPlayer().openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(event.getPlayer()));
-                         }
-                    );
+               event.getPlayer().openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(event.getPlayer()));
                run.UpdateScoreboard();
                event.setCancelled(true);
           }

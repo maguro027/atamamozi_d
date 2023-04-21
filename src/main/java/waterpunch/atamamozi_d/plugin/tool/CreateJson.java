@@ -13,7 +13,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class CreateJson {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Race/");
+     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
 
      public static void createfile(String string) {
           try {

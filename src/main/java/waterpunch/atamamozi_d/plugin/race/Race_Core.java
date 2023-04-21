@@ -1,7 +1,7 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -10,7 +10,7 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Race_Core {
 
-     public static HashMap<Race, ArrayList<Race_Runner>> Race_Run = new HashMap<>();
+     public static LinkedHashMap<Race, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
      public static ArrayList<Player> Race_Runner_Onetime = new ArrayList<>();
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
      public static ArrayList<Race> Race_list = new ArrayList<>();
@@ -159,8 +159,10 @@ public class Race_Core {
      }
 
      public static void Race_Start(Race race) {
+          System.out.println(race.getMode());
           switch (race.getMode()) {
                case WAIT:
+                    System.out.println("race.getMode()");
                     for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
                          for (Race_Runner val : Race_Run.get(key)) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + ChatColor.AQUA + key.getRace_name() + ChatColor.WHITE + "] " + " is Active Race Please wait");
                          return;

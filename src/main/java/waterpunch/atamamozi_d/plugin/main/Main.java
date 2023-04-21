@@ -13,16 +13,19 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 
 public class Main {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Race/");
+     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
 
      public static int fil_count = 0;
+
+     public static File getPath() {
+          File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
+          return file_;
+     }
 
      public static void loadconfig() {
           file_.mkdirs();
           File[] targetFile_dir_list = new File(file_.toString()).listFiles();
-
           if (targetFile_dir_list == null) return;
-
           getRaces();
      }
 
