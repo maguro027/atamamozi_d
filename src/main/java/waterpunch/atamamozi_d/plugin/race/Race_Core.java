@@ -162,7 +162,6 @@ public class Race_Core {
           System.out.println(race.getMode());
           switch (race.getMode()) {
                case WAIT:
-                    System.out.println("race.getMode()");
                     for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
                          for (Race_Runner val : Race_Run.get(key)) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + ChatColor.AQUA + key.getRace_name() + ChatColor.WHITE + "] " + " is Active Race Please wait");
                          return;

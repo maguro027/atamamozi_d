@@ -39,6 +39,7 @@ public class Core extends JavaPlugin {
                ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) sender));
                return false;
           }
+          Race_Runner run = null;
           switch (args[0]) {
                case "help":
                     onhelp((Player) sender);
@@ -54,6 +55,22 @@ public class Core extends JavaPlugin {
                     break;
                case "create":
                     oncreate((Player) sender);
+                    break;
+               case "setName":
+                    if (args.length == 1) {
+                         ((Player) sender).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Need Name");
+                         return false;
+                    }
+                    run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
+                    if (run.getMode() == Race_Mode.EDIT) {
+                         if (args[1].equals("[ER]")) {
+                              run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "NG Word");
+                              return false;
+                         }
+                         run.getRace().setRace_name(args[1]);
+                         run.getPlayer().openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(run.getPlayer()));
+                         run.UpdateScoreboard();
+                    }
                     break;
                case "addStartPoint":
                     onaddStartpoint((Player) sender);
@@ -73,7 +90,7 @@ public class Core extends JavaPlugin {
                     onupdatecheckpoint((Player) sender, args[1], args[2]);
                     break;
                case "start":
-                    Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
+                    run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
                     if (run.getMode() == Race_Mode.GOAL) {
                          run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                          return false;

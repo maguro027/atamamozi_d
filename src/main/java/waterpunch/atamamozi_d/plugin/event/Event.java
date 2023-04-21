@@ -72,7 +72,6 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
 
-                         if (event.getRawSlot() == 10) run.setName_Editor(true);
                          if (event.getRawSlot() == 12) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceType(((Player) event.getWhoClicked())));
                          if (event.getRawSlot() == 14) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceAmount(((Player) event.getWhoClicked())));
                          if (event.getRawSlot() == 16) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceRap(((Player) event.getWhoClicked())));
@@ -183,23 +182,6 @@ public class Event implements Listener {
                               break;
                          }
                }
-          }
-     }
-
-     @EventHandler
-     public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent event) {
-          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(event.getPlayer());
-          if (run.getName_Editer()) {
-               if (event.getMessage().equals("[ER]")) {
-                    event.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "NG Word");
-                    event.setCancelled(true);
-                    return;
-               }
-               run.getRace().setRace_name(event.getMessage());
-               run.setName_Editor(false);
-               event.getPlayer().openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(event.getPlayer()));
-               run.UpdateScoreboard();
-               event.setCancelled(true);
           }
      }
 

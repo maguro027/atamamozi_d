@@ -180,6 +180,8 @@ public class Menus {
           } else {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED + run.getRace().getRace_name());
           }
+          List<String> SET_NAME_lores = new ArrayList<String>();
+          SET_NAME_lores.add(ChatColor.GREEN + "/atamamozi_d setName");
 
           ItemStack RACE_TYPE = new ItemStack(Material.DIAMOND_AXE);
           ItemMeta RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
@@ -285,6 +287,7 @@ public class Menus {
 
           STARTPOINT_Meta.setLore(STARTPOINT_lores);
           CHECKPOINT_Meta.setLore(CHECKPOINT_lores);
+          SET_NAME_Meta.setLore(SET_NAME_lores);
           CREATE_Meta.setLore(lores);
           SET_NAME.setItemMeta(SET_NAME_Meta);
           RACE_TYPE.setItemMeta(RACE_TYPE_Meta);

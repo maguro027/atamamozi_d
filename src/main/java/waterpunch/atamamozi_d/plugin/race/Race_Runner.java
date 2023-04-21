@@ -23,7 +23,6 @@ public class Race_Runner {
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
-     private Boolean Name_Editer;
 
      public Race_Runner(Player player, Race race, int Join_Count) {
           this.Player = player;
@@ -226,17 +225,5 @@ public class Race_Runner {
           }
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(Race);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(Race);
-     }
-
-     public Boolean getName_Editer() {
-          return this.Name_Editer;
-     }
-
-     public void setName_Editor(Boolean yn) {
-          this.Name_Editer = yn;
-          if (yn) {
-               getPlayer().sendMessage(ChatColor.GOLD + "Enter the name of the race in the chat");
-               getPlayer().closeInventory();
-          }
      }
 }
