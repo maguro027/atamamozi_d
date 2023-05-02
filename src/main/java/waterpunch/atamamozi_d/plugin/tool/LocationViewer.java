@@ -42,7 +42,7 @@ public class LocationViewer {
                particleLoc0.setX(cos * u[0] + sin * v[0] + particleLoc.getX());
                particleLoc0.setY(cos * u[1] + sin * v[1] + particleLoc.getY());
                particleLoc0.setZ(cos * u[2] + sin * v[2] + particleLoc.getZ());
-               particleLoc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc0, 1, new Particle.DustOptions(Color.RED, 1));
+               runner.getPlayer().spawnParticle(Particle.REDSTONE, particleLoc0, 1, new Particle.DustOptions(Color.RED, 1));
 
                PP = cos * cosDelta - sin * sinDelta;
                YY = cos * sinDelta + sin * cosDelta;

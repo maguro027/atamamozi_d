@@ -91,12 +91,21 @@ public class Core extends JavaPlugin {
                     break;
                case "start":
                     run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
-                    if (run.getMode() == Race_Mode.GOAL) {
-                         run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
-                         return false;
+                    if (run == null) return false;
+                    switch (run.getMode()) {
+                         case EDIT:
+                              return false;
+                         case GOAL:
+                              run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
+                              return false;
+                         case RUN:
+                              return false;
+                         case WAIT:
+                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
+                              break;
+                         default:
+                              break;
                     }
-                    waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
-                    break;
                case "re":
                case "respawn":
                     onrespawn((Player) sender);
@@ -121,6 +130,7 @@ public class Core extends JavaPlugin {
                subcmd.add("addCheckPoint");
                subcmd.add("updateCheckPoint");
                subcmd.add("start");
+               subcmd.add("setName");
                subcmd.add("respawn");
 
                return subcmd;
@@ -131,8 +141,8 @@ public class Core extends JavaPlugin {
      void onhelp(Player player) {
           player.sendMessage("---------------------");
           player.sendMessage("[help] this messeage");
-          player.sendMessage("[load] /waterpunch.atamamozi_d load 'race name'");
-          player.sendMessage("[stop] /waterpunch.atamamozi_d stop 'race name' race stop");
+          player.sendMessage("[load] /atamamozi_d load 'race name'");
+          player.sendMessage("[stop] /atamamozi_d stop 'race name' race stop");
           player.sendMessage("[leave] leave player");
           player.sendMessage("---------------------");
      }
@@ -146,6 +156,10 @@ public class Core extends JavaPlugin {
      }
 
      void oncreate(Player player) {
+          if (!player.hasPermission("atamamozi_d.create") || !player.isOp()) {
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setNotPermission());
+               return;
+          }
           player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
      }
 
@@ -155,7 +169,7 @@ public class Core extends JavaPlugin {
 
           run.getRace().addStartPointLoc(player.getLocation());
           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Start Point");
-          waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(player.getLocation(), 1);
+          waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, player.getLocation(), 1);
           run.UpdateScoreboard();
      }
 
@@ -216,7 +230,7 @@ public class Core extends JavaPlugin {
 
      void onrespawn(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) {
+          if (run == null || run.getMode() == Race_Mode.EDIT) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You not join race");
                return;
           }

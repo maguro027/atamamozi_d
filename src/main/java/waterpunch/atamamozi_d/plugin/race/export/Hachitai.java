@@ -7,7 +7,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class Hachitai {
 
-     public static void setCircle(Location loc, int size) {
+     public static void setCircle(Race_Runner runner, Location loc, int size) {
           for (int d = 0; d <= 10; d += 1) {
                Location particleLoc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
                particleLoc.setYaw(loc.getYaw());
@@ -15,7 +15,7 @@ public class Hachitai {
 
                particleLoc.setX(loc.getX() + Math.cos(d) * size);
                particleLoc.setZ(loc.getZ() + Math.sin(d) * size);
-               loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, new Particle.DustOptions(Color.WHITE, 5));
+               runner.getPlayer().spawnParticle(Particle.REDSTONE, particleLoc, 1, new Particle.DustOptions(Color.WHITE, 5));
           }
      }
 

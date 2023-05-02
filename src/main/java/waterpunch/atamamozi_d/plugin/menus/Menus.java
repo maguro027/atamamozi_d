@@ -163,11 +163,9 @@ public class Menus {
 
      public static Inventory getRaceCreate(Player player) {
           Race_Runner run = null;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) {
-               run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          } else {
-               run = new Race_Runner(player, new Race(player), 0);
-          }
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
+          run = new Race_Runner(player, new Race(player), 0);
+
           run.setMode(Race_Mode.EDIT);
           run.UpdateScoreboard();
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");

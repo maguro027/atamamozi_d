@@ -1,7 +1,6 @@
 package waterpunch.atamamozi_d.plugin.event;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
@@ -14,11 +13,11 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
 import waterpunch.atamamozi_d.plugin.race.Race;
@@ -114,7 +113,7 @@ public class Event implements Listener {
                          }
                          if (event.getRawSlot() == 24) {
                               if (run.getRace().getJoin_Amount() == 1) return;
-                              run.getRace().setJoin_Amount(run.getRace().getJoin_Amount() + 1);
+                              run.getRace().setJoin_Amount(run.getRace().getJoin_Amount() - 1);
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceAmount(((Player) event.getWhoClicked())));
                          }
                          break;
@@ -148,7 +147,7 @@ public class Event implements Listener {
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                                   waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
+                                   waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
 
                                    ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
                                    event.setCancelled(true);
@@ -174,7 +173,7 @@ public class Event implements Listener {
                                    event.setCancelled(true);
                               }
                               if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                                   waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
+                                   waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
 
                                    ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceStartPoint((Player) event.getWhoClicked()));
                                    event.setCancelled(true);
@@ -214,25 +213,41 @@ public class Event implements Listener {
                ((Sign) e.getClickedBlock().getState()).setLine(3, "");
                return;
           }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), Integer.parseInt(((Sign) e.getClickedBlock().getState()).getLine(2).replace(" : Rap", "")), e.getPlayer());
+          // waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), Integer.parseInt(((Sign) e.getClickedBlock().getState()).getLine(2).replace(" : Rap", "")), e.getPlayer());
+          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))).getRap(), e.getPlayer());
      }
 
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) return;
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(event.getPlayer());
-          if (run.getMode() == Race_Mode.RUN) {
-               Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
-               run.setnewLoc(event.getTo());
-               run.setoldLoc(event.getFrom());
-               run.getLocationViewer().DrawCircle();
-               run.UpdateScoreboard();
-               if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
-                    double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
-                    if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr() * run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr()) run.addCheckPoint();
-               }
+          if (run == null) return;
+          switch (run.getMode()) {
+               case EDIT:
+                    break;
+               case GOAL:
+                    break;
+               case RUN:
+                    // if (!event.getPlayer().getVehicle().getUniqueId().equals(run.getUuid())) {
+                    //      run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + ":(");
+                    //      waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
+                    // }
+
+                    Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
+                    run.setnewLoc(event.getTo());
+                    run.setoldLoc(event.getFrom());
+                    run.getLocationViewer().DrawCircle();
+                    run.UpdateScoreboard();
+                    if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
+                         double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());
+                         if (((rtn[0] - chackpoint.getX()) * (rtn[0] - chackpoint.getX()) + (rtn[1] - chackpoint.getY()) * (rtn[1] - chackpoint.getY()) + (rtn[2] - chackpoint.getZ()) * (rtn[2] - chackpoint.getZ())) < run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr() * run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getr()) run.addCheckPoint();
+                    }
+                    break;
+               case WAIT:
+                    break;
+               default:
+                    break;
           }
-          if (run.getMode() == Race_Mode.EDIT) {}
      }
 
      @EventHandler
@@ -251,16 +266,32 @@ public class Event implements Listener {
 
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
+          // ((Player) event.getExited()).sendMessage("1");
           if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.equals((Player) event.getExited())) {
                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.remove((Player) event.getExited());
                event.setCancelled(false);
+               // ((Player) event.getExited()).sendMessage("2");
                return;
           }
-
+          // ((Player) event.getExited()).sendMessage("3");
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
+               // ((Player) event.getExited()).sendMessage("4");
                return;
           }
+          // ((Player) event.getExited()).sendMessage("5");
+     }
+
+     @EventHandler
+     public void AnitEnter(VehicleEnterEvent event) {
+          //      if (!(event.getEntered() instanceof Player)) return;
+          //      if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getEntered())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getEntered() && val.getMode() == Race_Mode.RUN) {
+          //           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.equals((Player) event.getEntered())) {
+          //                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.remove((Player) event.getEntered());
+          // event.setCancelled(false);
+          //                return;
+          //           }
+          //      }
      }
 }

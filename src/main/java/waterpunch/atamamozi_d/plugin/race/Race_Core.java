@@ -16,6 +16,10 @@ public class Race_Core {
      public static ArrayList<Race> Race_list = new ArrayList<>();
 
      public static void joinRace(Race Race, int Rap, Player player) {
+          if (!player.hasPermission("atamamozi_d.join") || !player.isOp()) {
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setNotPermission());
+               return;
+          }
           if (isJoin(player)) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
                return;
@@ -159,16 +163,15 @@ public class Race_Core {
      }
 
      public static void Race_Start(Race race) {
-          System.out.println(race.getMode());
           switch (race.getMode()) {
                case WAIT:
                     for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + ChatColor.AQUA + key.getRace_name() + ChatColor.WHITE + "] " + " is Active Race Please wait");
-                         return;
+                         for (Race_Runner val : Race_Run.get(key)) {
+                              val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + ChatColor.AQUA + key.getRace_name() + ChatColor.WHITE + "] " + " is Active Race Please wait");
+                              val.Start();
+                         }
                     }
                     race.setMode(Race_Mode.RUN);
-                    for (Race_Runner runner : Race_Run.get(race)) runner.Start();
-
                     break;
                case EDIT:
                     for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {

@@ -2,6 +2,7 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.UUID;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,6 +24,7 @@ public class Race_Runner {
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
+     private UUID CartUuid;
 
      public Race_Runner(Player player, Race race, int Join_Count) {
           this.Player = player;
@@ -116,6 +118,14 @@ public class Race_Runner {
           return DurationFormatUtils.formatPeriod(getStart_time(), getEnd_time(), "HH:mm:ss.SSS");
      }
 
+     public UUID getUuid() {
+          return CartUuid;
+     }
+
+     public void setUuid(UUID uuid) {
+          this.CartUuid = uuid;
+     }
+
      public void addCheckPoint() {
           this.CheckPoint++;
 
@@ -155,7 +165,24 @@ public class Race_Runner {
      public void Start() {
           this.Race_mode = Race_Mode.RUN;
           this.Player.teleport(Race.getStartPointLoc().get(Join_Count).getLocation());
-          if (Race.getRace_Type() == Race_Type.BOAT) this.Player.getLocation().getWorld().spawnEntity(this.Race.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
+
+          switch (Race.getRace_Type()) {
+               case BOAT:
+                    waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.add(Player);
+                    this.Player.getLocation().getWorld().spawnEntity(this.Race.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
+                    this.CartUuid = Player.getVehicle().getUniqueId();
+                    break;
+               case WALK:
+                    break;
+               default:
+                    Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + "A fatal error has occurred");
+                    Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + "----------------------");
+                    Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + Race.getRace_name());
+                    Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type [" + Race.getRace_Type() + "]");
+                    Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + "----------------------");
+                    waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(Player);
+                    break;
+          }
           this.Player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "START");
           this.start_time = System.currentTimeMillis();
           start_time = System.currentTimeMillis();
@@ -178,7 +205,7 @@ public class Race_Runner {
                case BOAT:
                     if (Race.getRace_Type() == Race_Type.BOAT) {
                          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.add(Player);
-                         getPlayer().getVehicle().remove();
+                         if (!(getPlayer().getVehicle() == null)) getPlayer().getVehicle().remove();
                          if (getCheckPoint() == 0) {
                               Race.getStartPointLoc().get(getJoin_Count()).getLocation().getWorld().spawnEntity(Race.getStartPointLoc().get(getJoin_Count()).getLocation(), EntityType.BOAT).addPassenger(Player);
                          } else {

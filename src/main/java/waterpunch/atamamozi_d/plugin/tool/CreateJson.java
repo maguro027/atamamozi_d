@@ -34,7 +34,7 @@ public class CreateJson {
           if (!(file_.exists())) file_.mkdir();
           String URL = file_ + "/" + run.getRace().getRace_name() + ".json";
           waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
-
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(run.getRace());
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
                gson.toJson(run.getRace(), writer);
