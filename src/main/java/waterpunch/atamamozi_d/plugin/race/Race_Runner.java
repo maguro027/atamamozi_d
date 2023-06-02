@@ -24,7 +24,7 @@ public class Race_Runner {
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
-     private UUID CartUuid;
+     private UUID Car;
 
      public Race_Runner(Player player, Race race, int Join_Count) {
           this.Player = player;
@@ -118,12 +118,12 @@ public class Race_Runner {
           return DurationFormatUtils.formatPeriod(getStart_time(), getEnd_time(), "HH:mm:ss.SSS");
      }
 
-     public UUID getUuid() {
-          return CartUuid;
+     public UUID getCar() {
+          return Car;
      }
 
-     public void setUuid(UUID uuid) {
-          this.CartUuid = uuid;
+     public void setCar(UUID uuid) {
+          this.Car = uuid;
      }
 
      public void addCheckPoint() {
@@ -170,7 +170,7 @@ public class Race_Runner {
                case BOAT:
                     waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.add(Player);
                     this.Player.getLocation().getWorld().spawnEntity(this.Race.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
-                    this.CartUuid = Player.getVehicle().getUniqueId();
+                    this.Car = Player.getVehicle().getUniqueId();
                     break;
                case WALK:
                     break;
@@ -235,7 +235,6 @@ public class Race_Runner {
           if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race).size()) {
                ArrayList<String> Score = new ArrayList<>();
                Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-
                Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race).stream().sorted(comparator).forEach(a -> Score.add("[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + a.getTimest()));
                Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");

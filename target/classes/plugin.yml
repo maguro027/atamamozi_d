@@ -1,0 +1,24 @@
+name: Atamamozi_D
+version: 0.1.91
+api-version: 1.13
+main: waterpunch.atamamozi_d.plugin.main.Core
+prefix: atamamozi_D
+
+commands:
+     atamamozi_d: null
+
+permissions:
+     atamamozi_d.*:
+          description: WaterPunch
+          children:
+               atamamozi_d.debug: true
+
+          atamamozi_d.debug:
+               description: debug permissions
+               default: true
+
+          atamamozi_d.player.*:
+               description: atamamozi_d permissions
+               children:
+                    atamamozi_d.player.join: true
+                    atamamozi_d.player.create: false

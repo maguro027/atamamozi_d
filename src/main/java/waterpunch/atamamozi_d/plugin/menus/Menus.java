@@ -162,15 +162,15 @@ public class Menus {
      }
 
      public static Inventory getRaceCreate(Player player) {
-          Race_Runner run = null;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
-          run = new Race_Runner(player, new Race(player), 0);
-
-          run.setMode(Race_Mode.EDIT);
-          run.UpdateScoreboard();
+          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
+          if (run == null || !(run.getMode() == Race_Mode.EDIT)) {
+               if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
+               run = new Race_Runner(player, new Race(player), 0);
+               run.setMode(Race_Mode.EDIT);
+               run.UpdateScoreboard();
+          }
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");
           setBorder(RACE_CREATE);
-
           ItemStack SET_NAME = new ItemStack(Material.NAME_TAG);
           ItemMeta SET_NAME_Meta = SET_NAME.getItemMeta();
           if (run.getRace().getRace_name().equals("DEFAULT")) {
@@ -235,15 +235,15 @@ public class Menus {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED + "<DEFAULT>");
                run.getRace().addErrorCount();
           } else {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + run.getRace().getRace_name());
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + ChatColor.GREEN + run.getRace().getRace_name());
           }
 
           switch (run.getRace().getRace_Type()) {
                case WALK:
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : RUN");
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : " + ChatColor.GREEN + "RUN");
                     break;
                case BOAT:
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : BOAT");
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : " + ChatColor.GREEN + "BOAT");
                     break;
                default:
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Type : " + ChatColor.RED + "NULL");
@@ -254,17 +254,17 @@ public class Menus {
           if (run.getRace().getJoin_Amount() == 0) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : No Limit");
           } else {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.RED + String.valueOf(run.getRace().getJoin_Amount()));
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.GREEN + String.valueOf(run.getRace().getJoin_Amount()));
           }
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + run.getRace().getRap());
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + run.getRace().getIcon().toString());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + ChatColor.GREEN + run.getRace().getRap());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + ChatColor.GREEN + run.getRace().getIcon().toString());
 
           if (run.getRace().getStartPointLoc().size() == run.getRace().getJoin_Amount()) {
                if (run.getRace().getJoin_Amount() == 0) {
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need  over 1");
                     run.getRace().addErrorCount();
                } else {
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint : " + run.getRace().getStartPointLoc().size());
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint :" + ChatColor.GREEN + run.getRace().getStartPointLoc().size());
                }
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need " + run.getRace().getJoin_Amount());
@@ -272,7 +272,7 @@ public class Menus {
           }
 
           if (run.getRace().getCheckPointLoc().size() >= 2) {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + run.getRace().getCheckPointLoc().size());
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.GREEN + run.getRace().getCheckPointLoc().size());
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED + "Need over 2");
                run.getRace().addErrorCount();

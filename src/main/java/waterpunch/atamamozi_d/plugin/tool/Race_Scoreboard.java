@@ -35,7 +35,6 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore("/atamamozi_d " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(runner.getRace())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
-
                     break;
                case RUN:
                     Scoreboards.add(objective.getScore("Rap : "));
@@ -59,15 +58,15 @@ public class Race_Scoreboard {
                     }
                     break;
                case EDIT:
-                    Scoreboards.add(objective.getScore(""));
                     Scoreboards.add(objective.getScore(ChatColor.RED + "EDITING"));
-                    Scoreboards.add(objective.getScore(""));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "TYPE" + ChatColor.WHITE + "]"));
                     Scoreboards.add(objective.getScore(runner.getRace().getRace_Type().toString()));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "RAP" + ChatColor.WHITE + "]"));
                     Scoreboards.add(objective.getScore(runner.getRace().getRap() + ""));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "CHECKPOINT" + ChatColor.WHITE + "]"));
                     Scoreboards.add(objective.getScore(runner.getRace().getCheckPointLoc().size() + ""));
+                    break;
+               default:
                     break;
           }
 

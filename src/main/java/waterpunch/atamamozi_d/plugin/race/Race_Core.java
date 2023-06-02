@@ -16,10 +16,6 @@ public class Race_Core {
      public static ArrayList<Race> Race_list = new ArrayList<>();
 
      public static void joinRace(Race Race, int Rap, Player player) {
-          if (!player.hasPermission("atamamozi_d.join") || !player.isOp()) {
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setNotPermission());
-               return;
-          }
           if (isJoin(player)) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
                return;
@@ -88,6 +84,8 @@ public class Race_Core {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + Race.getRace_name() + " is Editing now");
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + Race.getRace_name() + " Give it some time to try.");
                     break;
+               default:
+                    break;
           }
      }
 
@@ -107,43 +105,46 @@ public class Race_Core {
 
      public static void removeRunner(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (!isJoin(player)) {
+          if (run == null) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                return;
           }
-          if (run.getMode() == Race_Mode.EDIT) {
-               Race_list.remove(run.getRace());
-               Race_Runner_List.remove(run);
-               run.setMode(Race_Mode.WAIT);
-               run.getRace().setMode(Race_Mode.WAIT);
-               player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-               return;
+          switch (run.getMode()) {
+               case EMPTY:
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
+                    break;
+               case EDIT:
+                    Race_list.remove(run.getRace());
+                    Race_Runner_List.remove(run);
+                    run.setMode(Race_Mode.EMPTY);
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
+                    break;
+               case WAIT:
+               case RUN:
+               case GOAL:
+                    Race_Runner_List.remove(run);
+                    run.setMode(Race_Mode.EMPTY);
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
+                    if (run.getRace().getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {
+                         Race_Runner_Onetime.add(run.getPlayer());
+                         run.getPlayer().getVehicle().remove();
+                    }
+                    run.getPlayer().teleport(run.getst_Location());
+                    Race_Run.get(run.getRace()).remove(run);
+                    Race_Runner_List.remove(run);
+                    if (!(Race_Run.get(run.getRace()).size() == 0)) {
+                         for (int i = 0; i == Race_Run.get(run.getRace()).size(); i++) Race_Run.get(run.getRace()).get(i).setJoin_Count(i);
+                         LeaveMesseage(run.getRace(), player);
+                    } else {
+                         run.getRace().setMode(Race_Mode.WAIT);
+                         Race_Run.remove(run.getRace());
+                    }
+                    break;
+               default:
+                    break;
           }
-          if (run.getMode() == Race_Mode.GOAL) {
-               Race_Runner_List.remove(run);
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
-               player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-               return;
-          }
-
-          if (run.getRace().getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {
-               Race_Runner_Onetime.add(run.getPlayer());
-               run.getPlayer().getVehicle().remove();
-          }
-
-          run.getPlayer().teleport(run.getst_Location());
-          Race_Run.get(run.getRace()).remove(run);
-          Race_Runner_List.remove(run);
-          if (!(Race_Run.get(run.getRace()).size() == 0)) {
-               for (int i = 0; i == Race_Run.get(run.getRace()).size(); i++) Race_Run.get(run.getRace()).get(i).setJoin_Count(i);
-               LeaveMesseage(run.getRace(), player);
-          } else {
-               run.getRace().setMode(Race_Mode.WAIT);
-               Race_Run.remove(run.getRace());
-          }
-
-          player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
-          player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
      }
 
      public static boolean isJoin(Player player) {
@@ -166,10 +167,7 @@ public class Race_Core {
           switch (race.getMode()) {
                case WAIT:
                     for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) {
-                              val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "[" + ChatColor.AQUA + key.getRace_name() + ChatColor.WHITE + "] " + " is Active Race Please wait");
-                              val.Start();
-                         }
+                         for (Race_Runner val : Race_Run.get(key)) val.Start();
                     }
                     race.setMode(Race_Mode.RUN);
                     break;
@@ -197,9 +195,7 @@ public class Race_Core {
      }
 
      public static void Race_Goal(Race race) {
-          for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-               race.setMode(Race_Mode.GOAL);
-          }
+          for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) race.setMode(Race_Mode.GOAL);
      }
 
      public static void clear() {
