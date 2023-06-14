@@ -128,14 +128,13 @@ public class Race_Runner {
 
      public void addCheckPoint() {
           this.CheckPoint++;
-
           if (Race.getCheckPointLoc().size() == getCheckPoint()) {
                setCheckPoint(0);
                addRap();
           } else {
                this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                UpdateScoreboard();
-               locationViewer.DrawCircle();
+               locationViewer.DrawCircle(CheckPoint);
           }
      }
 
@@ -145,6 +144,10 @@ public class Race_Runner {
 
      public int getRap() {
           return Rap;
+     }
+
+     public void setRace(Race race) {
+          this.Race = race;
      }
 
      public void addRap() {

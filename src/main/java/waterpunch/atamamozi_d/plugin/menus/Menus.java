@@ -164,6 +164,8 @@ public class Menus {
      public static Inventory getRaceCreate(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null || !(run.getMode() == Race_Mode.EDIT)) {
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race Creating Start");
+               run = null;
                if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(player)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
                run = new Race_Runner(player, new Race(player), 0);
                run.setMode(Race_Mode.EDIT);

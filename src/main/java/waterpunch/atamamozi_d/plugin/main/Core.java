@@ -130,7 +130,7 @@ public class Core extends JavaPlugin {
                subcmd.add("create");
                subcmd.add("addStartPoint");
                subcmd.add("addCheckPoint");
-               subcmd.add("updateCheckPoint");
+               // subcmd.add("updateCheckPoint");
                subcmd.add("setName");
                subcmd.add("respawn");
 

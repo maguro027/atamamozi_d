@@ -123,8 +123,9 @@ public class Race_Core {
                case WAIT:
                case RUN:
                case GOAL:
-                    Race_Runner_List.remove(run);
+                    Race_Runner_List.remove(player);
                     run.setMode(Race_Mode.EMPTY);
+
                     player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
                     if (run.getRace().getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {

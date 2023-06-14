@@ -4,6 +4,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,7 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
+import org.checkerframework.checker.fenum.qual.SwingHorizontalOrientation;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
@@ -133,25 +135,26 @@ public class Event implements Listener {
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate((Player) event.getWhoClicked()));
                          } else {
                               if (event.getCurrentItem() == null) return;
+                              switch (event.getAction()) {
+                                   case CLONE_STACK: //remove
+                                        run.getRace().getCheckPointLoc().remove(event.getRawSlot() - 9);
+                                        ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
+                                        event.setCancelled(true);
+                                        break;
+                                   case PICKUP_HALF: //Update
+                                        run.getRace().getCheckPointLoc().set(event.getRawSlot() - 9, run.getRace().getCheckPointLoc().get(event.getRawSlot() - 9));
+                                        event.setCancelled(true);
+                                        break;
+                                   case PICKUP_ALL:
+                                        waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
 
+                                        ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
+                                        event.setCancelled(true);
+                                        break;
+                                   default:
+                                        break;
+                              }
                               ((Player) event.getWhoClicked()).sendMessage(event.getAction().toString());
-                              if (event.getAction() == InventoryAction.CLONE_STACK) {
-                                   //remove
-                                   run.getRace().getCheckPointLoc().remove(event.getRawSlot() - 9);
-                                   ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
-                                   event.setCancelled(true);
-                              }
-                              if (event.getAction() == InventoryAction.PICKUP_HALF) {
-                                   //Update
-                                   run.getRace().getCheckPointLoc().set(event.getRawSlot() - 9, run.getRace().getCheckPointLoc().get(event.getRawSlot() - 9));
-                                   event.setCancelled(true);
-                              }
-                              if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                                   waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, run.getRace().getStartPointLoc().get(event.getRawSlot() - 9).getLocation(), 1);
-
-                                   ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCheckPoint((Player) event.getWhoClicked()));
-                                   event.setCancelled(true);
-                              }
                          }
                          break;
                     case "RACE_CREATE_STARTPOINT":
@@ -213,7 +216,6 @@ public class Event implements Listener {
                ((Sign) e.getClickedBlock().getState()).setLine(3, "");
                return;
           }
-          // waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), Integer.parseInt(((Sign) e.getClickedBlock().getState()).getLine(2).replace(" : Rap", "")), e.getPlayer());
           waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), waterpunch.atamamozi_d.plugin.race.Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))).getRap(), e.getPlayer());
      }
 
@@ -224,19 +226,15 @@ public class Event implements Listener {
           if (run == null) return;
           switch (run.getMode()) {
                case EDIT:
+                    if (!(run.getRace().getCheckPointLoc().size() == 0)) for (int i = 0; i < run.getRace().getCheckPointLoc().size(); i++) run.getLocationViewer().DrawCircle(i);
                     break;
                case GOAL:
                     break;
                case RUN:
-                    // if (!event.getPlayer().getVehicle().getUniqueId().equals(run.getUuid())) {
-                    //      run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + ChatColor.RED + ":(");
-                    //      waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
-                    // }
-
                     Location chackpoint = run.getRace().getCheckPointLoc().get(run.getCheckPoint()).getLocation();
                     run.setnewLoc(event.getTo());
                     run.setoldLoc(event.getFrom());
-                    run.getLocationViewer().DrawCircle();
+                    run.getLocationViewer().DrawCircle(run.getCheckPoint());
                     run.UpdateScoreboard();
                     if (waterpunch.atamamozi_d.plugin.race.export.Hachitai.CheckPlanePassed(run, event.getTo(), event.getFrom())) {
                          double[] rtn = waterpunch.atamamozi_d.plugin.race.export.Hachitai.GetIntersection(run, chackpoint, event.getTo(), event.getFrom());

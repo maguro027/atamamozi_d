@@ -13,24 +13,23 @@ public class LocationViewer {
           this.runner = runner;
      }
 
-     public void DrawCircle() {
-          Location particleLoc = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation();
+     public void DrawCircle(int checkNo) {
+          Location particleLoc = runner.getRace().getCheckPointLoc().get(checkNo).getLocation();
+          double PP = runner.getRace().getCheckPointLoc().get(checkNo).getLocation().getPitch() * Math.PI * 0.0055555;
+          double YY = runner.getRace().getCheckPointLoc().get(checkNo).getLocation().getYaw() * Math.PI * 0.0055555;
 
-          double PP = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getPitch() * Math.PI * 0.0055555;
-          double YY = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation().getYaw() * Math.PI * 0.0055555;
+          double a = runner.getRace().getCheckPointLoc().get(checkNo).getabcd()[0];
+          double b = runner.getRace().getCheckPointLoc().get(checkNo).getabcd()[1];
+          double c = runner.getRace().getCheckPointLoc().get(checkNo).getabcd()[2];
 
-          double a = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[0];
-          double b = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[1];
-          double c = runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getabcd()[2];
-
-          double[] v = GetVerticalVector(runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getLocation(), runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(), a, b, c);
+          double[] v = GetVerticalVector(runner.getRace().getCheckPointLoc().get(checkNo).getLocation(), runner.getRace().getCheckPointLoc().get(checkNo).getr(), a, b, c);
           double[] u = new double[3];
 
           u[0] = v[1] * c - v[2] * b;
           u[1] = v[2] * a - v[0] * c;
           u[2] = v[0] * b - v[1] * a;
 
-          double theta = 2 * Math.PI / (double) (10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr());
+          double theta = 2 * Math.PI / (double) (10 * runner.getRace().getCheckPointLoc().get(checkNo).getr());
           double cos = 1;
           double sin = 0;
           double cosDelta = Math.cos(theta);
@@ -38,7 +37,7 @@ public class LocationViewer {
 
           Location particleLoc0 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
 
-          for (int i = 0; i < 10 * runner.getRace().getCheckPointLoc().get(runner.getCheckPoint()).getr(); i++) {
+          for (int i = 0; i < 10 * runner.getRace().getCheckPointLoc().get(checkNo).getr(); i++) {
                particleLoc0.setX(cos * u[0] + sin * v[0] + particleLoc.getX());
                particleLoc0.setY(cos * u[1] + sin * v[1] + particleLoc.getY());
                particleLoc0.setZ(cos * u[2] + sin * v[2] + particleLoc.getZ());
