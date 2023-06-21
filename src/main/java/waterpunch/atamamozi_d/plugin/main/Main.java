@@ -41,10 +41,14 @@ public class Main {
                          fil_count++;
                          try (FileReader fileReader = new FileReader(tmpFile)) {
                               Gson gson = new Gson();
-                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(gson.fromJson(fileReader, Race.class));
+                              Race r = gson.fromJson(fileReader, Race.class);
+                              if (r.getID() == null) {
+                                   r.setID();
+                                   waterpunch.atamamozi_d.plugin.tool.CreateJson.save(r);
+                              }
+                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(r);
                               System.out.println(tmpFile.getName());
                          } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                              // TODO Auto-generated catch block
                               e.printStackTrace();
                          }
                     }

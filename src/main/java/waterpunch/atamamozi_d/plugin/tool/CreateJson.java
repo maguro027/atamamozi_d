@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class CreateJson {
@@ -26,27 +27,40 @@ public class CreateJson {
      public static void saveRace(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
-          if (!(run.getRace().getErrorCount() == 0)) {
+          if (!(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
                player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
                return;
           }
-          run.getRace().setMode(Race_Mode.WAIT);
+          waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
           if (!(file_.exists())) file_.mkdir();
-          String URL = file_ + "/" + run.getRace().getRace_name() + ".json";
+          String URL = file_ + "/" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name() + ".json";
           waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(run.getRace());
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
-               gson.toJson(run.getRace(), writer);
+               gson.toJson(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()), writer);
 
-               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(run.getRace());
+               waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race Create Complete!!");
                System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + player.getName() + "is Race Create");
-               System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "NAME :" + run.getRace().getRace_name());
+               System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "NAME :" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name());
                waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
                player.closeInventory();
+          } catch (IOException e) {
+               e.printStackTrace();
+          }
+     }
+
+     public static void save(Race race) {
+          if (!(file_.exists())) file_.mkdir();
+          String URL = file_ + "/" + race.getRace_name() + ".json";
+          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          try (Writer writer = new FileWriter(URL)) {
+               Gson gson = new Gson();
+               gson.toJson(race, writer);
+               race.setMode(Race_Mode.WAIT);
           } catch (IOException e) {
                e.printStackTrace();
           }

@@ -1,6 +1,7 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 public class Race {
 
      private String creator, race_name;
+     private UUID race_ID;
      private Race_Type race_type;
      private Material icon;
      private int join_amount;
@@ -26,6 +28,7 @@ public class Race {
 
      public Race(Player creator) {
           this.creator = creator.getName();
+          this.race_ID = UUID.randomUUID();
           this.race_name = "DEFAULT";
           this.race_type = Race_Type.WALK;
           this.icon = Material.MAP;
@@ -120,5 +123,13 @@ public class Race {
 
      public ArrayList<String> getScore() {
           return this.Score;
+     }
+
+     public void setID() {
+          this.race_ID = UUID.randomUUID();
+     }
+
+     public UUID getID() {
+          return this.race_ID;
      }
 }

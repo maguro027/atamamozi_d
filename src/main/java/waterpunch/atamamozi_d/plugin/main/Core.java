@@ -22,7 +22,6 @@ public class Core extends JavaPlugin {
           new Event(this);
           new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
-
           for (Player p : this.getServer().getOnlinePlayers()) if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
      }
 
@@ -34,7 +33,7 @@ public class Core extends JavaPlugin {
 
      @Override
      public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-          if (!(cmd.getName().equalsIgnoreCase("atamamozi_d")) || !(sender instanceof Player) || !(sender.isOp())) return false;
+          if (!(cmd.getName().equalsIgnoreCase("atamamozi_d")) || !(sender instanceof Player)) return false;
           if (args.length == 0) {
                ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) sender));
                return false;
@@ -68,7 +67,7 @@ public class Core extends JavaPlugin {
                               run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "NG Word");
                               return false;
                          }
-                         run.getRace().setRace_name(args[1]);
+                         waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setRace_name(args[1]);
                          run.getPlayer().openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(run.getPlayer()));
                          run.UpdateScoreboard();
                     }
@@ -102,7 +101,7 @@ public class Core extends JavaPlugin {
                          case RUN:
                               return false;
                          case WAIT:
-                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(run.getRace());
+                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
                               return false;
                          default:
                     }
@@ -157,10 +156,6 @@ public class Core extends JavaPlugin {
      }
 
      void oncreate(Player player) {
-          if (!player.hasPermission("atamamozi_d.player.create") || !player.isOp()) {
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setNotPermission());
-               return;
-          }
           player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
      }
 
@@ -168,7 +163,7 @@ public class Core extends JavaPlugin {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
 
-          run.getRace().addStartPointLoc(player.getLocation());
+          waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).addStartPointLoc(player.getLocation());
           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Start Point");
           waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, player.getLocation(), 1);
           run.UpdateScoreboard();
@@ -182,7 +177,7 @@ public class Core extends JavaPlugin {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
                     return;
                }
-               run.getRace().addCheckPointLoc(player.getLocation(), Integer.parseInt(r));
+               waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).addCheckPointLoc(player.getLocation(), Integer.parseInt(r));
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Check Point");
@@ -195,39 +190,13 @@ public class Core extends JavaPlugin {
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
-          if (run.getRace().getCheckPointLoc().size() == 0) {
-               run.getRace().addCheckPointLoc(player.getLocation(), r);
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() == 0) {
+               waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).addCheckPointLoc(player.getLocation(), r);
           } else {
-               run.getRace().getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
+               waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
           }
           run.UpdateScoreboard();
      }
-
-     // void onupdatecheckpoint(Player player, String r, String No) {
-     //      Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-     //      if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
-     //      try {
-     //           if (Integer.parseIn2t(r) <= 0) {
-     //                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
-     //                return;
-     //           }
-
-     //           if (run.getRace().getCheckPointLoc().size() > Integer.parseInt(No)) {
-     //                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Check Point<" + ChatColor.RED + r + ChatColor.GOLD + "> Up Data");
-     //                onsetCheckPoint(player, Integer.parseInt(r), Integer.parseInt(No));
-     //                if (run.getRace().getCheckPointLoc().size() == 0) {
-     //                     run.getRace().addCheckPointLoc(player.getLocation(), Integer.parseInt(r));
-     //                } else {
-     //                     run.getRace().getCheckPointLoc().set(Integer.parseInt(No), new CheckPointLoc(player.getLocation(), Integer.parseInt(r)));
-     //                }
-     //           } else {
-     //                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Over Number");
-     //           }
-     //      } catch (NumberFormatException xr) {
-     //           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "<" + ChatColor.RED + r + "or" + No + ChatColor.GOLD + "> is Not Number");
-     //      }
-     //      run.UpdateScoreboard();
-     // }
 
      void onrespawn(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
@@ -242,7 +211,7 @@ public class Core extends JavaPlugin {
      void remCheckPoint(Player player, int no) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
-          run.getRace().getCheckPointLoc().remove(no);
+          waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getCheckPointLoc().remove(no);
           run.UpdateScoreboard();
      }
 }
