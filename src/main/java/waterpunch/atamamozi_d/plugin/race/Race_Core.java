@@ -127,7 +127,7 @@ public class Race_Core {
                case WAIT:
                case RUN:
                case GOAL:
-                    Race_Runner_List.remove(player);
+                    Race_Runner_List.remove(getRuner(player));
                     run.setMode(Race_Mode.EMPTY);
 
                     player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);

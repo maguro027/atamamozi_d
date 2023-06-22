@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -273,32 +272,20 @@ public class Event implements Listener {
 
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
-          // ((Player) event.getExited()).sendMessage("1");
           if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.equals((Player) event.getExited())) {
                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.remove((Player) event.getExited());
                event.setCancelled(false);
-               // ((Player) event.getExited()).sendMessage("2");
                return;
           }
-          // ((Player) event.getExited()).sendMessage("3");
+
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
                event.setCancelled(true);
-               // ((Player) event.getExited()).sendMessage("4");
+
                return;
           }
-          // ((Player) event.getExited()).sendMessage("5");
      }
 
      @EventHandler
-     public void AnitEnter(VehicleEnterEvent event) {
-          //      if (!(event.getEntered() instanceof Player)) return;
-          //      if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getEntered())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getEntered() && val.getMode() == Race_Mode.RUN) {
-          //           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.equals((Player) event.getEntered())) {
-          //                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.remove((Player) event.getEntered());
-          // event.setCancelled(false);
-          //                return;
-          //           }
-          //      }
-     }
+     public void AnitEnter(VehicleEnterEvent event) {}
 }
