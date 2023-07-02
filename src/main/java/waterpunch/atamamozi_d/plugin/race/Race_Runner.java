@@ -20,7 +20,7 @@ public class Race_Runner {
      private UUID Race_ID;
      private String Race_Name;
      private Race_Mode Race_mode;
-     private int Join_Count, CheckPoint, Rap;
+     private int Join_Count, CheckPoint, Rap, time;
      private long start_time, end_time;
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
@@ -53,6 +53,15 @@ public class Race_Runner {
 
      public void UpdateScoreboard() {
           Player.setScoreboard(scoreboard.updateScoreboard(this));
+     }
+
+     public void setCountDown(int i) {
+          this.time = i;
+          Player.setScoreboard(scoreboard.updateScoreboard(this));
+     }
+
+     public int getCountDown() {
+          return time;
      }
 
      public Player getPlayer() {
@@ -254,7 +263,6 @@ public class Race_Runner {
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE)) {
                for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
                val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamoazi_d leave");
-               val.setMode(Race_Mode.GOAL);
           }
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(RACE);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(RACE);

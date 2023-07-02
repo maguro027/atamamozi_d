@@ -12,9 +12,9 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 public class Race_Core {
 
      public static LinkedHashMap<Race, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
+     public static ArrayList<Race> Race_list = new ArrayList<>();
      public static ArrayList<Player> Race_Runner_Onetime = new ArrayList<>();
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
-     public static ArrayList<Race> Race_list = new ArrayList<>();
 
      public static void joinRace(Race Race, Player player) {
           if (isJoin(player)) {
@@ -91,6 +91,7 @@ public class Race_Core {
      }
 
      public static void JoinMesseage(Race race, Player player) {
+          // race.Count();
           for (Race_Runner runner : Race_Run.get(race)) {
                runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
                runner.UpdateScoreboard();
@@ -105,7 +106,11 @@ public class Race_Core {
      }
 
      public static void removeRunner(Player player) {
-          if (Race_Run.isEmpty()) return;
+          if (Race_Run.isEmpty()) {
+               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName() == null) return;
+               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               return;
+          }
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
           if (run == null) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
@@ -123,15 +128,16 @@ public class Race_Core {
 
                     player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
+
                     break;
                case WAIT:
                case RUN:
                case GOAL:
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
                     Race_Runner_List.remove(getRuner(player));
                     run.setMode(Race_Mode.EMPTY);
 
-                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-                    player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Leave the race");
                     if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {
                          Race_Runner_Onetime.add(run.getPlayer());
                          run.getPlayer().getVehicle().remove();

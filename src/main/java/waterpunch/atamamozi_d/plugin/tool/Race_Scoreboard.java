@@ -32,19 +32,20 @@ public class Race_Scoreboard {
           switch (runner.getMode()) {
                case WAIT:
                     Scoreboards.add(objective.getScore(ChatColor.YELLOW + "WAITING"));
+                    Scoreboards.add(objective.getScore(runner.getCountDown() + " s"));
                     Scoreboards.add(objective.getScore("/atamamozi_d " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE)) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
                     break;
                case RUN:
-                    Scoreboards.add(objective.getScore("Rap : "));
+                    Scoreboards.add(objective.getScore("Time : "));
+                    Scoreboards.add(objective.getScore(runner.getTimest()));
+                    Scoreboards.add(objective.getScore("Rap  : "));
                     Scoreboards.add(objective.getScore(runner.getRap() + " / " + RACE.getRap()));
                     Scoreboards.add(objective.getScore("CheckPiont : "));
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + RACE.getCheckPointLoc().size()));
 
-                    double index = 2;
-
-                    Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), index) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), index)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
+                    Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), 2) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), 2)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
                     break;
                case GOAL:
                     if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE) == null) break;

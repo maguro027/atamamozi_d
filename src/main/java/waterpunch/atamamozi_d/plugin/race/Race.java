@@ -1,10 +1,13 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
+import java.util.Timer;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
 import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
@@ -131,5 +134,36 @@ public class Race {
 
      public UUID getID() {
           return this.race_ID;
+     }
+
+     public void Count() {
+          BukkitTask task = null;
+          // if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID())).size() < 1) return;
+          System.out.println(waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown"));
+          System.out.println("waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt(Setting.CountDown)");
+
+          Bukkit
+               .getScheduler()
+               .runTaskTimer(
+                    waterpunch.atamamozi_d.plugin.main.Core.getthis(),
+                    new Runnable() {
+                         private int time = waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown");
+
+                         @Override
+                         public void run() {
+                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.isEmpty()) return;
+                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID())).size() == 0) return;
+
+                              if (time == 0) {
+                                   waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()));
+                              }
+
+                              for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()))) run.setCountDown(this.time);
+                              this.time--;
+                         }
+                    },
+                    0L,
+                    20L
+               );
      }
 }

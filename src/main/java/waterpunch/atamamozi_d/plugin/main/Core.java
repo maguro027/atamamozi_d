@@ -7,6 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import waterpunch.atamamozi_d.plugin.event.Event;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -16,9 +17,14 @@ import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 
 public class Core extends JavaPlugin {
 
+     static Plugin Data;
+
      @Override
      public void onEnable() {
           System.out.println("ATAMAMOZI-D ENGINE START");
+          saveDefaultConfig();
+          getConfig();
+          Data = this;
           new Event(this);
           new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
@@ -29,6 +35,10 @@ public class Core extends JavaPlugin {
      public void onDisable() {
           System.out.println("ATAMAMOZI-D ENGINE STOP");
           waterpunch.atamamozi_d.plugin.race.Race_Core.clear();
+     }
+
+     public static Plugin getthis() {
+          return Data;
      }
 
      @Override
@@ -73,22 +83,17 @@ public class Core extends JavaPlugin {
                     }
                     break;
                case "addStartPoint":
+               case "addstartpoint":
                     onaddStartpoint((Player) sender);
                     break;
                case "addCheckPoint":
+               case "addcheckpoint":
                     if (args.length == 1) {
                          ((Player) sender).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please int");
                          return false;
                     }
                     onaddCheckpoint((Player) sender, args[1]);
                     break;
-               // case "updateCheckPoint":
-               //      if (!(args.length == 1)) {
-               //           ((Player) sender).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please int");
-               //           return false;
-               //      }
-               //      onupdatecheckpoint((Player) sender, args[1], args[2]);
-               //      break;
                case "start":
                     run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
                     if (run == null) return false;
