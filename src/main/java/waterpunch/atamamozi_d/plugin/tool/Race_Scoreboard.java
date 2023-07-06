@@ -39,7 +39,7 @@ public class Race_Scoreboard {
                     break;
                case RUN:
                     Scoreboards.add(objective.getScore("Time : "));
-                    Scoreboards.add(objective.getScore(runner.getTimest()));
+                    Scoreboards.add(objective.getScore(runner.getNOWTimest()));
                     Scoreboards.add(objective.getScore("Rap  : "));
                     Scoreboards.add(objective.getScore(runner.getRap() + " / " + RACE.getRap()));
                     Scoreboards.add(objective.getScore("CheckPiont : "));

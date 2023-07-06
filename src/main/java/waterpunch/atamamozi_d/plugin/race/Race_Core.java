@@ -17,6 +17,10 @@ public class Race_Core {
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
 
      public static void joinRace(Race Race, Player player) {
+          if ((player.getDisplayName().equals("."))) {
+               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Sorry Only the Java version can participate in the race");
+               return;
+          }
           if (isJoin(player)) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Already join race");
                return;

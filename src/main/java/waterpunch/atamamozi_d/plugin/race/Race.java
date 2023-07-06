@@ -1,12 +1,14 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
@@ -135,35 +137,57 @@ public class Race {
      public UUID getID() {
           return this.race_ID;
      }
+     // public void Count() {
+     //      BukkitTask task = null;
+     //      System.out.println(waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown"));
+     //      // System.out.println(waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown"));
+     //      task = waterpunch.atamamozi_d.plugin.main.Core.getthis().getServer().getScheduler().runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), new Timer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 5), 0L, 20L);
+     //      Bukkit
+     //           .getScheduler()
+     //           .runTaskTimer(
+     //                waterpunch.atamamozi_d.plugin.main.Core.getthis(),
+     //                new Runnable() {
+     //                     private int time = waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown");
 
-     public void Count() {
-          BukkitTask task = null;
-          // if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID())).size() < 1) return;
-          System.out.println(waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown"));
-          System.out.println("waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt(Setting.CountDown)");
+     //                     @Override
+     //                     public void run() {
+     //                          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.isEmpty()) return;
+     //                          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID())).size() == 0) return;
 
-          Bukkit
-               .getScheduler()
-               .runTaskTimer(
-                    waterpunch.atamamozi_d.plugin.main.Core.getthis(),
-                    new Runnable() {
-                         private int time = waterpunch.atamamozi_d.plugin.main.Core.getthis().getConfig().getInt("Setting.CountDown");
+     //                          if (time == 0) {
+     //                               waterpunch.atamamozi_d.plugin.main.Core.getthis().getServer().getScheduler().cancelTask(task.cancel());
+     //                               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()));
+     //                          }
 
-                         @Override
-                         public void run() {
-                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.isEmpty()) return;
-                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID())).size() == 0) return;
+     //                          for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()))) run.setCountDown(this.time);
+     //                          this.time--;
+     //                     }
+     //                },
+     //                0L,
+     //                20L
+     //           );
+     // }
 
-                              if (time == 0) {
-                                   waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()));
-                              }
+     // private class Timer extends BukkitRunnable {
 
-                              for (Race_Runner run : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(getID()))) run.setCountDown(this.time);
-                              this.time--;
-                         }
-                    },
-                    0L,
-                    20L
-               );
-     }
+     //      int time; //秒数
+     //      JavaPlugin plugin; //BukkitのAPIにアクセスするためのJavaPlugin
+
+     //      public Timer(Plugin plugin2, int i) {
+     //           this.time = i;
+     //           this.plugin = (JavaPlugin) plugin2;
+     //      }
+
+     //      @Override
+     //      public void run() {
+     //           if (time <= 0) {
+     //                //タイムアップなら
+     //                plugin.getServer().broadcastMessage("Start!"); //Start!と全員に表示
+     //                plugin.getServer().getScheduler().cancelTask(task.getTaskId()); //自分自身を止める
+     //           } else {
+     //                plugin.getServer().broadcastMessage("" + time); //残り秒数を全員に表示
+     //           }
+     //           time--; //1秒減算
+     //      }
+     // }
 }

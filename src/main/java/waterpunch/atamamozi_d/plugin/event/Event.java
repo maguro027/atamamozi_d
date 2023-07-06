@@ -52,6 +52,10 @@ public class Event implements Listener {
                               ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
                               return;
                          }
+                         if (event.getRawSlot() == 49) {
+                              ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceList((Player) event.getWhoClicked()));
+                              return;
+                         }
                          if (event.getRawSlot() >= 9 && event.getRawSlot() < 45) {
                               if (event.getCurrentItem() == null) return;
                               if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(((Player) event.getWhoClicked()))) {

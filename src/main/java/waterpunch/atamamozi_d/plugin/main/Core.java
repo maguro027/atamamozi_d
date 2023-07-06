@@ -53,17 +53,20 @@ public class Core extends JavaPlugin {
                case "help":
                     onhelp((Player) sender);
                     break;
-               case "load":
-                    onload((Player) sender);
-                    break;
-               case "stop":
-                    onstop((Player) sender);
+               // case "load":
+               //      onload((Player) sender);
+               //      break;
+               // case "stop":
+               //      onstop((Player) sender);
+               //      break;
+               case "list":
+                    ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceList(((Player) sender)));
                     break;
                case "leave":
                     onleave((Player) sender);
                     break;
                case "create":
-                    oncreate((Player) sender);
+                    ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(((Player) sender)));
                     break;
                case "setName":
                case "setname":
@@ -115,6 +118,9 @@ public class Core extends JavaPlugin {
                case "respawn":
                     onrespawn((Player) sender);
                     break;
+               case "print":
+                    onrespawn((Player) sender);
+                    break;
                default:
                     onhelp((Player) sender);
                     break;
@@ -127,14 +133,15 @@ public class Core extends JavaPlugin {
           if (args.length == 1 && cmd.getName().equalsIgnoreCase("atamamozi_d")) {
                ArrayList<String> subcmd = new ArrayList<String>();
                subcmd.add("help");
-               subcmd.add("load");
+               // subcmd.add("load");
                subcmd.add("start");
-               subcmd.add("stop");
+               // subcmd.add("stop");
                subcmd.add("leave");
+               subcmd.add("list");
                subcmd.add("create");
                subcmd.add("addStartPoint");
                subcmd.add("addCheckPoint");
-               // subcmd.add("updateCheckPoint");
+
                subcmd.add("setName");
                subcmd.add("respawn");
 
@@ -146,8 +153,10 @@ public class Core extends JavaPlugin {
      void onhelp(Player player) {
           player.sendMessage("---------------------");
           player.sendMessage("[help] this messeage");
-          player.sendMessage("[load] /atamamozi_d load 'race name'");
-          player.sendMessage("[stop] /atamamozi_d stop 'race name' race stop");
+          // player.sendMessage("[load] /atamamozi_d load 'race name'");
+          // player.sendMessage("[stop] /atamamozi_d stop 'race name' race stop");
+          player.sendMessage("[list] /atamamozi_d list Open Race menu");
+          player.sendMessage("[respawn] /atamamozi_d respawn :)");
           player.sendMessage("[leave] leave player");
           player.sendMessage("---------------------");
      }
@@ -158,10 +167,6 @@ public class Core extends JavaPlugin {
 
      void onleave(Player player) {
           waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
-     }
-
-     void oncreate(Player player) {
-          player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
      }
 
      void onaddStartpoint(Player player) {

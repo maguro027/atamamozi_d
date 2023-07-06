@@ -132,6 +132,10 @@ public class Race_Runner {
           return DurationFormatUtils.formatPeriod(getStart_time(), getEnd_time(), "HH:mm:ss.SSS");
      }
 
+     public String getNOWTimest() {
+          return DurationFormatUtils.formatPeriod(getStart_time(), System.currentTimeMillis(), "HH:mm:ss.SSS");
+     }
+
      public UUID getCar() {
           return Car;
      }
