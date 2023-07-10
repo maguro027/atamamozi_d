@@ -1,4 +1,4 @@
-package waterpunch.atamamozi_d.plugin.tool;
+package waterpunch.atamamozi_d.plugin.tool.Location;
 
 import org.bukkit.Color;
 import org.bukkit.Location;

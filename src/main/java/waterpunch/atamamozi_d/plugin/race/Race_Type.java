@@ -1,10 +1,8 @@
-package waterpunch.atamamozi_d.plugin.tool;
+package waterpunch.atamamozi_d.plugin.race;
 
 public enum Race_Type {
      WALK(1),
      BOAT(2);
-
-     // RUN(Material.TOTEM_OF_UNDYING), BOAT(Material.OAK_BOAT);
 
      @SuppressWarnings("unused")
      private int id;

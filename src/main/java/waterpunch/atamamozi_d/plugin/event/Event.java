@@ -21,10 +21,10 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
-import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
-import waterpunch.atamamozi_d.plugin.tool.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.Race_Type;
+import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 public class Event implements Listener {
 

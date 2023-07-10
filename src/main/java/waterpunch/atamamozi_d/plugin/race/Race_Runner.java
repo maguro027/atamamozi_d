@@ -9,10 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import waterpunch.atamamozi_d.plugin.tool.LocationViewer;
-import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
-import waterpunch.atamamozi_d.plugin.tool.Race_Scoreboard;
-import waterpunch.atamamozi_d.plugin.tool.Race_Type;
+import waterpunch.atamamozi_d.plugin.tool.Location.LocationViewer;
+import waterpunch.atamamozi_d.plugin.tool.Scoreboaed.Race_Scoreboard;
 
 public class Race_Runner {
 
@@ -53,15 +51,6 @@ public class Race_Runner {
 
      public void UpdateScoreboard() {
           Player.setScoreboard(scoreboard.updateScoreboard(this));
-     }
-
-     public void setCountDown(int i) {
-          this.time = i;
-          Player.setScoreboard(scoreboard.updateScoreboard(this));
-     }
-
-     public int getCountDown() {
-          return time;
      }
 
      public Player getPlayer() {

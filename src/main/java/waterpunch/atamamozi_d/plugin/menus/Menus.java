@@ -10,9 +10,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
-import waterpunch.atamamozi_d.plugin.tool.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.Race_Type;
 
 public class Menus {
 

@@ -1,7 +1,7 @@
 package waterpunch.atamamozi_d.plugin.race.checkpoint;
 
 import org.bukkit.Location;
-import waterpunch.atamamozi_d.plugin.tool.Loc_parts;
+import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 public class CheckPointLoc {
 

@@ -1,4 +1,4 @@
-package waterpunch.atamamozi_d.plugin.tool;
+package waterpunch.atamamozi_d.plugin.tool.Scoreboaed;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +11,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class Race_Scoreboard {
@@ -32,7 +33,12 @@ public class Race_Scoreboard {
           switch (runner.getMode()) {
                case WAIT:
                     Scoreboards.add(objective.getScore(ChatColor.YELLOW + "WAITING"));
-                    Scoreboards.add(objective.getScore(runner.getCountDown() + " s"));
+
+                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() <= 5) {
+                         Scoreboards.add(objective.getScore(ChatColor.RED + "" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
+                    } else {
+                         Scoreboards.add(objective.getScore("" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
+                    }
                     Scoreboards.add(objective.getScore("/atamamozi_d " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE)) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));

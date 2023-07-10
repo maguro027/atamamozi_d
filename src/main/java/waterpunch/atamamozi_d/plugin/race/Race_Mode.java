@@ -1,4 +1,4 @@
-package waterpunch.atamamozi_d.plugin.tool;
+package waterpunch.atamamozi_d.plugin.race;
 
 public enum Race_Mode {
      EMPTY(0),

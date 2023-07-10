@@ -10,23 +10,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import waterpunch.atamamozi_d.plugin.event.Event;
+import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
-import waterpunch.atamamozi_d.plugin.tool.CountDownTimer;
-import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
 
 public class Core extends JavaPlugin {
 
      static Plugin Data;
+     public static int TIME;
 
      @Override
      public void onEnable() {
           System.out.println("ATAMAMOZI-D ENGINE START");
+
           saveDefaultConfig();
           getConfig();
+          TIME = getConfig().getInt("Setting.CountDown");
+          TIME = 30;
+
           Data = this;
           new Event(this);
-          new CountDownTimer(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
           for (Player p : this.getServer().getOnlinePlayers()) if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
      }
@@ -118,8 +122,8 @@ public class Core extends JavaPlugin {
                case "respawn":
                     onrespawn((Player) sender);
                     break;
-               case "print":
-                    onrespawn((Player) sender);
+               case "join":
+                    onjoin((Player) sender, args[1]);
                     break;
                default:
                     onhelp((Player) sender);
@@ -133,28 +137,29 @@ public class Core extends JavaPlugin {
           if (args.length == 1 && cmd.getName().equalsIgnoreCase("atamamozi_d")) {
                ArrayList<String> subcmd = new ArrayList<String>();
                subcmd.add("help");
-               // subcmd.add("load");
+               subcmd.add("join");
                subcmd.add("start");
-               // subcmd.add("stop");
                subcmd.add("leave");
                subcmd.add("list");
                subcmd.add("create");
                subcmd.add("addStartPoint");
                subcmd.add("addCheckPoint");
-
                subcmd.add("setName");
                subcmd.add("respawn");
-
                return subcmd;
           }
+          // if (args.length == 2 && args[1].equals("join") && cmd.getName().equalsIgnoreCase("atamamozi_d")) {
+          //      ArrayList<String> subcmd = new ArrayList<String>();
+          //      for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) subcmd.add(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
+          //      return subcmd;
+          // }
+
           return null;
      }
 
      void onhelp(Player player) {
           player.sendMessage("---------------------");
           player.sendMessage("[help] this messeage");
-          // player.sendMessage("[load] /atamamozi_d load 'race name'");
-          // player.sendMessage("[stop] /atamamozi_d stop 'race name' race stop");
           player.sendMessage("[list] /atamamozi_d list Open Race menu");
           player.sendMessage("[respawn] /atamamozi_d respawn :)");
           player.sendMessage("[leave] leave player");
@@ -216,6 +221,12 @@ public class Core extends JavaPlugin {
           }
           run.ReSpawn();
           return;
+     }
+
+     private void onjoin(Player player, String args) {
+          Race race = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(args);
+          if (race == null) return;
+          waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(race, player);
      }
 
      void remCheckPoint(Player player, int no) {

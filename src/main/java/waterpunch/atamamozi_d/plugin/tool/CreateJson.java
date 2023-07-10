@@ -10,11 +10,12 @@ import java.nio.file.Paths;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class CreateJson {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
+     public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
 
      public static void createfile(String string) {
           try {
@@ -32,8 +33,8 @@ public class CreateJson {
                return;
           }
           waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
-          if (!(file_.exists())) file_.mkdir();
-          String URL = file_ + "/" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name() + ".json";
+          if (!(file_Race.exists())) file_Race.mkdir();
+          String URL = file_Race + "/" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name() + ".json";
           waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
           try (Writer writer = new FileWriter(URL)) {
@@ -54,8 +55,8 @@ public class CreateJson {
      }
 
      public static void save(Race race) {
-          if (!(file_.exists())) file_.mkdir();
-          String URL = file_ + "/" + race.getRace_name() + ".json";
+          if (!(file_Race.exists())) file_Race.mkdir();
+          String URL = file_Race + "/" + race.getRace_name() + ".json";
           waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();

@@ -1,4 +1,4 @@
-package waterpunch.atamamozi_d.plugin.tool;
+package waterpunch.atamamozi_d.plugin.tool.Scoreboaed;
 
 import org.bukkit.Location;
 

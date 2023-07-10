@@ -13,25 +13,20 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 
 public class Main {
 
-     public static final File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
+     public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
 
      public static int fil_count = 0;
 
-     public static File getPath() {
-          File file_ = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
-          return file_;
-     }
-
      public static void loadconfig() {
-          file_.mkdirs();
-          File[] targetFile_dir_list = new File(file_.toString()).listFiles();
+          file_Race.mkdirs();
+          File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
           if (targetFile_dir_list == null) return;
           getRaces();
      }
 
      public static void getRaces() {
           int fil_count = 0;
-          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_.listFiles();
+          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_Race.listFiles();
           if (files == null) return;
           for (File tmpFile : files) {
                if (tmpFile.isDirectory()) {
@@ -42,8 +37,8 @@ public class Main {
                          try (FileReader fileReader = new FileReader(tmpFile)) {
                               Gson gson = new Gson();
                               Race r = gson.fromJson(fileReader, Race.class);
-                              if (r.getID() == null) {
-                                   r.setID();
+                              if (r.getUUID() == null) {
+                                   r.getUUID();
                                    waterpunch.atamamozi_d.plugin.tool.CreateJson.save(r);
                               }
                               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(r);
@@ -65,7 +60,7 @@ public class Main {
 
      public static void saveconfig(String string) {
           try {
-               FileWriter writer = new FileWriter(file_ + "/race_list.json");
+               FileWriter writer = new FileWriter(file_Race + "/race_list.json");
 
                writer.write(string);
                writer.close();

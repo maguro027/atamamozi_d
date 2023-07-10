@@ -6,8 +6,6 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
-import waterpunch.atamamozi_d.plugin.tool.Race_Mode;
-import waterpunch.atamamozi_d.plugin.tool.Race_Type;
 
 public class Race_Core {
 
@@ -33,11 +31,11 @@ public class Race_Core {
                               val.setMode(Race_Mode.WAIT);
                               Race_Run.put(Race, new ArrayList<Race_Runner>());
                               Race_Run.get(Race).add(val);
-                              val.UPDate(Race.getID(), 0);
+                              val.UPDate(Race.getUUID(), 0);
                               JoinMesseage(Race, player);
                               return;
                          }
-                         Race_Runner Runner = new Race_Runner(player, Race.getID(), 0);
+                         Race_Runner Runner = new Race_Runner(player, Race.getUUID(), 0);
                          Race_Run.put(Race, new ArrayList<Race_Runner>());
                          Race_Run.get(Race).add(Runner);
                          JoinMesseage(Race, player);
@@ -55,11 +53,11 @@ public class Race_Core {
                          }
                          if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getName().equals(player.getName())) {
                               Race_Run.get(Race).add(val);
-                              val.UPDate(Race.getID(), Race_Run.get(key).size() - 1);
+                              val.UPDate(Race.getUUID(), Race_Run.get(key).size() - 1);
                               JoinMesseage(Race, player);
                               return;
                          }
-                         Race_Runner Runner = new Race_Runner(player, Race.getID(), Race_Run.get(Race).size());
+                         Race_Runner Runner = new Race_Runner(player, Race.getUUID(), Race_Run.get(Race).size());
                          Race_Run.get(Race).add(Runner);
                          JoinMesseage(Race, player);
                          return;
@@ -69,11 +67,11 @@ public class Race_Core {
                          val.setMode(Race_Mode.WAIT);
                          Race_Run.put(Race, new ArrayList<Race_Runner>());
                          Race_Run.get(Race).add(val);
-                         val.UPDate(Race.getID(), 0);
+                         val.UPDate(Race.getUUID(), 0);
                          JoinMesseage(Race, player);
                          return;
                     }
-                    Race_Runner Runner = new Race_Runner(player, Race.getID(), 0);
+                    Race_Runner Runner = new Race_Runner(player, Race.getUUID(), 0);
                     Race_Run.put(Race, new ArrayList<Race_Runner>());
                     Race_Run.get(Race).add(Runner);
                     JoinMesseage(Race, player);
@@ -95,11 +93,11 @@ public class Race_Core {
      }
 
      public static void JoinMesseage(Race race, Player player) {
-          // race.Count();
           for (Race_Runner runner : Race_Run.get(race)) {
                runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
                runner.UpdateScoreboard();
           }
+          if (Race_Run.get(race).size() == 1) race.Count();
      }
 
      public static void LeaveMesseage(Race race, Player player) {
@@ -111,7 +109,7 @@ public class Race_Core {
 
      public static void removeRunner(Player player) {
           if (Race_Run.isEmpty()) {
-               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName() == null) return;
+               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) return;
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                return;
           }
@@ -179,7 +177,7 @@ public class Race_Core {
      }
 
      public static Race getRace(UUID race_uu) {
-          for (Race val : Race_list) if (val.getID().equals(race_uu)) return val;
+          for (Race val : Race_list) if (val.getUUID().equals(race_uu)) return val;
           return null;
      }
 
