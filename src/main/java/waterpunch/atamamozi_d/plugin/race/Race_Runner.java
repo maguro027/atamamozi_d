@@ -18,7 +18,7 @@ public class Race_Runner {
      private UUID Race_ID;
      private String Race_Name;
      private Race_Mode Race_mode;
-     private int Join_Count, CheckPoint, Rap, time;
+     private int Join_Count, CheckPoint, Rap;
      private long start_time, end_time;
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;

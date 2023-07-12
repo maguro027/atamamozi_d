@@ -265,6 +265,7 @@ public class Event implements Listener {
           waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
      }
 
+     @Deprecated
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
           if (!(event.getVehicle().getPassenger() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
