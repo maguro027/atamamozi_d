@@ -121,6 +121,7 @@ public class Menus {
                     lores.add(ChatColor.GOLD + "Join " + ChatColor.RED + ": 0 / " + race.getJoin_Amount());
                } else {
                     lores.add(ChatColor.GOLD + "Join : " + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race).size() + " / " + race.getJoin_Amount());
+                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race)) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getName());
                }
           }
           lores.add(ChatColor.GOLD + "RAP : " + ChatColor.RED + race.getRap());

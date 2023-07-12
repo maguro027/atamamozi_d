@@ -48,9 +48,8 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore(runner.getNOWTimest()));
                     Scoreboards.add(objective.getScore("Rap  : "));
                     Scoreboards.add(objective.getScore(runner.getRap() + " / " + RACE.getRap()));
-                    Scoreboards.add(objective.getScore("CheckPiont : "));
+                    Scoreboards.add(objective.getScore("CheckPoint : "));
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + RACE.getCheckPointLoc().size()));
-
                     Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), 2) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), 2)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
                     break;
                case GOAL:

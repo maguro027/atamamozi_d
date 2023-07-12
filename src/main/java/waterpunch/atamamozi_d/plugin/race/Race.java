@@ -7,7 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
-import waterpunch.atamamozi_d.plugin.tool.Race_Timer;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Race {
 
@@ -130,7 +131,7 @@ public class Race {
      }
 
      public void Count() {
-          new Race_Timer(waterpunch.atamamozi_d.plugin.main.Core.TIME, this).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+          new Race_Timer(Race_Timer_Type.WAIT, waterpunch.atamamozi_d.plugin.main.Core.TIME, this).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
      }
 
      public int getCountDown() {

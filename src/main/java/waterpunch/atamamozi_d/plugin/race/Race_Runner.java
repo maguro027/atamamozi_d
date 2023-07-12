@@ -173,6 +173,9 @@ public class Race_Runner {
           Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID);
           Player.teleport(RACE.getStartPointLoc().get(Join_Count).getLocation());
 
+          Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          Player.sendTitle(ChatColor.GREEN + " - START - ", "", 10, 15, 10);
+
           switch (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
                     waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.add(Player);
@@ -255,7 +258,7 @@ public class Race_Runner {
           Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID);
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE)) {
                for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
-               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamoazi_d leave");
+               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamozi_d leave");
           }
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(RACE);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(RACE);

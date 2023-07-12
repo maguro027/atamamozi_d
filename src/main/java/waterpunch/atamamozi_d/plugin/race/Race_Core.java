@@ -27,7 +27,7 @@ public class Race_Core {
                case WAIT:
                     if (Race_Run.isEmpty()) {
                          Race.setRap(Race.getRap());
-                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getName().equals(player.getName())) {
+                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
                               val.setMode(Race_Mode.WAIT);
                               Race_Run.put(Race, new ArrayList<Race_Runner>());
                               Race_Run.get(Race).add(val);
@@ -51,7 +51,7 @@ public class Race_Core {
                               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Sorry " + Race.getRace_name() + " is Max Player");
                               return;
                          }
-                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getName().equals(player.getName())) {
+                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
                               Race_Run.get(Race).add(val);
                               val.UPDate(Race.getUUID(), Race_Run.get(key).size() - 1);
                               JoinMesseage(Race, player);
@@ -63,7 +63,7 @@ public class Race_Core {
                          return;
                     }
                     Race.setRap(Race.getRap());
-                    if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getName().equals(player.getName())) {
+                    if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
                          val.setMode(Race_Mode.WAIT);
                          Race_Run.put(Race, new ArrayList<Race_Runner>());
                          Race_Run.get(Race).add(val);
@@ -123,8 +123,9 @@ public class Race_Core {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                     break;
                case EDIT:
-                    Race_list.remove(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
                     waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).remove(run);
+                    Race_list.remove(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
+
                     Race_Runner_List.remove(run);
                     run.setMode(Race_Mode.EMPTY);
 
@@ -156,6 +157,7 @@ public class Race_Core {
                     }
                     break;
                default:
+                    Race_Runner_List.remove(run);
                     break;
           }
      }
@@ -184,9 +186,7 @@ public class Race_Core {
      public static void Race_Start(Race race) {
           switch (race.getMode()) {
                case WAIT:
-                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) val.Start();
-                    }
+                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) for (Race_Runner val : Race_Run.get(key)) val.Start();
                     race.setMode(Race_Mode.RUN);
                     break;
                case EDIT:
