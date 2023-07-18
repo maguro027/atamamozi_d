@@ -131,7 +131,7 @@ public class Race {
      }
 
      public void Count() {
-          new Race_Timer(Race_Timer_Type.WAIT, waterpunch.atamamozi_d.plugin.main.Core.TIME, this).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+          new Race_Timer(Race_Timer_Type.WAIT, waterpunch.atamamozi_d.plugin.main.Core.TIME, getUUID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
      }
 
      public int getCountDown() {

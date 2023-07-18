@@ -14,6 +14,8 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Core extends JavaPlugin {
 
@@ -113,7 +115,10 @@ public class Core extends JavaPlugin {
                          case RUN:
                               return false;
                          case WAIT:
-                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
+                              for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.get(i).getUUID() == run.getRaceID() && waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.get(i).getType() == Race_Timer_Type.START) {
+                                   return false;
+                              }
+                              new Race_Timer(Race_Timer_Type.START, 5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
                               return false;
                          default:
                     }
@@ -148,12 +153,6 @@ public class Core extends JavaPlugin {
                subcmd.add("respawn");
                return subcmd;
           }
-          // if (args.length == 2 && args[1].equals("join") && cmd.getName().equalsIgnoreCase("atamamozi_d")) {
-          //      ArrayList<String> subcmd = new ArrayList<String>();
-          //      for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) subcmd.add(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i).getRace_name());
-          //      return subcmd;
-          // }
-
           return null;
      }
 

@@ -6,13 +6,15 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 
 public class Race_Core {
 
-     public static LinkedHashMap<Race, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
+     public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
      public static ArrayList<Race> Race_list = new ArrayList<>();
      public static ArrayList<Player> Race_Runner_Onetime = new ArrayList<>();
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
+     public static ArrayList<Race_Timer> Timers = new ArrayList<>();
 
      public static void joinRace(Race Race, Player player) {
           if ((player.getDisplayName().equals("."))) {
@@ -25,55 +27,11 @@ public class Race_Core {
           }
           switch (Race.getMode()) {
                case WAIT:
-                    if (Race_Run.isEmpty()) {
-                         Race.setRap(Race.getRap());
-                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
-                              val.setMode(Race_Mode.WAIT);
-                              Race_Run.put(Race, new ArrayList<Race_Runner>());
-                              Race_Run.get(Race).add(val);
-                              val.UPDate(Race.getUUID(), 0);
-                              JoinMesseage(Race, player);
-                              return;
-                         }
-                         Race_Runner Runner = new Race_Runner(player, Race.getUUID(), 0);
-                         Race_Run.put(Race, new ArrayList<Race_Runner>());
-                         Race_Run.get(Race).add(Runner);
-                         JoinMesseage(Race, player);
-                         return;
-                    }
-
-                    for (Race key : Race_Run.keySet()) if (Race.getRace_name().equals(key.getRace_name())) {
-                         if (!(Race.getRap() == key.getRap())) {
-                              player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + Race.getRace_name() + " is Active Race Please wait");
-                              return;
-                         }
-                         if (Race.getJoin_Amount() == Race_Run.get(Race).size()) {
-                              player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Sorry " + Race.getRace_name() + " is Max Player");
-                              return;
-                         }
-                         if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
-                              Race_Run.get(Race).add(val);
-                              val.UPDate(Race.getUUID(), Race_Run.get(key).size() - 1);
-                              JoinMesseage(Race, player);
-                              return;
-                         }
-                         Race_Runner Runner = new Race_Runner(player, Race.getUUID(), Race_Run.get(Race).size());
-                         Race_Run.get(Race).add(Runner);
-                         JoinMesseage(Race, player);
-                         return;
-                    }
-                    Race.setRap(Race.getRap());
-                    if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId() == player.getUniqueId()) {
-                         val.setMode(Race_Mode.WAIT);
-                         Race_Run.put(Race, new ArrayList<Race_Runner>());
-                         Race_Run.get(Race).add(val);
-                         val.UPDate(Race.getUUID(), 0);
-                         JoinMesseage(Race, player);
-                         return;
-                    }
-                    Race_Runner Runner = new Race_Runner(player, Race.getUUID(), 0);
-                    Race_Run.put(Race, new ArrayList<Race_Runner>());
-                    Race_Run.get(Race).add(Runner);
+                    Race_Runner run = getRuner(player);
+                    if (Race_Run.get(Race.getUUID()) == null) Race_Run.put(Race.getUUID(), new ArrayList<Race_Runner>());
+                    if (run == null) run = new Race_Runner(player, Race.getUUID());
+                    if (run.getRaceID() != Race.getUUID()) run.UPDate(Race.getUUID());
+                    Race_Run.get(Race.getUUID()).add(run);
                     JoinMesseage(Race, player);
                     break;
                case RUN:
@@ -93,16 +51,16 @@ public class Race_Core {
      }
 
      public static void JoinMesseage(Race race, Player player) {
-          for (Race_Runner runner : Race_Run.get(race)) {
-               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
+          for (Race_Runner runner : Race_Run.get(race.getUUID())) {
+               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race.getUUID()).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
                runner.UpdateScoreboard();
           }
-          if (Race_Run.get(race).size() == 1) race.Count();
+          if (Race_Run.get(race.getUUID()).size() == 1) race.Count();
      }
 
      public static void LeaveMesseage(Race race, Player player) {
-          for (Race_Runner runner : Race_Run.get(race)) {
-               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Leave");
+          for (Race_Runner runner : Race_Run.get(race.getUUID())) {
+               runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race.getUUID()).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Leave");
                runner.UpdateScoreboard();
           }
      }
@@ -113,7 +71,7 @@ public class Race_Core {
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                return;
           }
-          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
+          Race_Runner run = getRuner(player);
           if (run == null) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                return;
@@ -123,8 +81,8 @@ public class Race_Core {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                     break;
                case EDIT:
-                    waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).remove(run);
-                    Race_list.remove(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
+                    Race_Run.get(run.getRaceID()).remove(run);
+                    Race_list.remove(getRace(run.getRaceID()));
 
                     Race_Runner_List.remove(run);
                     run.setMode(Race_Mode.EMPTY);
@@ -141,19 +99,19 @@ public class Race_Core {
                     Race_Runner_List.remove(getRuner(player));
                     run.setMode(Race_Mode.EMPTY);
 
-                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {
+                    if (getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT && !(run.getPlayer().getVehicle() == null)) {
                          Race_Runner_Onetime.add(run.getPlayer());
                          run.getPlayer().getVehicle().remove();
                     }
                     run.getPlayer().teleport(run.getst_Location());
-                    if (!Race_Run.isEmpty()) Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).remove(run);
+                    if (!Race_Run.isEmpty()) Race_Run.get(run.getRaceID()).remove(run);
                     Race_Runner_List.remove(run);
-                    if (!(Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).size() == 0)) {
-                         for (int i = 0; i == Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).size(); i++) Race_Run.get(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID())).get(i).setJoin_Count(i);
-                         LeaveMesseage(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()), player);
+                    if (!(Race_Run.get(run.getRaceID()).size() == 0)) {
+                         for (int i = 0; i == Race_Run.get(run.getRaceID()).size(); i++) Race_Run.get(run.getRaceID()).get(i).setJoin_Count(i);
+                         LeaveMesseage(getRace(run.getRaceID()), player);
                     } else {
-                         waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
-                         Race_Run.remove(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
+                         getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
+                         Race_Run.remove(run.getRaceID());
                     }
                     break;
                default:
@@ -163,7 +121,7 @@ public class Race_Core {
      }
 
      public static boolean isJoin(Player player) {
-          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
+          Race_Runner run = getRuner(player);
           if (run == null || run.getMode() == Race_Mode.GOAL) return false;
           return true;
      }
@@ -183,27 +141,27 @@ public class Race_Core {
           return null;
      }
 
-     public static void Race_Start(Race race) {
-          switch (race.getMode()) {
+     public static void Race_Start(UUID Race_UUID) {
+          switch (getRace(Race_UUID).getMode()) {
                case WAIT:
-                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) for (Race_Runner val : Race_Run.get(key)) val.Start();
-                    race.setMode(Race_Mode.RUN);
+                    for (UUID key : Race_Run.keySet()) if (Race_UUID == key) for (Race_Runner val : Race_Run.get(key)) val.Start();
+                    getRace(Race_UUID).setMode(Race_Mode.RUN);
                     break;
                case EDIT:
-                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + race.getRace_name() + " is Editing now");
+                    for (UUID key : Race_Run.keySet()) if (Race_UUID == key) {
+                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + getRace(Race_UUID).getRace_name() + " is Editing now");
                          return;
                     }
                     break;
                case GOAL:
-                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + race.getRace_name() + " is End");
+                    for (UUID key : Race_Run.keySet()) if (Race_UUID == key) {
+                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + getRace(Race_UUID).getRace_name() + " is End");
                          return;
                     }
                     break;
                case RUN:
-                    for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) {
-                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + race.getRace_name() + " is Active Race Please wait");
+                    for (UUID key : Race_Run.keySet()) if (Race_UUID == key) {
+                         for (Race_Runner val : Race_Run.get(key)) if (val.getMode() == Race_Mode.EDIT) val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + getRace(Race_UUID).getRace_name() + " is Active Race Please wait");
                          return;
                     }
                     break;
@@ -212,8 +170,8 @@ public class Race_Core {
           }
      }
 
-     public static void Race_Goal(Race race) {
-          for (Race key : Race_Run.keySet()) if (race.getRace_name().equals(key.getRace_name())) race.setMode(Race_Mode.GOAL);
+     public static void Race_Goal(UUID Race_UUID) {
+          for (UUID key : Race_Run.keySet()) if (Race_UUID == key) getRace(Race_UUID).setMode(Race_Mode.GOAL);
      }
 
      public static void clear() {

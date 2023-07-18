@@ -117,11 +117,11 @@ public class Menus {
           if (race.getJoin_Amount() == 0) {
                lores.add(ChatColor.GOLD + "Max Join : " + ChatColor.RED + "No Limit");
           } else {
-               if ((waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race) == null)) {
+               if ((waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race.getUUID()) == null)) {
                     lores.add(ChatColor.GOLD + "Join " + ChatColor.RED + ": 0 / " + race.getJoin_Amount());
                } else {
-                    lores.add(ChatColor.GOLD + "Join : " + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race).size() + " / " + race.getJoin_Amount());
-                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race)) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getName());
+                    lores.add(ChatColor.GOLD + "Join : " + ChatColor.RED + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race.getUUID()).size() + " / " + race.getJoin_Amount());
+                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(race.getUUID())) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getName());
                }
           }
           lores.add(ChatColor.GOLD + "RAP : " + ChatColor.RED + race.getRap());
