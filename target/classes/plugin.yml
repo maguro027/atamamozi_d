@@ -1,5 +1,5 @@
 name: Atamamozi_D
-version: 0.1.92
+version: 0.1.95
 api-version: 1.13
 main: waterpunch.atamamozi_d.plugin.main.Core
 prefix: atamamozi_D

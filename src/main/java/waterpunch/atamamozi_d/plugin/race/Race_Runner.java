@@ -175,7 +175,7 @@ public class Race_Runner {
      public void Start() {
           this.Race_mode = Race_Mode.RUN;
           Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID);
-          Player.teleport(RACE.getStartPointLoc().get(Join_Count).getLocation());
+          Player.teleport(RACE.getStartPointLoc().get(Join_Count - 1).getLocation());
 
           Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           Player.sendTitle(ChatColor.GREEN + " - START - ", "", 10, 15, 10);
@@ -272,7 +272,7 @@ public class Race_Runner {
      }
 
      String getScore(Race_Runner a) {
-          if (a.getPlayer().getUniqueId().equals(Player.getUniqueId())) return "[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + ChatColor.YELLOW + a.getTimest();
+          // if (a.getPlayer().getUniqueId().equals(Player.getUniqueId())) return "[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + ChatColor.YELLOW + a.getTimest();
           return "[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + a.getTimest();
      }
 }

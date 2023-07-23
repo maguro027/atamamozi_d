@@ -15,7 +15,6 @@ import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
-import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Core extends JavaPlugin {
 
@@ -108,18 +107,25 @@ public class Core extends JavaPlugin {
                     if (run == null) return false;
                     switch (run.getMode()) {
                          case EDIT:
+                         case RUN:
                               return false;
                          case GOAL:
                               run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                               return false;
-                         case RUN:
-                              return false;
                          case WAIT:
-                              for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.size(); i++) if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.get(i).getUUID() == run.getRaceID() && waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.get(i).getType() == Race_Timer_Type.START) {
+                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.isEmpty()) {
+                                   new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
                                    return false;
                               }
-                              new Race_Timer(Race_Timer_Type.START, 5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
-                              return false;
+                              System.out.println("1");
+                              for (Race_Timer timer : waterpunch.atamamozi_d.plugin.race.Race_Core.Timers) {
+                                   System.out.println("2");
+                                   if (timer.getUUID() != run.getRaceID()) {
+                                        System.out.println("3");
+                                        new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+                                   }
+                              }
+                              break;
                          default:
                     }
                     break;

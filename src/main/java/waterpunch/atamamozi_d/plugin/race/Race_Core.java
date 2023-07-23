@@ -55,7 +55,6 @@ public class Race_Core {
                runner.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + " " + Race_Run.get(race.getUUID()).size() + "/" + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName() + ChatColor.WHITE + "] is Join");
                runner.UpdateScoreboard();
           }
-          if (Race_Run.get(race.getUUID()).size() == 1) race.Count();
      }
 
      public static void LeaveMesseage(Race race, Player player) {
