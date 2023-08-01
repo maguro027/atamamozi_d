@@ -1,7 +1,5 @@
 package waterpunch.atamamozi_d.plugin.race;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.UUID;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
@@ -144,8 +142,8 @@ public class Race_Runner {
                addRap();
           } else {
                this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               UpdateScoreboard();
                locationViewer.DrawCircle(CheckPoint);
+               UpdateScoreboard();
           }
      }
 
@@ -251,28 +249,6 @@ public class Race_Runner {
           UpdateScoreboard();
           int i = 0;
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Mode.GOAL) i++;
-          if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).size()) AllGoal();
-     }
-
-     public void AllGoal() {
-          Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID);
-          ArrayList<String> Score = new ArrayList<>();
-          Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-          Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).stream().sorted(comparator).forEach(a -> Score.add(getScore(a)));
-          Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-          RACE.setScore(Score);
-
-          for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) {
-               for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
-               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamozi_d leave");
-          }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(RACE.getUUID());
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(RACE.getUUID());
-     }
-
-     String getScore(Race_Runner a) {
-          // if (a.getPlayer().getUniqueId().equals(Player.getUniqueId())) return "[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + ChatColor.YELLOW + a.getTimest();
-          return "[" + ChatColor.AQUA + a.getPlayer().getName() + ChatColor.WHITE + "] : " + a.getTimest();
+          if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).size()) waterpunch.atamamozi_d.plugin.race.Race_Core.AllGoal(RACE.getUUID());
      }
 }

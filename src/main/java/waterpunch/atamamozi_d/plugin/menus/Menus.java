@@ -51,6 +51,20 @@ public class Menus {
           return race_LIST;
      }
 
+     static ItemStack getDebug() {
+          ItemStack Debug = new ItemStack(Material.REDSTONE_TORCH);
+          ItemMeta Debug_Meta = Debug.getItemMeta();
+          Debug_Meta.setDisplayName(ChatColor.GOLD + "Debug");
+          List<String> lores = new ArrayList<String>();
+          lores.add(ChatColor.AQUA + "-Runner-");
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) lores.add(ChatColor.AQUA + "- size :" + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.size() + " -");
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getUniqueId());
+
+          Debug_Meta.setLore(lores);
+          Debug.setItemMeta(Debug_Meta);
+          return Debug;
+     }
+
      static ItemStack getRace_EDIT() {
           ItemStack race_EDIT = new ItemStack(Material.COMPASS);
           ItemMeta race_EDIT_Meta = race_EDIT.getItemMeta();
@@ -99,8 +113,6 @@ public class Menus {
           switch (race.getMode()) {
                case EDIT:
                     lores.add(ChatColor.RED + "EDITING NOW ");
-                    break;
-               case EMPTY:
                     break;
                case GOAL:
                     break;
@@ -180,6 +192,7 @@ public class Menus {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
           RACE_LIST.setItem(49, new ItemStack(getRace_LIST()));
+          RACE_LIST.setItem(48, new ItemStack(getDebug()));
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_LIST;
           for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i))));
           return RACE_LIST;

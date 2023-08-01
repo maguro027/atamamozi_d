@@ -113,18 +113,8 @@ public class Core extends JavaPlugin {
                               run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                               return false;
                          case WAIT:
-                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.isEmpty()) {
-                                   new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
-                                   return false;
-                              }
-                              System.out.println("1");
-                              for (Race_Timer timer : waterpunch.atamamozi_d.plugin.race.Race_Core.Timers) {
-                                   System.out.println("2");
-                                   if (timer.getUUID() != run.getRaceID()) {
-                                        System.out.println("3");
-                                        new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
-                                   }
-                              }
+                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.isEmpty()) new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+                              if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.contains(run.getRaceID())) new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
                               break;
                          default:
                     }
