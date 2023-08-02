@@ -6,6 +6,7 @@ prefix: atamamozi_D
 
 commands:
      atamamozi_d: null
+     atd: null
 
 permissions:
      atamamozi_d.*:

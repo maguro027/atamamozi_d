@@ -15,6 +15,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Core extends JavaPlugin {
 
@@ -48,7 +49,7 @@ public class Core extends JavaPlugin {
 
      @Override
      public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-          if (!(cmd.getName().equalsIgnoreCase("atamamozi_d")) || !(sender instanceof Player)) return false;
+          if (!(sender instanceof Player)) return false;
           if (args.length == 0) {
                ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) sender));
                return false;
@@ -113,8 +114,8 @@ public class Core extends JavaPlugin {
                               run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
                               return false;
                          case WAIT:
-                              if (waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.isEmpty()) new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
-                              if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Timers.contains(run.getRaceID())) new Race_Timer(5, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+
                               break;
                          default:
                     }
@@ -135,7 +136,7 @@ public class Core extends JavaPlugin {
 
      @Override
      public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-          if (args.length == 1 && cmd.getName().equalsIgnoreCase("atamamozi_d")) {
+          if (args.length == 1) {
                ArrayList<String> subcmd = new ArrayList<String>();
                subcmd.add("help");
                subcmd.add("join");

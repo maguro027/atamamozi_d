@@ -181,7 +181,7 @@ public class Race_Runner {
           switch (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
                     waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_Onetime.add(Player);
-                    Player.getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(Join_Count).getLocation(), EntityType.BOAT).addPassenger(Player);
+                    Player.getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT).addPassenger(Player);
                     Car = Player.getVehicle().getUniqueId();
                     break;
                case WALK:

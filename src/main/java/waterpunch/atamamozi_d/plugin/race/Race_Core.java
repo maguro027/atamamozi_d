@@ -81,7 +81,8 @@ public class Race_Core {
           }
 
           if (!isJoin(player)) {
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Not join the race");
+               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) return;
+               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                return;
           }
           Race_Runner run = getRuner(player);
@@ -112,12 +113,8 @@ public class Race_Core {
                          getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
                          Race_Run.remove(run.getRaceID());
                     }
-                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(run.getRaceID()) == null) {
-                         waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(run.getRaceID()).clear();
-                         return;
-                    }
                     Race_Runner_List.remove(run);
-                    run = null;
+                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(run.getRaceID()) == null) return;
 
                     int GOAL = 0;
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(run.getRaceID())) if (val.getMode() == Race_Mode.GOAL) GOAL++;
@@ -196,10 +193,11 @@ public class Race_Core {
 
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) {
                for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
-               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atamamozi_d leave");
+               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atd leave");
                waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.remove(getRuner(val.getPlayer()));
           }
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(RACE.getUUID());
+          RACE.setMode(Race_Mode.WAIT);
           waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(RACE.getUUID());
      }
 

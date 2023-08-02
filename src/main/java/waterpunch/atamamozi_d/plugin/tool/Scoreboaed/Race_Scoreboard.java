@@ -39,7 +39,7 @@ public class Race_Scoreboard {
                     } else {
                          Scoreboards.add(objective.getScore("" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
                     }
-                    Scoreboards.add(objective.getScore("/atamamozi_d " + ChatColor.AQUA + "start"));
+                    Scoreboards.add(objective.getScore("/atd " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
                     break;
