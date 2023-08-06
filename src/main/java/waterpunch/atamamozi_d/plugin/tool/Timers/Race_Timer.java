@@ -21,7 +21,6 @@ public class Race_Timer extends BukkitRunnable {
                     this.time = 5;
                     break;
                case WAIT:
-               case LEAVE:
                     this.time = 30;
                     break;
                default:
@@ -45,27 +44,36 @@ public class Race_Timer extends BukkitRunnable {
 
      @Override
      public void run() {
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.isEmpty() || waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_UUID) == null) {
-               cancel();
-               return;
-          }
-
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_UUID).getMode() != Race_Mode.WAIT) {
-               cancel();
-               return;
-          }
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.isEmpty()) cancel();
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_UUID) == null) cancel();
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_UUID).getMode() != Race_Mode.WAIT) cancel();
           waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_UUID).setCountDown(this.time);
-
-          if (this.time == 0) {
-               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(Race_UUID);
+          try {
+               switch (Type) {
+                    case WAIT:
+                         for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_UUID)) val.UpdateScoreboard();
+                         if (this.time == 0) {
+                              new Race_Timer(Race_Timer_Type.START, Race_UUID).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+                              cancel();
+                              return;
+                         }
+                         break;
+                    case START:
+                         if (this.time == 0) {
+                              waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Start(Race_UUID);
+                              cancel();
+                              return;
+                         }
+                         for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_UUID)) {
+                              val.getPlayer().teleport(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_UUID).getStartPointLoc().get(val.getJoin_Count() - 1).getLocation());
+                              val.UpdateScoreboard();
+                              val.getPlayer().playSound(val.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+                              val.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + time + ChatColor.GREEN + " - ", "", 10, 15, 10);
+                         }
+                         break;
+               }
+          } catch (NullPointerException e) {
                cancel();
-               return;
-          }
-          for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_UUID)) {
-               val.getPlayer().teleport(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Race_UUID).getStartPointLoc().get(val.getJoin_Count() - 1).getLocation());
-               val.UpdateScoreboard();
-               val.getPlayer().playSound(val.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               val.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + time + ChatColor.GREEN + " - ", "", 10, 15, 10);
           }
 
           this.time--;

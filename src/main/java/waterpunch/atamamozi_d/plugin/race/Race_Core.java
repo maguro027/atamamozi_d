@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Leave_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 
 public class Race_Core {
@@ -29,7 +31,6 @@ public class Race_Core {
                     case WAIT:
                     case RUN:
                     case EDIT:
-                         System.out.println("run" + run.getMode().toString());
                          player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Already join race");
                          return;
                     default:
@@ -74,17 +75,12 @@ public class Race_Core {
      }
 
      public static void removeRunner(Player player) {
-          if (Race_Run.isEmpty()) {
-               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) return;
-               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-               return;
-          }
-
           if (!isJoin(player)) {
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) return;
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                return;
           }
+
           Race_Runner run = getRuner(player);
           switch (run.getMode()) {
                case EDIT:
@@ -127,6 +123,8 @@ public class Race_Core {
      }
 
      public static boolean isJoin(Player player) {
+          if (Bukkit.getServer().getPlayer(player.getName()) == null) return false;
+          if (Race_Run.isEmpty()) return false;
           if (getRuner(player) == null) return false;
           return true;
      }
@@ -144,6 +142,7 @@ public class Race_Core {
      }
 
      public static Race getRace(String race_st) {
+          if (Race_list.isEmpty()) return null;
           for (Race val : Race_list) if (val.getRace_name().equals(race_st)) return val;
           return null;
      }
@@ -187,18 +186,20 @@ public class Race_Core {
           ArrayList<String> Score = new ArrayList<>();
           Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
           Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).stream().sorted(comparator).forEach(a -> Score.add(getScore(a)));
+          Race_Run.get(RACE.getUUID()).stream().sorted(comparator).forEach(a -> Score.add(getScore(a)));
           Score.add("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
           RACE.setScore(Score);
-
-          for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) {
+          ArrayList<Player> Players = new ArrayList<>();
+          for (Race_Runner val : Race_Run.get(RACE.getUUID())) {
                for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
                val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atd leave");
-               waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.remove(getRuner(val.getPlayer()));
+               Race_Runner_List.remove(getRuner(val.getPlayer()));
+               Players.add(val.getPlayer());
           }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Goal(RACE.getUUID());
+          new Leave_Timer(Players).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+          Race_Goal(RACE.getUUID());
           RACE.setMode(Race_Mode.WAIT);
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.remove(RACE.getUUID());
+          Race_Run.remove(RACE.getUUID());
      }
 
      public static String getScore(Race_Runner runner) {

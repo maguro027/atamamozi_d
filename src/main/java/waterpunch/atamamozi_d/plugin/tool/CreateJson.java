@@ -16,6 +16,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 public class CreateJson {
 
      public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
+     public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Scores/");
 
      public static void createfile(String string) {
           try {

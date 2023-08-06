@@ -9,6 +9,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocationViewer;
 import waterpunch.atamamozi_d.plugin.tool.Scoreboaed.Race_Scoreboard;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Race_Runner {
 
@@ -25,11 +27,7 @@ public class Race_Runner {
 
      public Race_Runner(Player player, UUID Race_ID) {
           this.Player = player;
-          this.Race_ID = Race_ID;
-          this.Race_mode = Race_Mode.WAIT;
-          this.start_time = System.currentTimeMillis();
-          this.st_Location = player.getLocation();
-          this.Join_Count = waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_ID).size() + 1;
+          UPDate(Race_ID);
           this.scoreboard = new Race_Scoreboard();
           this.new_Location = player.getLocation();
           this.old_Location = player.getLocation();
@@ -42,7 +40,8 @@ public class Race_Runner {
           this.Race_mode = Race_Mode.WAIT;
           this.start_time = System.currentTimeMillis();
           this.st_Location = Player.getLocation();
-          this.Join_Count = waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_ID).size() - 1;
+          this.Join_Count = waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(Race_ID).size() + 1;
+          if (getJoin_Count() == 1) new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
           this.Rap = 0;
           this.CheckPoint = 0;
      }
@@ -116,7 +115,7 @@ public class Race_Runner {
      }
 
      public Long getTime() {
-          return getStart_time() - getEnd_time();
+          return getEnd_time() - getStart_time();
      }
 
      public String getTimest() {
@@ -247,6 +246,7 @@ public class Race_Runner {
           if (RACE.getRace_Type() == Race_Type.BOAT) this.Player.getVehicle().remove();
           getPlayer().teleport(st_Location);
           UpdateScoreboard();
+          waterpunch.atamamozi_d.plugin.score.Score_Core.setScore(getRaceID(), getPlayer(), getTime());
           int i = 0;
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Mode.GOAL) i++;
           if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).size()) waterpunch.atamamozi_d.plugin.race.Race_Core.AllGoal(RACE.getUUID());

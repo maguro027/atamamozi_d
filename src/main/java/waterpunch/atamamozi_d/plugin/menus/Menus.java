@@ -1,6 +1,8 @@
 package waterpunch.atamamozi_d.plugin.menus;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -105,7 +107,7 @@ public class Menus {
           return Refresh;
      }
 
-     static ItemStack getRace(Race race) {
+     static ItemStack getRace(Race race, Player player) {
           ItemStack race_item = new ItemStack(race.getIcon());
           ItemMeta race_item_Meta = race_item.getItemMeta();
           race_item_Meta.setDisplayName(race.getRace_name());
@@ -138,6 +140,12 @@ public class Menus {
           }
           lores.add(ChatColor.GOLD + "RAP : " + ChatColor.RED + race.getRap());
           lores.add(ChatColor.GOLD + "CheckPoint : " + ChatColor.RED + race.getCheckPointLoc().size());
+          if (waterpunch.atamamozi_d.plugin.score.Score_Core.getScore(race.getUUID(), player.getUniqueId()) != null) {
+               Calendar result = Calendar.getInstance();
+               result.setTimeInMillis(waterpunch.atamamozi_d.plugin.score.Score_Core.getScore(race.getUUID(), player.getUniqueId()));
+               SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
+               lores.add(ChatColor.GOLD + "Score : " + ChatColor.RED + sdf.format(result.getTime()));
+          }
 
           race_item_Meta.setLore(lores);
           race_item.setItemMeta(race_item_Meta);
@@ -194,7 +202,7 @@ public class Menus {
           RACE_LIST.setItem(49, new ItemStack(getRace_LIST()));
           RACE_LIST.setItem(48, new ItemStack(getDebug()));
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_LIST;
-          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i))));
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i), player)));
           return RACE_LIST;
      }
 

@@ -2,8 +2,7 @@ package waterpunch.atamamozi_d.plugin.tool.Timers;
 
 public enum Race_Timer_Type {
      WAIT(0),
-     START(1),
-     LEAVE(2);
+     START(1);
 
      @SuppressWarnings("unused")
      private int id;
