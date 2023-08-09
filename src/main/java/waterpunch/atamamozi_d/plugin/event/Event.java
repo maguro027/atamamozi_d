@@ -189,8 +189,8 @@ public class Event implements Listener {
 
      @EventHandler
      public void SignChangeEvent(SignChangeEvent e) {
-          if (e.getLine(0).equals("[race]")) e.setLine(0, "[Race]");
-          if (!(e.getLine(0).equals("[Race]"))) return;
+          if (e.getLine(0).equals("[race]") || e.getLine(0).equals("[Race]")) e.setLine(0, ChatColor.AQUA + "[Race]");
+          if (!(e.getLine(0).equals(ChatColor.AQUA + "[Race]"))) return;
           String name_cash = e.getLine(1);
 
           e.setLine(1, "Loaging...");
@@ -209,7 +209,7 @@ public class Event implements Listener {
      @EventHandler(ignoreCancelled = true)
      public void onEnSignClick(PlayerInteractEvent e) {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign) || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock()) return;
-          if (!(((Sign) e.getClickedBlock().getState()).getLine(0).equals("[Race]"))) return;
+          if (!(((Sign) e.getClickedBlock().getState()).getLine(0).equals(ChatColor.AQUA + "[Race]"))) return;
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(((Sign) e.getClickedBlock().getState()).getLine(1)) == null) {
                e.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Unknown Race");
                ((Sign) e.getClickedBlock().getState()).setLine(1, ChatColor.RED + "Error");

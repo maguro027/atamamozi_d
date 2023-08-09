@@ -246,7 +246,7 @@ public class Race_Runner {
           if (RACE.getRace_Type() == Race_Type.BOAT) this.Player.getVehicle().remove();
           getPlayer().teleport(st_Location);
           UpdateScoreboard();
-          waterpunch.atamamozi_d.plugin.score.Score_Core.setScore(getRaceID(), getPlayer(), getTime());
+          waterpunch.atamamozi_d.plugin.score.Player_Score_Core.addPlayer_Score(getPlayer(), getRaceID(), getTime());
           int i = 0;
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Mode.GOAL) i++;
           if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).size()) waterpunch.atamamozi_d.plugin.race.Race_Core.AllGoal(RACE.getUUID());

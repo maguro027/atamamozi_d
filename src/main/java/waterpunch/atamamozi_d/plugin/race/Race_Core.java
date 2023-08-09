@@ -192,7 +192,7 @@ public class Race_Core {
           ArrayList<Player> Players = new ArrayList<>();
           for (Race_Runner val : Race_Run.get(RACE.getUUID())) {
                for (String st : RACE.getScore()) val.getPlayer().sendMessage(st);
-               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is  /atd leave");
+               val.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race leave is " + ChatColor.LIGHT_PURPLE + "/atd leave");
                Race_Runner_List.remove(getRuner(val.getPlayer()));
                Players.add(val.getPlayer());
           }

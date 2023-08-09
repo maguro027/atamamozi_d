@@ -140,9 +140,9 @@ public class Menus {
           }
           lores.add(ChatColor.GOLD + "RAP : " + ChatColor.RED + race.getRap());
           lores.add(ChatColor.GOLD + "CheckPoint : " + ChatColor.RED + race.getCheckPointLoc().size());
-          if (waterpunch.atamamozi_d.plugin.score.Score_Core.getScore(race.getUUID(), player.getUniqueId()) != null) {
+          if (waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getPlayer_TOP_Score(player, race.getUUID()) != null) {
                Calendar result = Calendar.getInstance();
-               result.setTimeInMillis(waterpunch.atamamozi_d.plugin.score.Score_Core.getScore(race.getUUID(), player.getUniqueId()));
+               result.setTimeInMillis(waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getPlayer_TOP_Score(player, race.getUUID()));
                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
                lores.add(ChatColor.GOLD + "Score : " + ChatColor.RED + sdf.format(result.getTime()));
           }

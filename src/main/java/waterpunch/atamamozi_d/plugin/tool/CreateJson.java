@@ -12,11 +12,12 @@ import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
 public class CreateJson {
 
      public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
-     public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Scores/");
+     public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
 
      public static void createfile(String string) {
           try {
@@ -63,6 +64,18 @@ public class CreateJson {
                Gson gson = new Gson();
                gson.toJson(race, writer);
                race.setMode(Race_Mode.WAIT);
+          } catch (IOException e) {
+               e.printStackTrace();
+          }
+     }
+
+     public static void Scoresave(Player_Score Score) {
+          if (!(file_SCORE.exists())) file_SCORE.mkdir();
+          String URL = file_SCORE + "/" + Score.getUUID() + ".json";
+          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          try (Writer writer = new FileWriter(URL)) {
+               Gson gson = new Gson();
+               gson.toJson(Score, writer);
           } catch (IOException e) {
                e.printStackTrace();
           }

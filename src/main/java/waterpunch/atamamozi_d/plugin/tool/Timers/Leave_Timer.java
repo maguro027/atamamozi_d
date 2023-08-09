@@ -17,7 +17,7 @@ public class Leave_Timer extends BukkitRunnable {
      @Override
      public void run() {
           if (this.time == 0) {
-               for (Player val : Players) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(val);
+               for (Player val : Players) if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(val)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(val);
                cancel();
                return;
           }
