@@ -1,11 +1,9 @@
 package waterpunch.atamamozi_d.plugin.score;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -13,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class Player_Score {
 
-     private LinkedHashMap<UUID, List<Long>> Scores = new LinkedHashMap<>();
+     private List<Score_parts> Scores = new ArrayList<Score_parts>();
      private UUID uuid;
      private String Name;
 
@@ -32,34 +30,45 @@ public class Player_Score {
 
      public Long getTOPScore(UUID RACE_ID) {
           if (Scores.isEmpty()) return null;
-          if (Scores.get(RACE_ID) == null) return null;
-          return Scores.get(RACE_ID).get(0);
+          for (Score_parts parts : Scores) if (parts.getRace_ID().equals(RACE_ID)) return parts.getTime(0);
+          return null;
+     }
+
+     public HashMap<UUID, Long> getTOPScores() {
+          if (Scores.isEmpty()) return null;
+          HashMap<UUID, Long> rt = new HashMap<UUID, Long>();
+          for (Score_parts parts : Scores) rt.put(parts.getRace_ID(), parts.getTime(0));
+          return rt;
+     }
+
+     public int getCount(UUID RACE_ID) {
+          if (Scores.isEmpty()) return 0;
+          for (Score_parts parts : Scores) if (parts.getRace_ID().equals(RACE_ID)) return parts.getCount();
+          return 0;
      }
 
      public void setScore(UUID RACE_ID, Long i) {
-          if (Scores.isEmpty()) Scores.put(RACE_ID, new ArrayList<Long>());
-          if (Scores.get(RACE_ID) == null) Scores.put(RACE_ID, new ArrayList<Long>());
-          Scores.get(RACE_ID).add(i);
-          List<Long> sortedList = Scores.get(RACE_ID).stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-          Scores.remove(RACE_ID);
-          Scores.put(RACE_ID, sortedList);
-
-          if (Scores.get(RACE_ID).size() == 11) Scores.get(RACE_ID).remove(10);
+          if (Scores.isEmpty()) {
+               Scores.add(new Score_parts(RACE_ID, i));
+               waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
+               return;
+          }
+          for (Score_parts parts : Scores) if (parts.getRace_ID().equals(RACE_ID)) if (parts.addTime(i)) {
+               setTOP(RACE_ID, i);
+               waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
+               return;
+          } else return;
+          Scores.add(new Score_parts(RACE_ID, i));
           waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
-          if (0 == i - Scores.get(RACE_ID).get(0)) setTOP();
+          return;
      }
 
-     public List<Long> getScores(UUID RACE_ID) {
-          if (Scores.isEmpty()) return null;
-          if (Scores.get(RACE_ID) == null) return null;
-          return Scores.get(RACE_ID);
-     }
-
-     public void setTOP() {
+     public void setTOP(UUID RACE_ID, Long i) {
           for (Player player : Bukkit.getOnlinePlayers()) if (player.getUniqueId().equals(getUUID())) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "NEW RECORD!!");
                player.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + "NEW RECORD!!" + ChatColor.GREEN + " - ", "", 10, 40, 10);
                player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+               waterpunch.atamamozi_d.plugin.score.Player_Score_Core.addRanking(RACE_ID, player.getName(), i);
                break;
           }
      }

@@ -15,6 +15,7 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.Race_Type;
+import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 
 public class Menus {
 
@@ -58,13 +59,25 @@ public class Menus {
           ItemMeta Debug_Meta = Debug.getItemMeta();
           Debug_Meta.setDisplayName(ChatColor.GOLD + "Debug");
           List<String> lores = new ArrayList<String>();
-          lores.add(ChatColor.AQUA + "-Runner-");
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) lores.add(ChatColor.AQUA + "- size :" + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.size() + " -");
-          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getUniqueId());
-
+          lores.add(ChatColor.AQUA + "- Runner -");
+          if (!waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.isEmpty()) {
+               lores.add(ChatColor.AQUA + "- size :" + waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.size() + " -");
+               for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) lores.add(ChatColor.AQUA + "- " + val.getPlayer().getUniqueId());
+          }
           Debug_Meta.setLore(lores);
           Debug.setItemMeta(Debug_Meta);
           return Debug;
+     }
+
+     static ItemStack getRanking() {
+          ItemStack Ranking = new ItemStack(Material.TOTEM_OF_UNDYING);
+          ItemMeta Ranking_Meta = Ranking.getItemMeta();
+          Ranking_Meta.setDisplayName(ChatColor.GOLD + "Ranking");
+          List<String> lores = new ArrayList<String>();
+          lores.add(ChatColor.AQUA + "- Click -");
+          Ranking_Meta.setLore(lores);
+          Ranking.setItemMeta(Ranking_Meta);
+          return Ranking;
      }
 
      static ItemStack getRace_EDIT() {
@@ -145,11 +158,32 @@ public class Menus {
                result.setTimeInMillis(waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getPlayer_TOP_Score(player, race.getUUID()));
                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
                lores.add(ChatColor.GOLD + "Score : " + ChatColor.RED + sdf.format(result.getTime()));
+               int Rank = waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getRank(race.getUUID(), player.getName());
+               if (Rank != -1) lores.add(ChatColor.GOLD + "Ranking : " + ChatColor.AQUA + Rank + ChatColor.RED + " th");
           }
 
           race_item_Meta.setLore(lores);
           race_item.setItemMeta(race_item_Meta);
           return race_item;
+     }
+
+     static ItemStack getRaceRank(Race race, Player player) {
+          ItemStack Rank = new ItemStack(race.getIcon());
+          ItemMeta Rank_Meta = Rank.getItemMeta();
+          Rank_Meta.setDisplayName(ChatColor.GREEN + race.getRace_name());
+          List<String> lores = new ArrayList<String>();
+          int i = 1;
+
+          if (waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getRanking(race.getUUID()) != null) {
+               SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
+               for (Ranking_parts parts : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getRanking(race.getUUID())) {
+                    lores.add(ChatColor.AQUA + "" + i + ChatColor.GOLD + " th :  " + ChatColor.RED + sdf.format(parts.getTIME()) + ChatColor.GOLD + " - " + ChatColor.RED + parts.getNAME());
+                    i++;
+               }
+               Rank_Meta.setLore(lores);
+          }
+          Rank.setItemMeta(Rank_Meta);
+          return Rank;
      }
 
      static ItemStack getRace_StartPint_Item(Race race, int i) {
@@ -200,10 +234,20 @@ public class Menus {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
           RACE_LIST.setItem(49, new ItemStack(getRace_LIST()));
-          RACE_LIST.setItem(48, new ItemStack(getDebug()));
+          RACE_LIST.setItem(48, new ItemStack(getRanking()));
+          // RACE_LIST.setItem(45, new ItemStack(getDebug()));
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_LIST;
           for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i), player)));
           return RACE_LIST;
+     }
+
+     public static Inventory getRaceRanking(Player player) {
+          Inventory RACE_RANKING = Bukkit.createInventory(player, 9 * 6, "RACE_RANKING");
+          setBorder(RACE_RANKING);
+          RACE_RANKING.setItem(49, new ItemStack(getRace_LIST()));
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_RANKING;
+          for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_RANKING.setItem(i + 9, new ItemStack(getRaceRank(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i), player)));
+          return RACE_RANKING;
      }
 
      public static Inventory getRaceEdit(Player player) {

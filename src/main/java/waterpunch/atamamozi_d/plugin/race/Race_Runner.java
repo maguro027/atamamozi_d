@@ -251,4 +251,6 @@ public class Race_Runner {
           for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Mode.GOAL) i++;
           if (i == waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()).size()) waterpunch.atamamozi_d.plugin.race.Race_Core.AllGoal(RACE.getUUID());
      }
+
+     public void sendMessage(String string) {}
 }
