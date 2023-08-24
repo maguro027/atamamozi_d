@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -39,7 +38,7 @@ public class Event implements Listener {
      public void onInventoryClickEvent(InventoryClickEvent event) {
           if (event.getInventory().toString().matches(".*" + "Custom" + ".*") && event.getInventory().getType() == InventoryType.CHEST) {
                Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) event.getWhoClicked());
-               if (event.getAction() != InventoryAction.PICKUP_ALL) return;
+               // if (event.getAction() != InventoryAction.PICKUP_ALL) return;
                switch (((Player) event.getWhoClicked()).getOpenInventory().getTitle().toString()) {
                     case "RACE_TOP_MENU":
                          event.setCancelled(true);
@@ -49,6 +48,7 @@ public class Event implements Listener {
                     case "RACE_LIST":
                          event.setCancelled(true);
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getTop((Player) event.getWhoClicked()));
+                         if (event.getRawSlot() == 48) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceRanking((Player) event.getWhoClicked()));
                          if (event.getRawSlot() == 49) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceList((Player) event.getWhoClicked()));
 
                          if (event.getRawSlot() >= 9 && event.getRawSlot() < 45) {
@@ -56,6 +56,10 @@ public class Event implements Listener {
                               waterpunch.atamamozi_d.plugin.race.Race_Core.joinRace(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()), (Player) event.getWhoClicked());
                               ((Player) event.getWhoClicked()).closeInventory();
                          }
+                         return;
+                    case "RACE_RANKING":
+                         event.setCancelled(true);
+                         if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceList((Player) event.getWhoClicked()));
                          return;
                     case "RACE_EDIT":
                          event.setCancelled(true);
