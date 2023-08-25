@@ -129,6 +129,9 @@ public class Core extends JavaPlugin {
                case "join":
                     onjoin((Player) sender, args[1]);
                     break;
+               case "rank":
+                    ((Player) sender).openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceRanking(((Player) sender)));
+                    break;
                default:
                     onhelp((Player) sender);
                     break;
@@ -150,6 +153,7 @@ public class Core extends JavaPlugin {
                subcmd.add("addCheckPoint");
                subcmd.add("setName");
                subcmd.add("respawn");
+               subcmd.add("rank");
                return subcmd;
           }
           return null;

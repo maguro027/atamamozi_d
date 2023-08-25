@@ -50,6 +50,7 @@ public class Player_Score {
      public void setScore(UUID RACE_ID, Long i) {
           if (Scores.isEmpty()) {
                Scores.add(new Score_parts(RACE_ID, i));
+               setTOP(RACE_ID, i);
                waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
                return;
           }

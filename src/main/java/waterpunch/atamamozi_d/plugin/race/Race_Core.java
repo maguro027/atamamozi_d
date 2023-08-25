@@ -90,10 +90,13 @@ public class Race_Core {
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                if (Race_Runner_List.isEmpty()) return;
                if (Race_Runner_List == null) return;
-               for (Race_Runner runner : Race_Runner_List) {
+
+               Iterator<Race_Runner> it = Race_Runner_List.iterator();
+               while (it.hasNext()) {
+                    Race_Runner runner = it.next();
                     if (runner.getPlayer().getUniqueId().equals(player.getUniqueId())) Race_Runner_List.remove(runner);
+                    return;
                }
-               return;
           }
 
           Race_Runner run = getRuner(player);

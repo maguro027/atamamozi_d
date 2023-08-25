@@ -176,8 +176,16 @@ public class Menus {
 
           if (waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getRanking(race.getUUID()) != null) {
                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
+               String space = "";
                for (Ranking_parts parts : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.getRanking(race.getUUID())) {
-                    lores.add(ChatColor.AQUA + "" + i + ChatColor.GOLD + " th :  " + ChatColor.RED + sdf.format(parts.getTIME()) + ChatColor.GOLD + " - " + ChatColor.RED + parts.getNAME());
+                    if (10 > i) space = " "; else space = "";
+
+                    if (player.getName().equals(parts.getNAME())) {
+                         lores.add(ChatColor.AQUA + space + i + ChatColor.GOLD + " th :  " + ChatColor.RED + sdf.format(parts.getTIME()) + ChatColor.GOLD + "　" + ChatColor.AQUA + parts.getNAME());
+                    } else {
+                         lores.add(ChatColor.AQUA + space + i + ChatColor.GOLD + " th :  " + ChatColor.RED + sdf.format(parts.getTIME()) + ChatColor.GOLD + "　" + ChatColor.GRAY + parts.getNAME());
+                    }
+                    if (i == 21) break;
                     i++;
                }
                Rank_Meta.setLore(lores);
