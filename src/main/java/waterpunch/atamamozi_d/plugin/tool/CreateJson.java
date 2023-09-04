@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
 public class CreateJson {
@@ -29,7 +30,7 @@ public class CreateJson {
 
      public static void saveRace(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
+          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
           if (!(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
                player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
                return;

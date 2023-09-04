@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Type;
 import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 
@@ -127,7 +128,7 @@ public class Menus {
           List<String> lores = new ArrayList<String>();
           switch (race.getMode()) {
                case EDIT:
-                    lores.add(ChatColor.RED + "EDITING NOW ");
+                    lores.add(ChatColor.RED + "EDIT NOW ");
                     break;
                case GOAL:
                     break;
@@ -243,7 +244,7 @@ public class Menus {
           setBorder(RACE_LIST);
           RACE_LIST.setItem(49, new ItemStack(getRace_LIST()));
           RACE_LIST.setItem(48, new ItemStack(getRanking()));
-          // RACE_LIST.setItem(45, new ItemStack(getDebug()));
+          RACE_LIST.setItem(47, new ItemStack(getDebug()));
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size() == 0) return RACE_LIST;
           for (int i = 0; i < waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(getRace(waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.get(i), player)));
           return RACE_LIST;
@@ -270,7 +271,7 @@ public class Menus {
                return waterpunch.atamamozi_d.plugin.menus.Menus.getTop(player);
           }
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) {
+          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race Creating Start");
                run = null;
                waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
@@ -280,7 +281,7 @@ public class Menus {
                RACE.setMode(Race_Mode.EDIT);
           }
           run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          run.setMode(Race_Mode.EDIT);
+          run.setMode(Race_Runner_Mode.EDIT);
           run.UpdateScoreboard();
 
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");

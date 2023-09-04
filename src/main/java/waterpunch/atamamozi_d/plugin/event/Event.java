@@ -13,15 +13,15 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.Plugin;
 import waterpunch.atamamozi_d.plugin.race.Race;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
@@ -38,7 +38,6 @@ public class Event implements Listener {
      public void onInventoryClickEvent(InventoryClickEvent event) {
           if (event.getInventory().toString().matches(".*" + "Custom" + ".*") && event.getInventory().getType() == InventoryType.CHEST) {
                Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) event.getWhoClicked());
-               // if (event.getAction() != InventoryAction.PICKUP_ALL) return;
                switch (((Player) event.getWhoClicked()).getOpenInventory().getTitle().toString()) {
                     case "RACE_TOP_MENU":
                          event.setCancelled(true);
@@ -255,14 +254,21 @@ public class Event implements Listener {
 
      @EventHandler
      public void leave(PlayerQuitEvent event) {
-          waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(event.getPlayer());
+          Race_Runner R = null;
+          for (Race_Runner r : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (r.getPlayer().getUniqueId().equals(event.getPlayer().getUniqueId())) R = r;
+          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List.remove(R);
+     }
+
+     @EventHandler
+     public void join(PlayerJoinEvent event) {
+          new Race_Runner(event.getPlayer());
      }
 
      @Deprecated
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
           if (!(event.getVehicle().getPassenger() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer().getUniqueId() == event.getVehicle().getPassenger().getUniqueId() && val.getMode() == Race_Mode.RUN) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getVehicle().getPassenger())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer().getUniqueId() == event.getVehicle().getPassenger().getUniqueId() && val.getMode() == Race_Runner_Mode.RUN) {
                event.setCancelled(true);
                return;
           }
@@ -277,13 +283,10 @@ public class Event implements Listener {
                return;
           }
 
-          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Mode.RUN) {
+          if (waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin((Player) event.getExited())) for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Runner_List) if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Runner_Mode.RUN) {
                event.setCancelled(true);
 
                return;
           }
      }
-
-     @EventHandler
-     public void AnitEnter(VehicleEnterEvent event) {}
 }

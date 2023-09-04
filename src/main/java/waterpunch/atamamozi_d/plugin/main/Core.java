@@ -9,10 +9,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
 import waterpunch.atamamozi_d.plugin.event.Event;
 import waterpunch.atamamozi_d.plugin.race.Race;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
@@ -35,7 +36,11 @@ public class Core extends JavaPlugin {
           Data = this;
           new Event(this);
           waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
-          for (Player p : this.getServer().getOnlinePlayers()) if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
+          for (Player p : this.getServer().getOnlinePlayers()) {
+               if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
+               new Race_Runner(p);
+               if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+          }
      }
 
      @Override
@@ -83,7 +88,7 @@ public class Core extends JavaPlugin {
                          return false;
                     }
                     run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
-                    if (run.getMode() == Race_Mode.EDIT) {
+                    if (run.getMode() == Race_Runner_Mode.EDIT) {
                          if (args[1].equals("[ER]")) {
                               run.getPlayer().sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "NG Word");
                               return false;
@@ -127,6 +132,10 @@ public class Core extends JavaPlugin {
                     onrespawn((Player) sender);
                     break;
                case "join":
+                    if (args.length == 1) {
+                         ((Player) sender).sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Need Race Name");
+                         return false;
+                    }
                     onjoin((Player) sender, args[1]);
                     break;
                case "rank":
@@ -141,22 +150,42 @@ public class Core extends JavaPlugin {
 
      @Override
      public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-          if (args.length == 1) {
-               ArrayList<String> subcmd = new ArrayList<String>();
-               subcmd.add("help");
-               subcmd.add("join");
-               subcmd.add("start");
-               subcmd.add("leave");
-               subcmd.add("list");
-               subcmd.add("create");
-               subcmd.add("addStartPoint");
-               subcmd.add("addCheckPoint");
-               subcmd.add("setName");
-               subcmd.add("respawn");
-               subcmd.add("rank");
-               return subcmd;
+          Race_Runner r = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
+          ArrayList<String> subcmd = new ArrayList<String>();
+          subcmd.add("leave");
+          subcmd.add("list");
+          subcmd.add("help");
+          subcmd.add("rank");
+          if (args.length == 1) switch (r.getMode()) {
+               case EDIT:
+                    subcmd.add("addStartPoint");
+                    subcmd.add("addCheckPoint");
+                    subcmd.add("setName");
+                    break;
+               case ALL_GOAL_WAIT:
+                    break;
+               case GOAL:
+                    subcmd.add("join");
+                    break;
+               case NO_ENTRY:
+                    subcmd.add("join");
+                    break;
+               case RUN:
+                    subcmd.add("respawn");
+                    break;
+               case WAIT:
+                    subcmd.add("start");
+                    subcmd.add("join");
+                    break;
+               default:
+                    subcmd.add("leave");
+                    subcmd.add("list");
+                    subcmd.add("help");
+                    subcmd.add("rank");
+                    break;
           }
-          return null;
+
+          return subcmd;
      }
 
      void onhelp(Player player) {
@@ -178,7 +207,7 @@ public class Core extends JavaPlugin {
 
      void onaddStartpoint(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
 
           waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).addStartPointLoc(player.getLocation());
           player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Set Start Point");
@@ -188,7 +217,7 @@ public class Core extends JavaPlugin {
 
      void onaddCheckpoint(Player player, String r) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
           try {
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setWarning() + "Please enter Over 0");
@@ -206,7 +235,7 @@ public class Core extends JavaPlugin {
 
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
           if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() == 0) {
                waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).addCheckPointLoc(player.getLocation(), r);
           } else {
@@ -217,7 +246,7 @@ public class Core extends JavaPlugin {
 
      void onrespawn(Player player) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || run.getMode() == Race_Mode.EDIT) {
+          if (run == null || run.getMode() == Race_Runner_Mode.EDIT) {
                player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "You not join race");
                return;
           }
@@ -233,7 +262,7 @@ public class Core extends JavaPlugin {
 
      void remCheckPoint(Player player, int no) {
           Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
           waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getCheckPointLoc().remove(no);
           run.UpdateScoreboard();
      }
