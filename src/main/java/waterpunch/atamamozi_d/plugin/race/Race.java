@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
@@ -29,7 +30,7 @@ public class Race {
           this.rap = 1;
           this.race_Mode = Race_Mode.WAIT;
           this.join_amount = 1;
-          this.TIME = waterpunch.atamamozi_d.plugin.main.Core.TIME;
+          this.TIME = Core.WAIT_TIME;
      }
 
      public void addStartPointLoc(Location loc) {
@@ -134,5 +135,10 @@ public class Race {
 
      public void setCountDown(int i) {
           this.TIME = i;
+     }
+
+     public void Complete() {
+          setMode(Race_Mode.WAIT);
+          // setUUID();
      }
 }

@@ -3,6 +3,8 @@ package waterpunch.atamamozi_d.plugin.tool.Timers;
 import java.util.ArrayList;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 
 public class Leave_Timer extends BukkitRunnable {
 
@@ -17,7 +19,7 @@ public class Leave_Timer extends BukkitRunnable {
      @Override
      public void run() {
           if (this.time == 0) {
-               for (Player val : Players) if (!waterpunch.atamamozi_d.plugin.race.Race_Core.isJoin(val)) waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(val);
+               for (Player val : Players) if (val.isOnline() && Race_Core.getRuner(val).getMode() == Race_Runner_Mode.NO_ENTRY) Race_Core.removeRunner(val);
                cancel();
                return;
           }

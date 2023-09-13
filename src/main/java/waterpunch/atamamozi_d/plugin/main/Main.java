@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
+import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
+import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
 
@@ -26,7 +29,7 @@ public class Main {
      }
 
      public static void getRaces() {
-          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_Race.listFiles();
+          File[] files = CreateJson.file_Race.listFiles();
           if (files == null) return;
           for (File tmpFile : files) if (tmpFile.isDirectory()) {
                getRaces();
@@ -35,8 +38,8 @@ public class Main {
                     try (FileReader fileReader = new FileReader(tmpFile)) {
                          Gson gson = new Gson();
                          Race r = gson.fromJson(fileReader, Race.class);
-                         if (r.getUUID() == null) waterpunch.atamamozi_d.plugin.tool.CreateJson.save(r);
-                         waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(r);
+                         if (r.getUUID() == null) CreateJson.save(r);
+                         Race_Core.addRace(r);
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
                          e.printStackTrace();
                     }
@@ -45,21 +48,21 @@ public class Main {
      }
 
      public static void getScores() {
-          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_SCORE.listFiles();
+          File[] files = CreateJson.file_SCORE.listFiles();
           if (files == null) return;
           for (File tmpFile : files) if (!tmpFile.isDirectory()) {
                if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
                     try (FileReader fileReader = new FileReader(tmpFile)) {
                          Gson gson = new Gson();
                          Player_Score r = gson.fromJson(fileReader, Player_Score.class);
-                         waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score.add(r);
-                         r.getTOPScores().forEach((k, v) -> waterpunch.atamamozi_d.plugin.score.Player_Score_Core.addRanking(k, r.getName(), v));
+                         Player_Score_Core.Score.add(r);
+                         r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
                          e.printStackTrace();
                     }
                }
           }
-          for (Race r : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list) waterpunch.atamamozi_d.plugin.score.Player_Score_Core.SortRanking(r.getUUID());
+          for (Race r : Race_Core.Race_list) Player_Score_Core.SortRanking(r.getUUID());
      }
 
      public static void createfile(String string) {

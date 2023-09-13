@@ -1,2 +1,6 @@
 Setting:
-     CountDown: 30
+     CountDown:
+          WAIT: 30
+          START: 5
+          YOIN: 5
+     MENU_RANK_VIEW: 20
