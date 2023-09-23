@@ -32,26 +32,28 @@ public class CreateJson {
 
      public static void saveRace(Player player) {
           Race_Runner run = Race_Core.getRuner(player);
+          Race race = Race_Core.getRace(run.getRaceID());
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
-          if (!(Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
+          if (!(race.getErrorCount() == 0)) {
                player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
                return;
           }
-          Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
+          race.setMode(Race_Mode.WAIT);
+          // race.setCreate_Day();
           if (!(file_Race.exists())) file_Race.mkdir();
-          String URL = file_Race + "/" + Race_Core.getRace(run.getRaceID()).getRace_name() + ".json";
+          String URL = file_Race + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
-          Race_Core.addRace(Race_Core.getRace(run.getRaceID()));
+          Race_Core.addRace(race);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
-               gson.toJson(Race_Core.getRace(run.getRaceID()), writer);
+               gson.toJson(race, writer);
 
-               Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
+               race.setMode(Race_Mode.WAIT);
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
                System.out.println(CollarMessage.setInfo() + player.getName() + "is Race Create");
-               System.out.println(CollarMessage.setInfo() + "NAME :" + Race_Core.getRace(run.getRaceID()).getRace_name());
+               System.out.println(CollarMessage.setInfo() + "NAME :" + race.getRace_name());
                Race_Core.removeRunner(player);
                player.closeInventory();
           } catch (IOException e) {

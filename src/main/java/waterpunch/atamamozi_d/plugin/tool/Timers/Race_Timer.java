@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.Race_Type;
 
 public class Race_Timer extends BukkitRunnable {
 
@@ -38,8 +38,8 @@ public class Race_Timer extends BukkitRunnable {
      }
 
      public Race_Timer(Player player) {
-          this.time = 10;
           this.Type = Race_Timer_Type.YOIN;
+          this.time = waterpunch.atamamozi_d.plugin.main.Core.YOIN_TIME;
           this.player = player;
      }
 
@@ -61,6 +61,25 @@ public class Race_Timer extends BukkitRunnable {
 
      @Override
      public void run() {
+          if (Type == Race_Timer_Type.YOIN) {
+               Race_Runner r = Race_Core.getRuner(player);
+               if (this.time == 0) {
+                    switch (r.getMode()) {
+                         case ALL_GOAL_WAIT:
+                         case NO_ENTRY:
+                              if (Race_Core.getRace(r.getRaceID()).getRace_Type() == Race_Type.BOAT) player.getVehicle().remove();
+                              player.teleport(Race_Core.getRuner(player).getst_Location());
+                              break;
+                         default:
+                              break;
+                    }
+                    cancel();
+                    return;
+               }
+               this.time--;
+               return;
+          }
+
           if (Race_Core.Race_Run.isEmpty()) cancel();
           if (Race_Core.Race_Run.get(Race_UUID) == null) cancel();
           if (Race_Core.getRace(Race_UUID).getMode() != Race_Mode.WAIT) cancel();
@@ -86,14 +105,6 @@ public class Race_Timer extends BukkitRunnable {
                               val.UpdateScoreboard();
                               val.getPlayer().playSound(val.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                               val.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + time + ChatColor.GREEN + " - ", "", 10, 15, 10);
-                         }
-                         break;
-                    case YOIN:
-                         if (this.time == 0) {
-                              Race_Runner run = Race_Core.getRuner(player);
-                              if (run.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT || run.getMode() == Race_Runner_Mode.GOAL) player.teleport(run.getst_Location());
-                              cancel();
-                              return;
                          }
                          break;
                     default:

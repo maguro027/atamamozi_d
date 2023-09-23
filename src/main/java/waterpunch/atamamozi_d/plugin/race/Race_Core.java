@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.UUID;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -32,7 +31,7 @@ public class Race_Core {
 
      public static void joinRace(Race Race, Player player) {
           Race_Runner run = getRuner(player);
-          if (!isJoin(player)) {
+          if (isJoin(player)) {
                player.sendMessage(CollarMessage.setWarning() + "Already join race");
                return;
           }
@@ -76,10 +75,9 @@ public class Race_Core {
                     return;
                case EDIT:
                     Race_list.remove(getRace(run.getRaceID()));
-                    Race_Runner_List.remove(run);
-                    run = null;
                     player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                     player.sendMessage(CollarMessage.setInfo() + "Leave the race");
+                    run.Complete();
                     break;
                case WAIT:
                case RUN:
@@ -87,7 +85,6 @@ public class Race_Core {
                     run.getPlayer().sendMessage(CollarMessage.setInfo() + "Leave the race");
                     RemoveCar(run.getPlayer());
                     run.getPlayer().teleport(run.getst_Location());
-                    LeaveMesseage(getRace(run.getRaceID()), run.getPlayer());
 
                     if (Race_Run.get(run.getRaceID()).size() == 1) {
                          if (Timers.isEmpty()) return;
@@ -95,16 +92,11 @@ public class Race_Core {
                     }
 
                     for (UUID a : Race_Run.keySet()) if (run.getRaceID().equals(a)) Race_Run.get(a).remove(run);
-
+                    LeaveMesseage(getRace(run.getRaceID()), run.getPlayer());
                     int GOAL = 0;
-
                     for (Race_Runner val : Race_Run.get(run.getRaceID())) if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT) GOAL++;
                     if (GOAL == Race_Run.get(run.getRaceID()).size()) AllGoal(run.getRaceID());
 
-                    run.Complete();
-                    break;
-               case GOAL:
-                    player.sendMessage(CollarMessage.setInfo() + "Leave the race");
                     run.Complete();
                     break;
                default:
@@ -115,34 +107,28 @@ public class Race_Core {
      public static void AllGoal(UUID Race_ID) {
           Race RACE = Race_Core.getRace(Race_ID);
           ArrayList<Player> Players = new ArrayList<>();
-          ArrayList<String> Score = new ArrayList<>();
 
           Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
           Race_Run.get(RACE.getUUID()).stream().sorted(comparator);
           Collections.reverse(Race_Run.get(RACE.getUUID()));
-          RACE.setScore(Score);
 
           for (Race_Runner val : Race_Run.get(RACE.getUUID())) {
                val.UpdateScoreboard();
                sayScore(val, getRace(Race_ID).getRace_name());
                Players.add(val.getPlayer());
-               val.setMode(Race_Runner_Mode.GOAL);
+               val.setMode(Race_Runner_Mode.NO_ENTRY);
+               new Leave_Timer(val.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
           }
           Player_Score_Core.SortRanking(Race_ID);
-          new Leave_Timer(Players).runTaskTimer(Core.getthis(), 0L, 20L);
+
           Race_Goal(RACE.getUUID());
           RACE.Complete();
           Race_Run.remove(RACE.getUUID());
      }
 
      public static boolean isJoin(Player player) {
-          switch (getRuner(player).getMode()) {
-               case GOAL:
-               case NO_ENTRY:
-                    return true;
-               default:
-                    return false;
-          }
+          if (getRuner(player).getMode() == Race_Runner_Mode.NO_ENTRY) return false;
+          return true;
      }
 
      public static void JoinMesseage(Race race, Player player) {
@@ -215,7 +201,7 @@ public class Race_Core {
 
      public static void sayScore(Race_Runner val, String RACE_NAME) {
           val.getPlayer().sendMessage("------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-          val.getPlayer().sendMessage("[" + ChatColor.GREEN + RACE_NAME + "]");
+          val.getPlayer().sendMessage("[" + ChatColor.GREEN + RACE_NAME + ChatColor.WHITE + "]");
           for (Race_Runner sc : Race_Run.get(val.getRaceID())) {
                if (sc.getPlayer().getUniqueId().equals(val.getPlayer().getUniqueId())) {
                     val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE + "] : " + ChatColor.YELLOW + sc.getTimest());
@@ -237,7 +223,7 @@ public class Race_Core {
 
      public static void clear() {
           Race_Run.clear();
-          if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) {
+          if (!Race_Runner_List.isEmpty()) for (Race_Runner val : Race_Runner_List) if (isJoin(val.getPlayer())) {
                val.getPlayer().getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                RemoveCar(val.getPlayer());
           }

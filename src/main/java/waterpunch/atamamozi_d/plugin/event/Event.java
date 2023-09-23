@@ -50,19 +50,20 @@ public class Event implements Listener {
                          break;
                     case "RACE_LIST":
                          event.setCancelled(true);
+                         if (event.getCurrentItem() == null) return;
                          if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(Menus.getTop((Player) event.getWhoClicked()));
-                         if (event.getRawSlot() == 48) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceRanking((Player) event.getWhoClicked()));
-                         if (event.getRawSlot() == 49) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceList((Player) event.getWhoClicked()));
-
+                         if (event.getRawSlot() == 46) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceList((Player) event.getWhoClicked()));
+                         if (event.getRawSlot() == 47) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceRanking((Player) event.getWhoClicked()));
                          if (event.getRawSlot() >= 9 && event.getRawSlot() < 45) {
-                              if (event.getCurrentItem() == null) return;
                               Race_Core.joinRace(Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName()), (Player) event.getWhoClicked());
                               ((Player) event.getWhoClicked()).closeInventory();
                          }
                          return;
                     case "RACE_RANKING":
                          event.setCancelled(true);
-                         if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceList((Player) event.getWhoClicked()));
+                         if (event.getRawSlot() == 45) ((Player) event.getWhoClicked()).openInventory(Menus.getTop((Player) event.getWhoClicked()));
+                         if (event.getRawSlot() == 46) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceList((Player) event.getWhoClicked()));
+                         if (event.getRawSlot() == 47) ((Player) event.getWhoClicked()).openInventory(Menus.getRaceRanking((Player) event.getWhoClicked()));
                          return;
                     case "RACE_EDIT":
                          event.setCancelled(true);
@@ -233,10 +234,10 @@ public class Event implements Listener {
           Race_Runner run = Race_Core.getRuner(event.getPlayer());
           if (run == null) return;
           switch (run.getMode()) {
+               case NO_ENTRY:
+                    break;
                case EDIT:
                     if (!(Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() == 0)) for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size(); i++) run.getLocationViewer().DrawCircle(i);
-                    break;
-               case GOAL:
                     break;
                case RUN:
                     Location chackpoint = Race_Core.getRace(run.getRaceID()).getCheckPointLoc().get(run.getCheckPoint()).getLocation();
@@ -257,7 +258,7 @@ public class Event implements Listener {
      }
 
      @EventHandler
-     public void leave(PlayerQuitEvent event) {
+     public void Quit(PlayerQuitEvent event) {
           Race_Core.removeRunner(event.getPlayer());
           Race_Core.Race_Runner_List.remove(Race_Core.getRuner(event.getPlayer()));
      }
@@ -277,6 +278,7 @@ public class Event implements Listener {
           }
      }
 
+     @Deprecated
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
           if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;

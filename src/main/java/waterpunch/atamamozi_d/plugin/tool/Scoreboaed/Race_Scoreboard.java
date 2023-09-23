@@ -56,7 +56,6 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), 2) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), 2)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
                     break;
                case ALL_GOAL_WAIT:
-               case GOAL:
                     if (Race_Core.Race_Run.get(RACE.getUUID()) == null) break;
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "SCORE" + ChatColor.WHITE + "]"));
                     for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) {

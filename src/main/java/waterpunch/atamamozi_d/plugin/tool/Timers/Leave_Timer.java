@@ -1,25 +1,26 @@
 package waterpunch.atamamozi_d.plugin.tool.Timers;
 
-import java.util.ArrayList;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
+import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
 
 public class Leave_Timer extends BukkitRunnable {
 
+     private Player player;
      private int time;
-     private ArrayList<Player> Players = new ArrayList<>();
 
-     public Leave_Timer(ArrayList<Player> Players) {
-          this.Players = Players;
-          this.time = 30;
+     public Leave_Timer(Player player) {
+          this.time = Core.LEAVE_TIME;
+          this.player = player;
      }
 
      @Override
      public void run() {
           if (this.time == 0) {
-               for (Player val : Players) if (val.isOnline() && Race_Core.getRuner(val).getMode() == Race_Runner_Mode.NO_ENTRY) Race_Core.removeRunner(val);
+               if (Race_Core.getRuner(player).getMode() == Race_Runner_Mode.NO_ENTRY) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                cancel();
                return;
           }

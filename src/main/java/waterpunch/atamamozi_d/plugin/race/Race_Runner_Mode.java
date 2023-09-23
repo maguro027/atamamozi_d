@@ -5,8 +5,8 @@ public enum Race_Runner_Mode {
      WAIT(1),
      RUN(2),
      ALL_GOAL_WAIT(3),
-     GOAL(4),
-     EDIT(5);
+  
+     EDIT(4);
 
      @SuppressWarnings("unused")
      private int id;

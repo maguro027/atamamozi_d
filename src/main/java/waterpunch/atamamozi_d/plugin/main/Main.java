@@ -9,6 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
@@ -20,7 +27,7 @@ public class Main {
      public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
      public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
 
-     public static void loadconfig() {
+     public static void loadDeta() {
           file_Race.mkdirs();
           File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
           if (targetFile_dir_list == null) return;
@@ -37,14 +44,25 @@ public class Main {
                if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
                     try (FileReader fileReader = new FileReader(tmpFile)) {
                          Gson gson = new Gson();
+
                          Race r = gson.fromJson(fileReader, Race.class);
-                         if (r.getUUID() == null) CreateJson.save(r);
+                         if (r.getUUID() == null) {
+                              r.setUUID();
+                              CreateJson.save(r);
+                         }
+                         // if (r.getCreate_Day() == null) {
+                         //      BasicFileAttributes attrs = Files.readAttributes(tmpFile.toPath(), BasicFileAttributes.class);
+                         //      r.setCreate_Day(LocalDateTime.ofInstant(attrs.creationTime().toInstant(), ZoneId.systemDefault()));
+                         //      CreateJson.save(r);
+                         // }
                          Race_Core.addRace(r);
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
                          e.printStackTrace();
+                         break;
                     }
                }
           }
+          // Race_Core.Race_list.sort(null);
      }
 
      public static void getScores() {

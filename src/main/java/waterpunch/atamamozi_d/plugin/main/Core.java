@@ -26,7 +26,7 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 public class Core extends JavaPlugin {
 
      static Plugin Data;
-     public static int WAIT_TIME, START_TIME, YOIN_TIME, MENU_RANK_VIEW;
+     public static int WAIT_TIME, START_TIME, YOIN_TIME, LEAVE_TIME, MENU_RANK_VIEW;
 
      @Override
      public void onEnable() {
@@ -34,13 +34,21 @@ public class Core extends JavaPlugin {
 
           saveDefaultConfig();
           getConfig();
+
           WAIT_TIME = getConfig().getInt("Setting.CountDown.WAIT");
           START_TIME = getConfig().getInt("Setting.CountDown.START");
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
+          LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
+          if (getConfig().getString("Setting.CountDown.WAIT") == null) getConfig().set("Setting.CountDown.WAIT", 30);
+          if (getConfig().getString("Setting.CountDown.START") == null) getConfig().set("Setting.CountDown.START", 5);
+          if (getConfig().getString("Setting.CountDown.YOIN") == null) getConfig().set("Setting.CountDown.YOIN", 5);
+          if (getConfig().getString("Setting.CountDown.LEAVE") == null) getConfig().set("Setting.CountDown.LEAVE", 10);
+          if (getConfig().getString("Setting.CountDown.MENU_RANK_VIEW") == null) getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
+          this.saveConfig();
           Data = this;
           new Event(this);
-          waterpunch.atamamozi_d.plugin.main.Main.loadconfig();
+          Main.loadDeta();
           for (Player p : this.getServer().getOnlinePlayers()) {
                if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
                new Race_Runner(p);
@@ -76,9 +84,6 @@ public class Core extends JavaPlugin {
                     System.out.println(Collections.singletonList(Race_Core.Race_Run));
                     System.out.println("----------------------");
                     break;
-               // case "stop":
-               //      onstop((Player) sender);
-               //      break;
                case "list":
                     ((Player) sender).openInventory(Menus.getRaceList(((Player) sender)));
                     break;
@@ -118,18 +123,11 @@ public class Core extends JavaPlugin {
                     onaddCheckpoint((Player) sender, args[1]);
                     break;
                case "start":
-                    run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner((Player) sender);
+                    run = Race_Core.getRuner((Player) sender);
                     if (run == null) return false;
                     switch (run.getMode()) {
-                         case EDIT:
-                         case RUN:
-                              return false;
-                         case GOAL:
-                              run.getPlayer().sendMessage(CollarMessage.setInfo() + "Not join the race");
-                              return false;
                          case WAIT:
-                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
-
+                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
                               break;
                          default:
                     }
@@ -172,9 +170,6 @@ public class Core extends JavaPlugin {
                          subcmd.add("setName");
                          break;
                     case ALL_GOAL_WAIT:
-                         break;
-                    case GOAL:
-                         subcmd.add("join");
                          break;
                     case NO_ENTRY:
                          subcmd.add("join");

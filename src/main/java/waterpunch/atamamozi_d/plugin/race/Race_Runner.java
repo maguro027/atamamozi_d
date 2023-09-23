@@ -243,11 +243,10 @@ public class Race_Runner {
                     } else {
                          RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation().getWorld().spawnEntity(RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation(), EntityType.BOAT).addPassenger(Player);
                     }
-
                     break;
           }
 
-          this.Player.sendMessage(CollarMessage.setInfo() + "Respawn");
+          Player.sendMessage(CollarMessage.setInfo() + "Respawn");
      }
 
      public void Goal() {
@@ -260,11 +259,11 @@ public class Race_Runner {
                val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName() + ChatColor.WHITE + "] " + getTimest());
                val.UpdateScoreboard();
           }
-          if (RACE.getRace_Type() == Race_Type.BOAT) this.Player.getVehicle().remove();
-          getPlayer().teleport(getst_Location());
+
           UpdateScoreboard();
           Player_Score_Core.addPlayer_Score(getPlayer(), getRaceID(), getTime());
           setMode(Race_Runner_Mode.ALL_GOAL_WAIT);
+          new Race_Timer(getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
           int i = 0;
           for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT) i++;
           if (i == Race_Core.Race_Run.get(RACE.getUUID()).size()) Race_Core.AllGoal(RACE.getUUID());
