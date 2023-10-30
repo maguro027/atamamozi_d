@@ -10,11 +10,12 @@ import java.nio.file.Paths;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import waterpunch.atamamozi_d.plugin.main.Main;
+import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
 public class CreateJson {
@@ -35,11 +36,10 @@ public class CreateJson {
           Race race = Race_Core.getRace(run.getRaceID());
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
           if (!(race.getErrorCount() == 0)) {
-               player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
+               player.openInventory(Menus.getRaceCreate(player));
                return;
           }
           race.setMode(Race_Mode.WAIT);
-          // race.setCreate_Day();
           if (!(file_Race.exists())) file_Race.mkdir();
           String URL = file_Race + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
@@ -64,7 +64,7 @@ public class CreateJson {
      public static void save(Race race) {
           if (!(file_Race.exists())) file_Race.mkdir();
           String URL = file_Race + "/" + race.getRace_name() + ".json";
-          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
                gson.toJson(race, writer);
@@ -77,7 +77,7 @@ public class CreateJson {
      public static void Scoresave(Player_Score Score) {
           if (!(file_SCORE.exists())) file_SCORE.mkdir();
           String URL = file_SCORE + "/" + Score.getUUID() + ".json";
-          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
                gson.toJson(Score, writer);

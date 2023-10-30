@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Leave_Timer extends BukkitRunnable {
 

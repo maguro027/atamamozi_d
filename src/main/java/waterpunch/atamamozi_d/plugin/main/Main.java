@@ -9,17 +9,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.race.Race_Package;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
+import waterpunch.atamamozi_d.plugin.score.Score_parts;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
@@ -44,25 +39,19 @@ public class Main {
                if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
                     try (FileReader fileReader = new FileReader(tmpFile)) {
                          Gson gson = new Gson();
-
                          Race r = gson.fromJson(fileReader, Race.class);
                          if (r.getUUID() == null) {
                               r.setUUID();
                               CreateJson.save(r);
                          }
-                         // if (r.getCreate_Day() == null) {
-                         //      BasicFileAttributes attrs = Files.readAttributes(tmpFile.toPath(), BasicFileAttributes.class);
-                         //      r.setCreate_Day(LocalDateTime.ofInstant(attrs.creationTime().toInstant(), ZoneId.systemDefault()));
-                         //      CreateJson.save(r);
-                         // }
                          Race_Core.addRace(r);
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         e.printStackTrace();
+                         // e.printStackTrace();
+                         System.out.println("レースファイルが破損しています");
                          break;
                     }
                }
           }
-          // Race_Core.Race_list.sort(null);
      }
 
      public static void getScores() {
@@ -74,6 +63,9 @@ public class Main {
                          Gson gson = new Gson();
                          Player_Score r = gson.fromJson(fileReader, Player_Score.class);
                          Player_Score_Core.Score.add(r);
+
+                         for (Score_parts parts : r.getScore_parts()) for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(parts.getRace_ID())) Package.addJoinCount(parts.getCount());
+
                          r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
                          e.printStackTrace();

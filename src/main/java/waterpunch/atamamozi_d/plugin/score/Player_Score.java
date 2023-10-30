@@ -66,6 +66,10 @@ public class Player_Score {
           return;
      }
 
+     public List<Score_parts> getScore_parts() {
+          return Scores;
+     }
+
      public void setTOP(UUID RACE_ID, Long i) {
           for (Player player : Bukkit.getOnlinePlayers()) if (player.getUniqueId().equals(getUUID())) {
                player.sendMessage(CollarMessage.setInfo() + "NEW RECORD!!");

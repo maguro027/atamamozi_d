@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import waterpunch.atamamozi_d.plugin.main.Core;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocationViewer;
@@ -29,6 +30,7 @@ public class Race_Runner {
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
      private UUID Car;
+     private boolean Enter;
 
      public Race_Runner(Player player) {
           this.Player = player;
@@ -186,6 +188,14 @@ public class Race_Runner {
           return this.locationViewer;
      }
 
+     public void setEnter(boolean yn) {
+          this.Enter = yn;
+     }
+
+     public Boolean getEnter() {
+          return this.Enter;
+     }
+
      public void Start() {
           this.Race_mode = Race_Runner_Mode.RUN;
           Race RACE = Race_Core.getRace(Race_ID);
@@ -196,7 +206,7 @@ public class Race_Runner {
 
           switch (Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
-                    Race_Core.Race_Runner_Onetime.add(Player);
+                    Enter = true;
                     Player.getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT).addPassenger(Player);
                     Car = Player.getVehicle().getUniqueId();
                     break;
@@ -236,7 +246,7 @@ public class Race_Runner {
                     }
                     break;
                case BOAT:
-                    Race_Core.Race_Runner_Onetime.add(Player);
+                    Enter = true;
                     if (!(getPlayer().getVehicle() == null)) getPlayer().getVehicle().remove();
                     if (getCheckPoint() == 0) {
                          RACE.getStartPointLoc().get(getJoin_Count()).getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(getJoin_Count()).getLocation(), EntityType.BOAT).addPassenger(Player);

@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.race.Race_Package;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 
@@ -120,6 +121,7 @@ public class Items {
           ItemMeta race_item_Meta = race_item.getItemMeta();
           race_item_Meta.setDisplayName(race.getRace_name());
           List<String> lores = new ArrayList<String>();
+          for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(race.getUUID())) lores.add(ChatColor.RED + "TEST " + Package.getJoinCount());
           switch (race.getMode()) {
                case EDIT:
                     lores.add(ChatColor.RED + "EDIT NOW ");

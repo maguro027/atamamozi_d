@@ -11,10 +11,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
-import waterpunch.atamamozi_d.plugin.race.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 
 public class Menus {

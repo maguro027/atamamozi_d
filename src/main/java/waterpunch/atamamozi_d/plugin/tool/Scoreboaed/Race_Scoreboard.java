@@ -13,7 +13,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Race_Scoreboard {
 

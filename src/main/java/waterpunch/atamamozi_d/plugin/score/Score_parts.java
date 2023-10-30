@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.race.Race_Package;
 
 public class Score_parts {
 
@@ -24,6 +26,7 @@ public class Score_parts {
      public Boolean addTime(Long time) {
           TIMEs.add(time);
           COUNT++;
+          for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(RACE_ID)) Package.addJoinCount();
           List<Long> onetime = TIMEs.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
           TIMEs = onetime;
           if (TIMEs.size() == 11) TIMEs.remove(10);

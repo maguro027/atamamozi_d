@@ -23,8 +23,8 @@ import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner_Mode;
-import waterpunch.atamamozi_d.plugin.race.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.race.export.Hachitai;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
@@ -282,8 +282,9 @@ public class Event implements Listener {
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
           if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT)) return;
-          if (Race_Core.Race_Runner_Onetime.equals((Player) event.getExited())) {
-               Race_Core.Race_Runner_Onetime.remove((Player) event.getExited());
+          if (!Race_Core.isJoin((Player) event.getExited())) return;
+          if (Race_Core.getRuner((Player) event.getExited()).getEnter()) {
+               Race_Core.getRuner((Player) event.getExited()).setEnter(false);
                event.setCancelled(false);
                return;
           }

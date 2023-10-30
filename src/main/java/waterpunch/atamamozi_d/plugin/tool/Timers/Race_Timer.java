@@ -6,9 +6,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
-import waterpunch.atamamozi_d.plugin.race.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 
 public class Race_Timer extends BukkitRunnable {
 

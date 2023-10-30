@@ -9,6 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import waterpunch.atamamozi_d.plugin.main.Core;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Leave_Timer;
@@ -17,16 +20,15 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Race_Core {
 
-     public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
-
      public static ArrayList<Race> Race_list = new ArrayList<>();
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
-
-     public static ArrayList<Player> Race_Runner_Onetime = new ArrayList<>();
+     public static ArrayList<Race_Package> Race_packages = new ArrayList<>();
+     public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
      public static ArrayList<Race_Timer> Timers = new ArrayList<>();
 
      public static void addRace(Race Race) {
           Race_list.add(Race);
+          Race_packages.add(new Race_Package(Race.getUUID()));
      }
 
      public static void joinRace(Race Race, Player player) {
@@ -148,7 +150,7 @@ public class Race_Core {
 
      public static void RemoveCar(Player player) {
           if (getRace(getRuner(player).getRaceID()).getRace_Type() == Race_Type.BOAT && player.getVehicle() != null) {
-               Race_Runner_Onetime.add(player);
+               getRuner(player).setEnter(false);
                player.getVehicle().remove();
           }
      }
