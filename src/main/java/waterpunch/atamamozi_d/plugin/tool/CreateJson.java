@@ -32,7 +32,7 @@ public class CreateJson {
      }
 
      public static void saveRace(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Race race = Race_Core.getRace(run.getRaceID());
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
           if (!(race.getErrorCount() == 0)) {

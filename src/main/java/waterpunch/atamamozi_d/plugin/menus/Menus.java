@@ -70,7 +70,7 @@ public class Menus {
                player.sendMessage(CollarMessage.setNotPermission());
                return waterpunch.atamamozi_d.plugin.menus.Menus.getTop(player);
           }
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) {
                player.sendMessage(CollarMessage.setInfo() + "Race Creating Start");
                run = null;
@@ -80,7 +80,7 @@ public class Menus {
                Race_Core.joinRace(RACE, player);
                RACE.setMode(Race_Mode.EDIT);
           }
-          run = Race_Core.getRuner(player);
+          run = Race_Core.getRunner(player);
           run.setMode(Race_Runner_Mode.EDIT);
           run.UpdateScoreboard();
 
@@ -259,7 +259,7 @@ public class Menus {
           RACE_CREATE_TYPE.setItem(24, new ItemStack(BOAT));
           RACE_CREATE_TYPE.setItem(29, new ItemStack(O));
           RACE_CREATE_TYPE.setItem(33, new ItemStack(O));
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.WALK) RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
           if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT) RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
 
@@ -267,7 +267,7 @@ public class Menus {
      }
 
      public static Inventory getRaceRap(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Inventory RACE_CREATE_RAP = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_RAP");
           setBorder(RACE_CREATE_RAP);
 
@@ -285,7 +285,7 @@ public class Menus {
      }
 
      public static Inventory getRaceAmount(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Inventory RACE_CREATE_AMOUNT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_AMOUNT");
           setBorder(RACE_CREATE_AMOUNT);
 
@@ -306,7 +306,7 @@ public class Menus {
      }
 
      public static Inventory getRaceIcon(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Inventory RACE_CREATE_ICON = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_ICON");
           setBorder(RACE_CREATE_ICON);
 
@@ -320,7 +320,7 @@ public class Menus {
      }
 
      public static Inventory getRaceStartPoint(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Inventory RACE_CREATE_STARTPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_STARTPOINT");
           setBorder(RACE_CREATE_STARTPOINT);
 
@@ -342,7 +342,7 @@ public class Menus {
      }
 
      public static Inventory getRaceCheckPoint(Player player) {
-          Race_Runner run = Race_Core.getRuner(player);
+          Race_Runner run = Race_Core.getRunner(player);
           Inventory RACE_CREATE_CHECKPOINT = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_CHECKPOINT");
           setBorder(RACE_CREATE_CHECKPOINT);
 

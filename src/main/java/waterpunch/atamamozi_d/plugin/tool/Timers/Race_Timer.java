@@ -62,13 +62,13 @@ public class Race_Timer extends BukkitRunnable {
      @Override
      public void run() {
           if (Type == Race_Timer_Type.YOIN) {
-               Race_Runner r = Race_Core.getRuner(player);
+               Race_Runner r = Race_Core.getRunner(player);
                if (this.time == 0) {
                     switch (r.getMode()) {
                          case ALL_GOAL_WAIT:
                          case NO_ENTRY:
                               if (Race_Core.getRace(r.getRaceID()).getRace_Type() == Race_Type.BOAT) player.getVehicle().remove();
-                              player.teleport(Race_Core.getRuner(player).getst_Location());
+                              player.teleport(Race_Core.getRunner(player).getst_Location());
                               break;
                          default:
                               break;

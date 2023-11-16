@@ -46,8 +46,7 @@ public class Race_Core {
                          player.sendMessage(CollarMessage.setWarning() + "Already join race");
                          return;
                     }
-                    run.UPDate(Race.getUUID());
-                    JoinMesseage(Race, player);
+                    if (run.UPDate(Race.getUUID())) JoinMesseage(Race, player);
                     break;
                case RUN:
                     player.sendMessage(CollarMessage.setInfo() + Race.getRace_name() + " is Active Race Please wait");
