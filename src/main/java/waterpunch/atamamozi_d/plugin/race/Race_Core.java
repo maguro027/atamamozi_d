@@ -32,7 +32,7 @@ public class Race_Core {
      }
 
      public static void joinRace(Race Race, Player player) {
-          Race_Runner run = getRuner(player);
+          Race_Runner run = getRunner(player);
           if (isJoin(player)) {
                player.sendMessage(CollarMessage.setWarning() + "Already join race");
                return;
@@ -70,7 +70,7 @@ public class Race_Core {
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
           }
 
-          Race_Runner run = getRuner(player);
+          Race_Runner run = getRunner(player);
           switch (run.getMode()) {
                case NO_ENTRY:
                     run.getPlayer().sendMessage(CollarMessage.setInfo() + "Not join the race");
@@ -129,7 +129,7 @@ public class Race_Core {
      }
 
      public static boolean isJoin(Player player) {
-          if (getRuner(player).getMode() == Race_Runner_Mode.NO_ENTRY) return false;
+          if (getRunner(player).getMode() == Race_Runner_Mode.NO_ENTRY) return false;
           return true;
      }
 
@@ -149,13 +149,13 @@ public class Race_Core {
      }
 
      public static void RemoveCar(Player player) {
-          if (getRace(getRuner(player).getRaceID()).getRace_Type() == Race_Type.BOAT && player.getVehicle() != null) {
-               getRuner(player).setEnter(false);
+          if (getRace(getRunner(player).getRaceID()).getRace_Type() == Race_Type.BOAT && player.getVehicle() != null) {
+               getRunner(player).setEnter(false);
                player.getVehicle().remove();
           }
      }
 
-     public static Race_Runner getRuner(Player player) {
+     public static Race_Runner getRunner(Player player) {
           if (Race_Runner_List.isEmpty()) return null;
           for (Race_Runner val : Race_Runner_List) if (val.getPlayer().getUniqueId().equals(player.getUniqueId())) return val;
           return null;

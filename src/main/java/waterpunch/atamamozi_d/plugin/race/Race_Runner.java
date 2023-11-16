@@ -41,17 +41,18 @@ public class Race_Runner {
      }
 
      public void UPDate(UUID Race_ID) {
+          if (Race_Core.getRace(Race_ID).getJoin_Amount() == Race_Core.Race_Run.get(getRaceID()).size()) {
+               Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
+               Complete();
+               return;
+          }
           this.new_Location = Player.getLocation();
           this.old_Location = Player.getLocation();
           this.Race_ID = Race_ID;
           this.Race_mode = Race_Runner_Mode.WAIT;
           this.start_time = System.currentTimeMillis();
           this.st_Location = Player.getLocation();
-          if (Race_Core.getRace(Race_ID).getJoin_Amount() == Race_Core.Race_Run.get(getRaceID()).size()) {
-               Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
-               Complete();
-               return;
-          }
+
           this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
           if (getJoin_Count() == 1) new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
           this.Rap = 0;
