@@ -39,7 +39,6 @@ public class Player_Score_Core {
                Ranking.get(RACE_ID).remove(i - 1);
                Ranking.get(RACE_ID).add(new Ranking_parts(Player, score));
           }
-          SortRanking(RACE_ID);
      }
 
      public static void SortRanking(UUID RACE_ID) {

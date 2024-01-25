@@ -55,6 +55,7 @@ public class Items {
           return Ranking;
      }
 
+     @Deprecated
      static ItemStack getCreater(String Name) {
           ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
           SkullMeta skull = (SkullMeta) item.getItemMeta();

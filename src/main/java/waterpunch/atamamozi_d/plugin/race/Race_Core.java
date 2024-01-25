@@ -37,6 +37,10 @@ public class Race_Core {
                player.sendMessage(CollarMessage.setWarning() + "Already join race");
                return;
           }
+          if (Race_Run.get(Race.getUUID()).size() == Race.getJoin_Amount()) {
+               player.sendMessage(CollarMessage.setInfo() + "MAX Player");
+               return;
+          }
 
           if (!Race_Run.containsKey(Race.getUUID())) Race_Run.put(Race.getUUID(), new ArrayList<Race_Runner>());
 

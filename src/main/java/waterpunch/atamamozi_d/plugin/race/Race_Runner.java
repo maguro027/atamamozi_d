@@ -41,11 +41,11 @@ public class Race_Runner {
      }
 
      public Boolean UPDate(UUID Race_ID) {
-          if (Race_Core.getRace(Race_ID).getJoin_Amount() == Race_Core.Race_Run.get(getRaceID()).size()) {
-               Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
-               // Complete();
-               return false;
-          }
+          // if (Race_Core.getRace(Race_ID).getJoin_Amount() == Race_Core.Race_Run.get(getRaceID()).size()) {
+          //      Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
+          //      // Complete();
+          //      return false;
+          // }
           this.new_Location = Player.getLocation();
           this.old_Location = Player.getLocation();
           this.Race_ID = Race_ID;
@@ -81,10 +81,6 @@ public class Race_Runner {
 
      public void setRaceID(UUID ID) {
           this.Race_ID = ID;
-     }
-
-     public int getJoinCount() {
-          return Race_Core.Race_Run.get(getRaceID()).size() - 1;
      }
 
      public void setnewLoc(Location loc) {

@@ -76,6 +76,7 @@ public class Player_Score {
                player.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + "NEW RECORD!!" + ChatColor.GREEN + " - ", "", 10, 40, 10);
                player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                Player_Score_Core.addRanking(RACE_ID, player.getName(), i);
+               Player_Score_Core.SortRanking(RACE_ID);
                break;
           }
      }

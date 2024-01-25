@@ -1,13 +1,14 @@
 package waterpunch.atamamozi_d.plugin.race;
 
-import java.util.Calendar;
+// import java.util.Calendar;
 import java.util.UUID;
 
 public class Race_Package {
 
      private UUID Race_ID;
      private int Count;
-     private Calendar Cal;
+
+     // private Calendar Cal;
 
      public Race_Package(UUID Race_ID) {
           this.Race_ID = Race_ID;

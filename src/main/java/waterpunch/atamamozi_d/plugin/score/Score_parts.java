@@ -12,6 +12,7 @@ public class Score_parts {
 
      private UUID RACE_ID;
      private int COUNT;
+     private List<Long> BEST_RAP = new ArrayList<Long>();
      private List<Long> TIMEs = new ArrayList<Long>();
 
      public Score_parts(UUID race_id, Long time) {
@@ -40,6 +41,11 @@ public class Score_parts {
 
      public int getCount() {
           return COUNT;
+     }
+
+     public Long getRAP_TIME(int i) {
+          if (BEST_RAP.isEmpty()) return (long) -1;
+          return BEST_RAP.get(i);
      }
 
      public List<Long> getAllScore() {

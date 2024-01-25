@@ -46,7 +46,6 @@ public class Hachitai {
           double length = (-abcd[3] - GetDot(abcd[0], abcd[1], abcd[2], to.getX(), to.getY(), to.getZ()));
           length /= GetDot(abcd[0], abcd[1], abcd[2], dirVecX, dirVecY, dirVecZ);
 
-          double[] rtn = new double[] { to.getX() + dirVecX * length, to.getY() + dirVecY * length, to.getZ() + dirVecZ * length };
-          return rtn;
+          return new double[] { to.getX() + dirVecX * length, to.getY() + dirVecY * length, to.getZ() + dirVecZ * length };
      }
 }
