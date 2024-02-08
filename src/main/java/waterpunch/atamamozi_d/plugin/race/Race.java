@@ -5,7 +5,10 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 public class Race {
@@ -18,7 +21,6 @@ public class Race {
      private Race_Mode race_Mode;
      private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
-     private ArrayList<String> Score = new ArrayList<>();
 
      public Race(Player creator) {
           this.creator = creator.getName();
@@ -29,7 +31,7 @@ public class Race {
           this.rap = 1;
           this.race_Mode = Race_Mode.WAIT;
           this.join_amount = 1;
-          this.TIME = waterpunch.atamamozi_d.plugin.main.Core.TIME;
+          this.TIME = Core.WAIT_TIME;
      }
 
      public void addStartPointLoc(Location loc) {
@@ -112,14 +114,6 @@ public class Race {
           return this.race_Mode;
      }
 
-     public void setScore(ArrayList<String> Score) {
-          this.Score = Score;
-     }
-
-     public ArrayList<String> getScore() {
-          return this.Score;
-     }
-
      public void setUUID() {
           this.race_ID = UUID.randomUUID();
      }
@@ -134,5 +128,9 @@ public class Race {
 
      public void setCountDown(int i) {
           this.TIME = i;
+     }
+
+     public void Complete() {
+          setMode(Race_Mode.WAIT);
      }
 }

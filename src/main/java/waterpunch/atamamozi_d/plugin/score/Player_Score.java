@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
+import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Player_Score {
 
@@ -50,25 +52,31 @@ public class Player_Score {
      public void setScore(UUID RACE_ID, Long i) {
           if (Scores.isEmpty()) {
                Scores.add(new Score_parts(RACE_ID, i));
-               waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
+               setTOP(RACE_ID, i);
+               CreateJson.Scoresave(this);
                return;
           }
           for (Score_parts parts : Scores) if (parts.getRace_ID().equals(RACE_ID)) if (parts.addTime(i)) {
                setTOP(RACE_ID, i);
-               waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
+               CreateJson.Scoresave(this);
                return;
           } else return;
           Scores.add(new Score_parts(RACE_ID, i));
-          waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(this);
+          CreateJson.Scoresave(this);
           return;
+     }
+
+     public List<Score_parts> getScore_parts() {
+          return Scores;
      }
 
      public void setTOP(UUID RACE_ID, Long i) {
           for (Player player : Bukkit.getOnlinePlayers()) if (player.getUniqueId().equals(getUUID())) {
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "NEW RECORD!!");
+               player.sendMessage(CollarMessage.setInfo() + "NEW RECORD!!");
                player.getPlayer().sendTitle(ChatColor.GREEN + " - " + ChatColor.AQUA + "NEW RECORD!!" + ChatColor.GREEN + " - ", "", 10, 40, 10);
                player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-               waterpunch.atamamozi_d.plugin.score.Player_Score_Core.addRanking(RACE_ID, player.getName(), i);
+               Player_Score_Core.addRanking(RACE_ID, player.getName(), i);
+               Player_Score_Core.SortRanking(RACE_ID);
                break;
           }
      }

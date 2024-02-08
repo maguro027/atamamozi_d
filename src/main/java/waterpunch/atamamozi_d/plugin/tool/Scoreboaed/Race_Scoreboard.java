@@ -11,8 +11,9 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import waterpunch.atamamozi_d.plugin.race.Race;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Race_Scoreboard {
 
@@ -21,7 +22,7 @@ public class Race_Scoreboard {
      private Objective objective;
 
      public Scoreboard updateScoreboard(Race_Runner runner) {
-          Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID());
+          Race RACE = Race_Core.getRace(runner.getRaceID());
           Scoreboards = null;
           Scoreboards = new ArrayList<>();
           board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -31,17 +32,19 @@ public class Race_Scoreboard {
           Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "RACE" + ChatColor.WHITE + "]"));
           Scoreboards.add(objective.getScore(RACE.getRace_name()));
           switch (runner.getMode()) {
+               case NO_ENTRY:
+                    return null;
                case WAIT:
                     Scoreboards.add(objective.getScore(ChatColor.YELLOW + "WAITING"));
 
-                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() <= 5) {
-                         Scoreboards.add(objective.getScore(ChatColor.RED + "" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
+                    if (Race_Core.getRace(runner.getRaceID()).getCountDown() <= 5) {
+                         Scoreboards.add(objective.getScore(ChatColor.RED + "" + Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
                     } else {
-                         Scoreboards.add(objective.getScore("" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
+                         Scoreboards.add(objective.getScore("" + Race_Core.getRace(runner.getRaceID()).getCountDown() + ChatColor.WHITE + " s"));
                     }
                     Scoreboards.add(objective.getScore("/atd " + ChatColor.AQUA + "start"));
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "ENTRY" + ChatColor.WHITE + "]"));
-                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
+                    for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) Scoreboards.add(objective.getScore("-" + ChatColor.AQUA + val.getPlayer().getName()));
                     break;
                case RUN:
                     Scoreboards.add(objective.getScore("Time : "));
@@ -52,12 +55,12 @@ public class Race_Scoreboard {
                     Scoreboards.add(objective.getScore(runner.getCheckPoint() + " / " + RACE.getCheckPointLoc().size()));
                     Scoreboards.add(objective.getScore("SPEED : " + new BigDecimal((Math.sqrt(Math.pow(runner.getnewLoc().getX() - runner.getoldLoc().getX(), 2) + Math.pow(runner.getnewLoc().getZ() - runner.getoldLoc().getZ(), 2)) * 20 * 60 * 60) / 1000).setScale(1, RoundingMode.HALF_UP).intValue()));
                     break;
-               case GOAL:
-                    if (waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID()) == null) break;
+               case ALL_GOAL_WAIT:
+                    if (Race_Core.Race_Run.get(RACE.getUUID()) == null) break;
                     Scoreboards.add(objective.getScore("[" + ChatColor.AQUA + "SCORE" + ChatColor.WHITE + "]"));
-                    for (Race_Runner val : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_Run.get(RACE.getUUID())) {
+                    for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) {
                          Scoreboards.add(objective.getScore(ChatColor.AQUA + val.getPlayer().getName()));
-                         if (val.getMode() == Race_Mode.RUN) Scoreboards.add(objective.getScore("-Runnig...")); else if (val.getMode() == Race_Mode.GOAL) Scoreboards.add(objective.getScore(val.getTimest()));
+                         if (val.getMode() == Race_Runner_Mode.RUN) Scoreboards.add(objective.getScore("-Runnig...")); else Scoreboards.add(objective.getScore(val.getTimest()));
                     }
                     break;
                case EDIT:

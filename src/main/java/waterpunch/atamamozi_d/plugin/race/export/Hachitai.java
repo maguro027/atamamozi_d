@@ -3,6 +3,7 @@ package waterpunch.atamamozi_d.plugin.race.export;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class Hachitai {
@@ -20,7 +21,7 @@ public class Hachitai {
      }
 
      static float PCalc(Race_Runner Runner, Location location) {
-          double[] abcd = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Runner.getRaceID()).getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
+          double[] abcd = Race_Core.getRace(Runner.getRaceID()).getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
           return (float) (((abcd[0] * location.getX()) + (abcd[1] * location.getY()) + (abcd[2] * location.getZ())) + abcd[3]);
      }
 
@@ -40,12 +41,11 @@ public class Hachitai {
           double dirVecY = to.getY() - from.getY();
           double dirVecZ = to.getZ() - from.getZ();
 
-          double[] abcd = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(Runner.getRaceID()).getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
+          double[] abcd = Race_Core.getRace(Runner.getRaceID()).getCheckPointLoc().get(Runner.getCheckPoint()).getabcd();
 
           double length = (-abcd[3] - GetDot(abcd[0], abcd[1], abcd[2], to.getX(), to.getY(), to.getZ()));
           length /= GetDot(abcd[0], abcd[1], abcd[2], dirVecX, dirVecY, dirVecZ);
 
-          double[] rtn = new double[] { to.getX() + dirVecX * length, to.getY() + dirVecY * length, to.getZ() + dirVecZ * length };
-          return rtn;
+          return new double[] { to.getX() + dirVecX * length, to.getY() + dirVecY * length, to.getZ() + dirVecZ * length };
      }
 }

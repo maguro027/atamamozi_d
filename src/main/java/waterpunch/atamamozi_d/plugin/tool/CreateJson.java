@@ -9,9 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import waterpunch.atamamozi_d.plugin.main.Main;
+import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
-import waterpunch.atamamozi_d.plugin.race.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
 public class CreateJson {
@@ -28,28 +32,29 @@ public class CreateJson {
      }
 
      public static void saveRace(Player player) {
-          Race_Runner run = waterpunch.atamamozi_d.plugin.race.Race_Core.getRuner(player);
-          if (run == null || !(run.getMode() == Race_Mode.EDIT)) return;
-          if (!(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
-               player.openInventory(waterpunch.atamamozi_d.plugin.menus.Menus.getRaceCreate(player));
+          Race_Runner run = Race_Core.getRunner(player);
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
+          if (!(race.getErrorCount() == 0)) {
+               player.openInventory(Menus.getRaceCreate(player));
                return;
           }
-          waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
+          race.setMode(Race_Mode.WAIT);
           if (!(file_Race.exists())) file_Race.mkdir();
-          String URL = file_Race + "/" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name() + ".json";
-          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
-          waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()));
+          String URL = file_Race + "/" + race.getRace_name() + ".json";
+          Main.createfile(URL);
+          Race_Core.addRace(race);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
-               gson.toJson(waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()), writer);
+               gson.toJson(race, writer);
 
-               waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).setMode(Race_Mode.WAIT);
+               race.setMode(Race_Mode.WAIT);
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               player.sendMessage(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "Race Create Complete!!");
-               System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + player.getName() + "is Race Create");
-               System.out.println(waterpunch.atamamozi_d.plugin.tool.CollarMessage.setInfo() + "NAME :" + waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(run.getRaceID()).getRace_name());
-               waterpunch.atamamozi_d.plugin.race.Race_Core.removeRunner(player);
+               player.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
+               System.out.println(CollarMessage.setInfo() + player.getName() + "is Race Create");
+               System.out.println(CollarMessage.setInfo() + "NAME :" + race.getRace_name());
+               Race_Core.removeRunner(player);
                player.closeInventory();
           } catch (IOException e) {
                e.printStackTrace();
@@ -59,7 +64,7 @@ public class CreateJson {
      public static void save(Race race) {
           if (!(file_Race.exists())) file_Race.mkdir();
           String URL = file_Race + "/" + race.getRace_name() + ".json";
-          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
                gson.toJson(race, writer);
@@ -72,7 +77,7 @@ public class CreateJson {
      public static void Scoresave(Player_Score Score) {
           if (!(file_SCORE.exists())) file_SCORE.mkdir();
           String URL = file_SCORE + "/" + Score.getUUID() + ".json";
-          waterpunch.atamamozi_d.plugin.main.Main.createfile(URL);
+          Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
                gson.toJson(Score, writer);

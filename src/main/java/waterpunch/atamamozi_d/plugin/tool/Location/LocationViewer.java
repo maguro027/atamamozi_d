@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import waterpunch.atamamozi_d.plugin.race.Race;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class LocationViewer {
@@ -15,7 +16,7 @@ public class LocationViewer {
      }
 
      public void DrawCircle(int checkNo) {
-          Race RACE = waterpunch.atamamozi_d.plugin.race.Race_Core.getRace(runner.getRaceID());
+          Race RACE = Race_Core.getRace(runner.getRaceID());
           Location particleLoc = RACE.getCheckPointLoc().get(checkNo).getLocation();
           double PP = RACE.getCheckPointLoc().get(checkNo).getLocation().getPitch() * Math.PI * 0.0055555;
           double YY = RACE.getCheckPointLoc().get(checkNo).getLocation().getYaw() * Math.PI * 0.0055555;

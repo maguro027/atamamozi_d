@@ -5,11 +5,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.race.Race_Package;
 
 public class Score_parts {
 
      private UUID RACE_ID;
      private int COUNT;
+     private List<Long> BEST_RAP = new ArrayList<Long>();
      private List<Long> TIMEs = new ArrayList<Long>();
 
      public Score_parts(UUID race_id, Long time) {
@@ -24,6 +27,7 @@ public class Score_parts {
      public Boolean addTime(Long time) {
           TIMEs.add(time);
           COUNT++;
+          for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(RACE_ID)) Package.addJoinCount();
           List<Long> onetime = TIMEs.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
           TIMEs = onetime;
           if (TIMEs.size() == 11) TIMEs.remove(10);
@@ -37,6 +41,11 @@ public class Score_parts {
 
      public int getCount() {
           return COUNT;
+     }
+
+     public Long getRAP_TIME(int i) {
+          if (BEST_RAP.isEmpty()) return (long) -1;
+          return BEST_RAP.get(i);
      }
 
      public List<Long> getAllScore() {

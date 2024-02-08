@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 
 public class Player_Score_Core {
@@ -38,14 +39,15 @@ public class Player_Score_Core {
                Ranking.get(RACE_ID).remove(i - 1);
                Ranking.get(RACE_ID).add(new Ranking_parts(Player, score));
           }
-          SortRanking(RACE_ID);
      }
 
      public static void SortRanking(UUID RACE_ID) {
           if (Ranking.isEmpty()) return;
           if (Ranking.get(RACE_ID) == null) return;
-          Comparator<Ranking_parts> comparator = Comparator.comparing(Ranking_parts::getTIME).reversed();
-          Ranking.get(RACE_ID).stream().sorted(comparator);
+          Comparator<Ranking_parts> comparator = Comparator.comparing(Ranking_parts::getTIME);
+          List<Ranking_parts> onetime = Ranking.get(RACE_ID).stream().sorted(comparator).collect(Collectors.toList());
+          Ranking.get(RACE_ID).clear();
+          Ranking.get(RACE_ID).addAll(onetime);
      }
 
      public static int getRank(UUID RACE_ID, String Player) {
