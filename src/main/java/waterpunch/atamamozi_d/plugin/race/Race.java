@@ -23,14 +23,15 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
  */
 public class Race {
 
-     private String creator, race_name;
+     private final String creator;
+     private String race_name;
      private UUID race_ID;
      private Race_Type race_type;
      private Material icon;
      private int join_amount, rap, TIME, Error_Count;
      private Race_Mode race_Mode;
-     private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
-     private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
+     private final ArrayList<Loc_parts> StartPoint = new ArrayList<>();
+     private final ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
 
      /**
       * Create a new race with default settings.

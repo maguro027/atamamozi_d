@@ -1,6 +1,6 @@
 {
     "java.configuration.updateBuildConfiguration": "disabled",
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
     "java.compile.nullAnalysis.mode": "disabled",
     "maven.view": "hierarchical",
     // Java専用のフォーマッター設定
@@ -16,5 +16,25 @@
     "java.format.settings.url": "",
     "java.format.settings.profile": "",
     "java.format.comments.enabled": true,
-    "editor.formatOnSaveMode": "file"
+    "editor.formatOnSaveMode": "file",
+    "cSpell.words": [
+        "addcheckpoint",
+        "addstartpoint",
+        "Atamamozi",
+        "getst",
+        "getthis",
+        "Hachitai",
+        "itemamount",
+        "Loaging",
+        "onadd",
+        "onhelp",
+        "onjoin",
+        "onleave",
+        "respawn",
+        "Scoreboaed",
+        "setname",
+        "Startpoint",
+        "subcmd",
+        "YOIN"
+    ]
 }

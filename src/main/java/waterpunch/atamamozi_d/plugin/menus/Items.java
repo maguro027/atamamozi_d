@@ -4,12 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Package;
@@ -66,10 +68,11 @@ public class Items {
           ItemMeta race_LIST_Meta = race_LIST.getItemMeta();
           if (race_LIST_Meta != null) {
                race_LIST_Meta.setDisplayName(ChatColor.GOLD + "RACE_LIST");
+               List<String> lores = new ArrayList<>();
+               lores.add(ChatColor.AQUA + "- Click to View-");
+               race_LIST_Meta.setLore(lores);
+               race_LIST.setItemMeta(race_LIST_Meta);
           }
-          List<String> lores = new ArrayList<>();
-          lores.add(ChatColor.AQUA + "- Click to View-");
-          race_LIST.setItemMeta(race_LIST_Meta);
           return race_LIST;
      }
 
@@ -277,7 +280,7 @@ public class Items {
                          .getRanking(race.getUUID())) {
                     String space = (i < 10) ? "  " : "";
                     String playerName = (player != null) ? player.getName() : null;
-                    
+
                     if (playerName != null && parts.getNAME() != null && playerName.equals(parts.getNAME())) {
                          lores.add(ChatColor.AQUA + space + i + ChatColor.GOLD + " th :  " + ChatColor.RED
                                    + sdf.format(parts.getTIME()) + ChatColor.GOLD + "　" + ChatColor.AQUA
@@ -309,7 +312,8 @@ public class Items {
                lores.add(ChatColor.GOLD + "X : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getX());
                lores.add(ChatColor.GOLD + "Y : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getY());
                lores.add(ChatColor.GOLD + "Z : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getZ());
-               lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED + race.getStartPointLoc().get(i).getLocation().getYaw());
+               lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED
+                         + race.getStartPointLoc().get(i).getLocation().getYaw());
                lores.add(ChatColor.GOLD + "PITCH : " + ChatColor.RED
                          + race.getStartPointLoc().get(i).getLocation().getPitch());
                START_Meta.setLore(lores);
@@ -330,7 +334,8 @@ public class Items {
                lores.add(ChatColor.GOLD + "X : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getX());
                lores.add(ChatColor.GOLD + "Y : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getY());
                lores.add(ChatColor.GOLD + "Z : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getZ());
-               lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED + race.getCheckPointLoc().get(i).getLocation().getYaw());
+               lores.add(ChatColor.GOLD + "YAW : " + ChatColor.RED
+                         + race.getCheckPointLoc().get(i).getLocation().getYaw());
                lores.add(ChatColor.GOLD + "PITCH : " + ChatColor.RED
                          + race.getCheckPointLoc().get(i).getLocation().getPitch());
                lores.add(ChatColor.GOLD + "r  : " + ChatColor.RED + race.getCheckPointLoc().get(i).getr());

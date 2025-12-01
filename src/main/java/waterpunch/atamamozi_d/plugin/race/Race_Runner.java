@@ -22,15 +22,15 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Race_Runner {
 
-     private Player Player;
+     private final Player Player;
      private UUID Race_ID;
      private String Race_Name;
      private Race_Runner_Mode Race_mode;
      private int Join_Count, CheckPoint, Rap;
      private long start_time, end_time;
      private Location st_Location, old_Location, new_Location;
-     private Race_Scoreboard scoreboard;
-     private LocationViewer locationViewer;
+     private final Race_Scoreboard scoreboard;
+     private final LocationViewer locationViewer;
      // Timestamp used to throttle scoreboard updates to avoid rebuilding every tick
      private long lastScoreUpdate = 0L;
      // Cache previous rendered scoreboard lines to do diff updates
@@ -68,7 +68,7 @@ public class Race_Runner {
 
           // Ensure there's a list for this race id to avoid NPEs
           if (!Race_Core.Race_Run.containsKey(Race_ID) || Race_Core.Race_Run.get(Race_ID) == null) {
-               Race_Core.Race_Run.put(Race_ID, new java.util.ArrayList<Race_Runner>());
+               Race_Core.Race_Run.put(Race_ID, new java.util.ArrayList<>());
           }
           this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
           if (getJoin_Count() == 1)

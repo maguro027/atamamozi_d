@@ -5,9 +5,9 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 public class CheckPointLoc {
 
-     private Loc_parts loc_parts;
-     private int r;
-     private double[] abcd;
+     private final Loc_parts loc_parts;
+     private final int r;
+     private final double[] abcd;
 
      public CheckPointLoc(Location loc, int r) {
           this.loc_parts = new Loc_parts(loc);

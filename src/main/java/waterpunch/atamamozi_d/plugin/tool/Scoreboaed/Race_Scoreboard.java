@@ -3,6 +3,7 @@ package waterpunch.atamamozi_d.plugin.tool.Scoreboaed;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -10,6 +11,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
+
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -30,8 +32,9 @@ public class Race_Scoreboard {
                return null;
           }
           board = manager.getNewScoreboard();
-          
-          // Try modern 3-arg method first (1.13+), fall back to legacy 2-arg method (1.12.2)
+
+          // Try modern 3-arg method first (1.13+), fall back to legacy 2-arg method
+          // (1.12.2)
           try {
                // Modern API: registerNewObjective(name, criteria, displayName)
                objective = board.registerNewObjective("Stats", "dummy", "a");
@@ -42,7 +45,7 @@ public class Race_Scoreboard {
                Objective legacyObj = board.registerNewObjective("Stats", "dummy");
                objective = legacyObj;
           }
-          
+
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 

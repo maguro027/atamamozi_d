@@ -47,17 +47,12 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
  */
 public class Event implements Listener {
 
-     /** Reference to plugin instance */
-     Plugin plugin_data = null;
-
      /**
       * Register this event listener with the plugin.
       * 
       * @param plugin Plugin instance
       */
      public Event(Plugin plugin) {
-          plugin.getServer().getPluginManager().registerEvents(this, plugin);
-          plugin_data = plugin;
      }
 
      /**
@@ -98,7 +93,7 @@ public class Event implements Listener {
                return;
           Player p = (Player) event.getWhoClicked();
           String title = p.getOpenInventory() == null ? "" : p.getOpenInventory().getTitle();
-          if (title == null || !title.startsWith("RACE"))
+          if (!title.startsWith("RACE"))
                return;
 
           Race_Runner run = Race_Core.getRunner(p);
@@ -128,11 +123,13 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 47)
                          p.openInventory(Menus.getRaceRanking(p));
                     if (event.getRawSlot() >= 9 && event.getRawSlot() < 45) {
-                         Race r = Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName());
-                         if (r == null)
-                              break;
-                         Race_Core.joinRace(r, p);
-                         p.closeInventory();
+                         if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
+                              Race r = Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName());
+                              if (r == null)
+                                   break;
+                              Race_Core.joinRace(r, p);
+                              p.closeInventory();
+                         }
                     }
                     break;
                case "RACE_RANKING":
@@ -175,13 +172,11 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 20 || event.getRawSlot() == 29) {
                          Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.WALK);
                          p.openInventory(Menus.getRaceType(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     } else if (event.getRawSlot() == 24 || event.getRawSlot() == 33) {
                          Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.BOAT);
                          p.openInventory(Menus.getRaceType(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_RAP":
@@ -191,16 +186,14 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 20) {
                          Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() + 1);
                          p.openInventory(Menus.getRaceRap(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
                          if (Race_Core.getRace(run.getRaceID()).getRap() == 1)
                               return;
                          Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() - 1);
                          p.openInventory(Menus.getRaceRap(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_AMOUNT":
@@ -211,8 +204,7 @@ public class Event implements Listener {
                          Race_Core.getRace(run.getRaceID())
                                    .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() + 1);
                          p.openInventory(Menus.getRaceAmount(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
                          if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 1)
@@ -220,8 +212,7 @@ public class Event implements Listener {
                          Race_Core.getRace(run.getRaceID())
                                    .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() - 1);
                          p.openInventory(Menus.getRaceAmount(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_ICON":
@@ -304,9 +295,12 @@ public class Event implements Listener {
 
      @EventHandler
      public void SignChangeEvent(SignChangeEvent e) {
-          if (e.getLine(0).equals("[race]") || e.getLine(0).equals("[Race]"))
+          String line0 = e.getLine(0);
+          if (line0 == null)
+               return;
+          if (line0.equals("[race]") || line0.equals("[Race]"))
                e.setLine(0, ChatColor.AQUA + "[Race]");
-          if (!(e.getLine(0).equals(ChatColor.AQUA + "[Race]")))
+          if (!(line0.equals(ChatColor.AQUA + "[Race]")))
                return;
           String name_cash = e.getLine(1);
 
@@ -314,7 +308,6 @@ public class Event implements Listener {
           Race Race = Race_Core.getRace(name_cash);
           if (Race == null) {
                e.setLine(1, ChatColor.RED + "Error");
-               return;
           } else {
                e.setLine(1, Race.getRace_name());
                e.setLine(2, Race.getRap() + " : Rap");
@@ -362,7 +355,7 @@ public class Event implements Listener {
                     // keep things lightweight.
                     Race raceEdit = Race_Core.getRace(run.getRaceID());
                     if (raceEdit != null && raceEdit.getCheckPointLoc() != null
-                              && raceEdit.getCheckPointLoc().size() != 0) {
+                              && !raceEdit.getCheckPointLoc().isEmpty()) {
                          int drawn = 0;
                          for (int i = 0; i < raceEdit.getCheckPointLoc().size(); i++) {
                               Location cpLoc = raceEdit.getCheckPointLoc().get(i).getLocation();
