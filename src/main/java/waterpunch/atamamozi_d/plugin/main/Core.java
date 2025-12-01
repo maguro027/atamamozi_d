@@ -20,6 +20,7 @@ import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
+import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
@@ -59,7 +60,7 @@ public class Core extends JavaPlugin {
      @Override
      public void onDisable() {
           System.out.println("ATAMAMOZI-D ENGINE STOP");
-          for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score) waterpunch.atamamozi_d.plugin.tool.CreateJson.Scoresave(ps);
+          for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score) CreateJson.Scoresave(ps);
           Race_Core.clear();
      }
 

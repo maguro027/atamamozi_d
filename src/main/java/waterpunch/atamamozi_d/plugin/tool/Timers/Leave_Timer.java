@@ -20,7 +20,10 @@ public class Leave_Timer extends BukkitRunnable {
      @Override
      public void run() {
           if (this.time == 0) {
-               if (Race_Core.getRunner(player).getMode() == Race_Runner_Mode.NO_ENTRY) player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               // Guard against missing runner
+               if (Race_Core.getRunner(player) == null
+                         || Race_Core.getRunner(player).getMode() == Race_Runner_Mode.NO_ENTRY)
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                cancel();
                return;
           }

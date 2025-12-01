@@ -37,6 +37,7 @@ public class Menus {
           return RACE_TOP_MENU;
      }
 
+     @SuppressWarnings("deprecation")
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
@@ -48,6 +49,7 @@ public class Menus {
           return RACE_LIST;
      }
 
+     @SuppressWarnings("deprecation")
      public static Inventory getRaceRanking(Player player) {
           Inventory RACE_RANKING = Bukkit.createInventory(player, 9 * 6, "RACE_RANKING");
           setBorder(RACE_RANKING);

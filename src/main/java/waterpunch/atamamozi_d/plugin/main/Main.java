@@ -5,22 +5,27 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import org.bukkit.inventory.Inventory;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Package;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
 import waterpunch.atamamozi_d.plugin.score.Score_parts;
+import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
 
      public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
      public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
+     public static final File file_Rase_Menu = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
 
      public static void loadDeta() {
           file_Race.mkdirs();
@@ -28,34 +33,46 @@ public class Main {
           if (targetFile_dir_list == null) return;
           getRaces();
           getScores();
+          getTop_Menu();
+     }
+
+     @SuppressWarnings("unchecked")
+     private static void getTop_Menu() {
+          try {
+               createfile(file_Rase_Menu + "/race_list.json");
+               Reader reader = Files.newBufferedReader(Paths.get(file_Rase_Menu + "/race_list.json"));
+               Race_Core.TOP_MENU = new Gson().fromJson(reader, new LinkedHashMap<Integer, ArrayList<Inventory>>().getClass());
+          } catch (IOException e) {
+               e.printStackTrace();
+          }
      }
 
      public static void getRaces() {
-          File[] files = CreateJson.file_Race.listFiles();
+          File[] files = file_Race.listFiles();
           if (files == null) return;
           for (File tmpFile : files) if (tmpFile.isDirectory()) {
                getRaces();
           } else {
-               if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
-                    try (FileReader fileReader = new FileReader(tmpFile)) {
-                         Gson gson = new Gson();
-                         Race r = gson.fromJson(fileReader, Race.class);
-                         if (r.getUUID() == null) {
-                              r.setUUID();
-                              CreateJson.save(r);
-                         }
-                         Race_Core.addRace(r);
-                    } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         // e.printStackTrace();
-                         System.out.println("レースファイルが破損しています");
-                         break;
+               if (!tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) continue;
+               try (FileReader fileReader = new FileReader(tmpFile)) {
+                    Gson gson = new Gson();
+                    Race r = gson.fromJson(fileReader, Race.class);
+                    if (r.getUUID() == null) {
+                         r.setUUID();
+                         CreateJson.save(r);
                     }
+                    Race_Core.addRace(r);
+               } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                    System.out.println(CollarMessage.setWarning() + "Race Data Broken...");
+                    System.out.println(tmpFile.getName());
+                    e.printStackTrace();
+                    break;
                }
           }
      }
 
      public static void getScores() {
-          File[] files = CreateJson.file_SCORE.listFiles();
+          File[] files = file_SCORE.listFiles();
           if (files == null) return;
           for (File tmpFile : files) if (!tmpFile.isDirectory()) {
                if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
@@ -79,16 +96,5 @@ public class Main {
           try {
                Files.createFile(Paths.get(string));
           } catch (IOException e) {}
-     }
-
-     public static void saveconfig(String string) {
-          try {
-               FileWriter writer = new FileWriter(file_Race + "/race_list.json");
-
-               writer.write(string);
-               writer.close();
-          } catch (IOException e) {
-               e.printStackTrace();
-          }
      }
 }

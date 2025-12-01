@@ -10,12 +10,20 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 public class LocationViewer {
 
      private Race_Runner runner;
+     // throttle particle rendering to avoid heavy per-tick overhead (ms)
+     private long lastDrawTime = 0L;
 
      public LocationViewer(Race_Runner runner) {
           this.runner = runner;
      }
 
      public void DrawCircle(int checkNo) {
+          // Avoid drawing particles too often — this method can be invoked very
+          // frequently
+          final long now = System.currentTimeMillis();
+          if (now - lastDrawTime < 250)
+               return; // draw at most ~4 times/sec
+          lastDrawTime = now;
           Race RACE = Race_Core.getRace(runner.getRaceID());
           Location particleLoc = RACE.getCheckPointLoc().get(checkNo).getLocation();
           double PP = RACE.getCheckPointLoc().get(checkNo).getLocation().getPitch() * Math.PI * 0.0055555;
@@ -25,7 +33,8 @@ public class LocationViewer {
           double b = RACE.getCheckPointLoc().get(checkNo).getabcd()[1];
           double c = RACE.getCheckPointLoc().get(checkNo).getabcd()[2];
 
-          double[] v = GetVerticalVector(RACE.getCheckPointLoc().get(checkNo).getLocation(), RACE.getCheckPointLoc().get(checkNo).getr(), a, b, c);
+          double[] v = GetVerticalVector(RACE.getCheckPointLoc().get(checkNo).getLocation(),
+                    RACE.getCheckPointLoc().get(checkNo).getr(), a, b, c);
           double[] u = new double[3];
 
           u[0] = v[1] * c - v[2] * b;
@@ -38,13 +47,15 @@ public class LocationViewer {
           double cosDelta = Math.cos(theta);
           double sinDelta = Math.sin(theta);
 
-          Location particleLoc0 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(), particleLoc.getZ());
+          Location particleLoc0 = new Location(particleLoc.getWorld(), particleLoc.getX(), particleLoc.getY(),
+                    particleLoc.getZ());
 
           for (int i = 0; i < 10 * RACE.getCheckPointLoc().get(checkNo).getr(); i++) {
                particleLoc0.setX(cos * u[0] + sin * v[0] + particleLoc.getX());
                particleLoc0.setY(cos * u[1] + sin * v[1] + particleLoc.getY());
                particleLoc0.setZ(cos * u[2] + sin * v[2] + particleLoc.getZ());
-               runner.getPlayer().spawnParticle(Particle.REDSTONE, particleLoc0, 1, new Particle.DustOptions(Color.RED, 1));
+               runner.getPlayer().spawnParticle(Particle.REDSTONE, particleLoc0, 1,
+                         new Particle.DustOptions(Color.RED, 1));
 
                PP = cos * cosDelta - sin * sinDelta;
                YY = cos * sinDelta + sin * cosDelta;

@@ -1,6 +1,8 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,6 +31,13 @@ public class Race_Runner {
      private Location st_Location, old_Location, new_Location;
      private Race_Scoreboard scoreboard;
      private LocationViewer locationViewer;
+     // Timestamp used to throttle scoreboard updates to avoid rebuilding every tick
+     private long lastScoreUpdate = 0L;
+     // Cache previous rendered scoreboard lines to do diff updates
+     private List<String> lastScoreLines = new ArrayList<>();
+     // Speed meter caching (update at most every 100ms)
+     private long lastSpeedUpdate = 0L;
+     private int cachedSpeed = 0;
      private UUID Car;
      private boolean Enter;
 
@@ -38,13 +47,17 @@ public class Race_Runner {
           this.scoreboard = new Race_Scoreboard();
           this.locationViewer = new LocationViewer(this);
           Race_Core.Race_Runner_List.add(this);
+          // also add to the fast lookup map
+          if (this.Player != null)
+               Race_Core.Race_Runner_Map.put(this.Player.getUniqueId(), this);
      }
 
      public Boolean UPDate(UUID Race_ID) {
-          // if (Race_Core.getRace(Race_ID).getJoin_Amount() == Race_Core.Race_Run.get(getRaceID()).size()) {
-          //      Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
-          //      // Complete();
-          //      return false;
+          // if (Race_Core.getRace(Race_ID).getJoin_Amount() ==
+          // Race_Core.Race_Run.get(getRaceID()).size()) {
+          // Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
+          // // Complete();
+          // return false;
           // }
           this.new_Location = Player.getLocation();
           this.old_Location = Player.getLocation();
@@ -54,7 +67,8 @@ public class Race_Runner {
           this.st_Location = Player.getLocation();
 
           this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
-          if (getJoin_Count() == 1) new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
+          if (getJoin_Count() == 1)
+               new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
           this.Rap = 0;
           this.CheckPoint = 0;
           Race_Core.Race_Run.get(Race_ID).add(this);
@@ -63,12 +77,56 @@ public class Race_Runner {
      }
 
      public void UpdateScoreboard() {
-          Scoreboard s = scoreboard.updateScoreboard(this);
+          // Basic rate-limit: avoid rebuilding scoreboard too frequently
+          final long now = System.currentTimeMillis();
+          if (now - lastScoreUpdate < 500)
+               return; // 500ms cooldown
+          lastScoreUpdate = now;
+
+          // Build text lines first (cheap compared to constructing a Scoreboard object)
+          List<String> lines = scoreboard.buildLines(this);
+
+          // If the mode expects no scoreboard (e.g., NO_ENTRY), clear and return
+          if (lines == null) {
+               Player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               lastScoreLines = new ArrayList<>();
+               return;
+          }
+
+          // If content hasn't changed, avoid rebuilding the scoreboard (diff update)
+          if (lines.equals(lastScoreLines))
+               return;
+
+          // Build and apply new scoreboard when content changed
+          Scoreboard s = scoreboard.buildBoardFromLines(lines);
           if (s != null) {
                Player.setScoreboard(s);
+               lastScoreLines = new ArrayList<>(lines);
                return;
           }
           Player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+     }
+
+     /**
+      * Cached speed readout updated at most every 100ms.
+      */
+     public int getCachedSpeed() {
+          final long now = System.currentTimeMillis();
+          if (now - lastSpeedUpdate >= 100) {
+               lastSpeedUpdate = now;
+               if (new_Location == null || old_Location == null) {
+                    cachedSpeed = 0;
+               } else {
+                    double dx = new_Location.getX() - old_Location.getX();
+                    double dz = new_Location.getZ() - old_Location.getZ();
+                    double raw = Math.sqrt(dx * dx + dz * dz);
+                    // preserve previous calculation semantics (scaled and rounded)
+                    double speed = (raw * 20 * 60 * 60) / 1000.0;
+                    cachedSpeed = new java.math.BigDecimal(speed).setScale(1, java.math.RoundingMode.HALF_UP)
+                              .intValue();
+               }
+          }
+          return cachedSpeed;
      }
 
      public Player getPlayer() {
@@ -153,12 +211,17 @@ public class Race_Runner {
 
      public void addCheckPoint() {
           this.CheckPoint++;
-          if (Race_Core.getRace(Race_ID).getCheckPointLoc().size() == getCheckPoint()) {
+          Race r = Race_Core.getRace(Race_ID);
+          if (r == null)
+               return;
+          if (r.getCheckPointLoc().size() == getCheckPoint()) {
                setCheckPoint(0);
                addRap();
           } else {
                this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                locationViewer.DrawCircle(CheckPoint);
+               // Force immediate scoreboard refresh for checkpoint events
+               lastScoreUpdate = 0L;
                UpdateScoreboard();
           }
      }
@@ -174,8 +237,12 @@ public class Race_Runner {
      public void addRap() {
           this.Rap++;
           Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          // Force immediate update after rap increment
+          lastScoreUpdate = 0L;
           UpdateScoreboard();
-          if (Race_Core.getRace(Race_ID).getRap() == Rap) Goal();
+          Race r = Race_Core.getRace(Race_ID);
+          if (r != null && r.getRap() == Rap)
+               Goal();
      }
 
      public void setRap(int i) {
@@ -197,6 +264,11 @@ public class Race_Runner {
      public void Start() {
           this.Race_mode = Race_Runner_Mode.RUN;
           Race RACE = Race_Core.getRace(Race_ID);
+          if (RACE == null) {
+               Player.sendMessage(CollarMessage.setWarning() + "Race data missing");
+               this.Race_mode = Race_Runner_Mode.NO_ENTRY;
+               return;
+          }
           Player.teleport(RACE.getStartPointLoc().get(Join_Count - 1).getLocation());
 
           Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -205,7 +277,9 @@ public class Race_Runner {
           switch (Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
                     Enter = true;
-                    Player.getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT).addPassenger(Player);
+                    Player.getLocation().getWorld()
+                              .spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT)
+                              .addPassenger(Player);
                     Car = Player.getVehicle().getUniqueId();
                     break;
                case WALK:
@@ -214,7 +288,8 @@ public class Race_Runner {
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "A fatal error has occurred");
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + Race_Name);
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type [" + RACE.getRace_Type() + "]");
+                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type ["
+                              + RACE.getRace_Type() + "]");
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
                     Race_Core.removeRunner(Player);
                     break;
@@ -222,11 +297,15 @@ public class Race_Runner {
           this.Player.sendMessage(CollarMessage.setInfo() + "START");
           this.start_time = System.currentTimeMillis();
           start_time = System.currentTimeMillis();
+          // immediate update for start
+          lastScoreUpdate = 0L;
           UpdateScoreboard();
      }
 
      public void ReSpawn() {
           Race RACE = Race_Core.getRace(Race_ID);
+          if (RACE == null)
+               return;
           switch (RACE.getMode()) {
                case EDIT:
                case GOAL:
@@ -245,11 +324,18 @@ public class Race_Runner {
                     break;
                case BOAT:
                     Enter = true;
-                    if (!(getPlayer().getVehicle() == null)) getPlayer().getVehicle().remove();
+                    if (!(getPlayer().getVehicle() == null))
+                         getPlayer().getVehicle().remove();
                     if (getCheckPoint() == 0) {
-                         RACE.getStartPointLoc().get(getJoin_Count()).getLocation().getWorld().spawnEntity(RACE.getStartPointLoc().get(getJoin_Count()).getLocation(), EntityType.BOAT).addPassenger(Player);
+                         RACE.getStartPointLoc().get(getJoin_Count()).getLocation().getWorld()
+                                   .spawnEntity(RACE.getStartPointLoc().get(getJoin_Count()).getLocation(),
+                                             EntityType.BOAT)
+                                   .addPassenger(Player);
                     } else {
-                         RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation().getWorld().spawnEntity(RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation(), EntityType.BOAT).addPassenger(Player);
+                         RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation().getWorld()
+                                   .spawnEntity(RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation(),
+                                             EntityType.BOAT)
+                                   .addPassenger(Player);
                     }
                     break;
           }
@@ -259,22 +345,30 @@ public class Race_Runner {
 
      public void Goal() {
           Race RACE = Race_Core.getRace(Race_ID);
+          if (RACE == null)
+               return;
           this.end_time = System.currentTimeMillis();
 
           getPlayer().playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           getPlayer().sendMessage(CollarMessage.setInfo() + "GOAL!!");
           for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) {
-               val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName() + ChatColor.WHITE + "] " + getTimest());
+               val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName()
+                         + ChatColor.WHITE + "] " + getTimest());
                val.UpdateScoreboard();
           }
 
+          // ensure scoreboard updates immediately after goal
+          lastScoreUpdate = 0L;
           UpdateScoreboard();
           Player_Score_Core.addPlayer_Score(getPlayer(), getRaceID(), getTime());
           setMode(Race_Runner_Mode.ALL_GOAL_WAIT);
           new Race_Timer(getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
           int i = 0;
-          for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT) i++;
-          if (i == Race_Core.Race_Run.get(RACE.getUUID()).size()) Race_Core.AllGoal(RACE.getUUID());
+          for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID()))
+               if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
+                    i++;
+          if (i == Race_Core.Race_Run.get(RACE.getUUID()).size())
+               Race_Core.AllGoal(RACE.getUUID());
      }
 
      public void Complete() {

@@ -32,6 +32,11 @@
       <artifactId>spigot-api</artifactId>
       <version>1.18.2-R0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.30</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -51,8 +56,13 @@
           <version>3.0.2</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -80,15 +90,7 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.0</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-        </plugin>
+        <!-- duplicate maven-compiler-plugin removed; configuration merged into one plugin entry above -->
       </plugins>
     </pluginManagement>
   </build>
@@ -102,6 +104,13 @@
       <url>https://repo.dmulloy2.net/repository/public/</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencyManagement>
 
