@@ -43,20 +43,20 @@ public class Core extends JavaPlugin {
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
           LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
-          if (getConfig().getString("Setting.CountDown.WAIT") == null)
+          if (!getConfig().contains("Setting.CountDown.WAIT"))
                getConfig().set("Setting.CountDown.WAIT", 30);
-          if (getConfig().getString("Setting.CountDown.START") == null)
+          if (!getConfig().contains("Setting.CountDown.START"))
                getConfig().set("Setting.CountDown.START", 5);
-          if (getConfig().getString("Setting.CountDown.YOIN") == null)
+          if (!getConfig().contains("Setting.CountDown.YOIN"))
                getConfig().set("Setting.CountDown.YOIN", 5);
-          if (getConfig().getString("Setting.CountDown.LEAVE") == null)
+          if (!getConfig().contains("Setting.CountDown.LEAVE"))
                getConfig().set("Setting.CountDown.LEAVE", 10);
-          if (getConfig().getString("Setting.CountDown.MENU_RANK_VIEW") == null)
+          if (!getConfig().contains("Setting.CountDown.MENU_RANK_VIEW"))
                getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
           this.saveConfig();
           Data = this;
           new Event(this);
-          Main.loadDeta();
+          Main.loadData();
           for (Player p : this.getServer().getOnlinePlayers()) {
                if (p.getOpenInventory().getTitle().equals("RACE_CREATE"))
                     p.closeInventory();

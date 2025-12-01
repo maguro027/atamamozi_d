@@ -32,7 +32,7 @@ public class Main {
      public static final File file_Rase_Menu = new File(
                new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
 
-     public static void loadDeta() {
+     public static void loadData() {
           file_Race.mkdirs();
           File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
           if (targetFile_dir_list == null)

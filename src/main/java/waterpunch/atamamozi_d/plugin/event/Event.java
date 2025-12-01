@@ -160,7 +160,7 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 24) {
                          if (Race_Core.getRace(run.getRaceID()).getRap() == 1)
                               return;
-                         Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() + 1);
+                         Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() - 1);
                          p.openInventory(Menus.getRaceRap(p));
                          if (run != null)
                               run.UpdateScoreboard();

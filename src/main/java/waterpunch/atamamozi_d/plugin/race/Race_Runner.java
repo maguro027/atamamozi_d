@@ -333,7 +333,7 @@ public class Race_Runner {
           switch (RACE.getRace_Type()) {
                case WALK:
                     if (getCheckPoint() == 0) {
-                         int idx = getJoin_Count();
+                         int idx = getJoin_Count() - 1;
                          if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
                               Player.sendMessage(CollarMessage.setWarning() + "Respawn start point not available");
                               Player.teleport(getst_Location());
@@ -355,7 +355,7 @@ public class Race_Runner {
                     if (!(getPlayer().getVehicle() == null))
                          getPlayer().getVehicle().remove();
                     if (getCheckPoint() == 0) {
-                         int idx = getJoin_Count();
+                         int idx = getJoin_Count() - 1;
                          if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
                               Player.sendMessage(
                                         CollarMessage.setWarning() + "Respawn start point not available for boat");
