@@ -133,10 +133,13 @@ public class Race_Core {
                               Race_Run.get(a).remove(run);
                     LeaveMesseage(getRace(run.getRaceID()), run.getPlayer());
                     int GOAL = 0;
-                    for (Race_Runner val : Race_Run.get(run.getRaceID()))
-                         if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
-                              GOAL++;
-                    if (GOAL == Race_Run.get(run.getRaceID()).size())
+                    java.util.List<Race_Runner> __runners_after_leave = Race_Run.get(run.getRaceID());
+                    if (__runners_after_leave != null) {
+                         for (Race_Runner val : __runners_after_leave)
+                              if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
+                                   GOAL++;
+                    }
+                    if (__runners_after_leave != null && GOAL == __runners_after_leave.size())
                          AllGoal(run.getRaceID());
 
                     run.Complete();
@@ -153,15 +156,18 @@ public class Race_Core {
           ArrayList<Player> Players = new ArrayList<>();
 
           Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
-          Race_Run.get(RACE.getUUID()).stream().sorted(comparator);
-          Collections.reverse(Race_Run.get(RACE.getUUID()));
+          java.util.List<Race_Runner> __runners_allgoal = Race_Run.get(RACE.getUUID());
+          if (__runners_allgoal != null) {
+               __runners_allgoal.stream().sorted(comparator);
+               Collections.reverse(__runners_allgoal);
 
-          for (Race_Runner val : Race_Run.get(RACE.getUUID())) {
-               val.UpdateScoreboard();
-               sayScore(val, getRace(Race_ID).getRace_name());
-               Players.add(val.getPlayer());
-               val.setMode(Race_Runner_Mode.NO_ENTRY);
-               new Leave_Timer(val.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
+               for (Race_Runner val : __runners_allgoal) {
+                    val.UpdateScoreboard();
+                    sayScore(val, getRace(Race_ID).getRace_name());
+                    Players.add(val.getPlayer());
+                    val.setMode(Race_Runner_Mode.NO_ENTRY);
+                    new Leave_Timer(val.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
+               }
           }
           Player_Score_Core.SortRanking(Race_ID);
 
@@ -178,11 +184,13 @@ public class Race_Core {
      }
 
      public static void JoinMesseage(Race race, Player player) {
-          if (!Race_Run.containsKey(race.getUUID()) || Race_Run.get(race.getUUID()) == null)
+          java.util.List<Race_Runner> __join_runners = Race_Run.get(race.getUUID());
+          if (__join_runners == null)
                return;
-          for (Race_Runner runner : Race_Run.get(race.getUUID())) {
+          final int __join_count = __join_runners.size();
+          for (Race_Runner runner : __join_runners) {
                runner.getPlayer()
-                         .sendMessage(CollarMessage.setInfo() + " " + Race_Run.get(race.getUUID()).size() + "/"
+                         .sendMessage(CollarMessage.setInfo() + " " + __join_count + "/"
                                    + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName()
                                    + ChatColor.WHITE + "] is Join");
                new Race_Timer(Race_Timer_Type.WAIT, race.getUUID()).runTaskTimer(Core.getthis(), 0L, 20L);
@@ -191,11 +199,13 @@ public class Race_Core {
      }
 
      public static void LeaveMesseage(Race race, Player player) {
-          if (!Race_Run.containsKey(race.getUUID()) || Race_Run.get(race.getUUID()) == null)
+          java.util.List<Race_Runner> __leave_runners = Race_Run.get(race.getUUID());
+          if (__leave_runners == null)
                return;
-          for (Race_Runner runner : Race_Run.get(race.getUUID())) {
+          final int __leave_count = __leave_runners.size();
+          for (Race_Runner runner : __leave_runners) {
                runner.getPlayer()
-                         .sendMessage(CollarMessage.setInfo() + " " + Race_Run.get(race.getUUID()).size() + "/"
+                         .sendMessage(CollarMessage.setInfo() + " " + __leave_count + "/"
                                    + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName()
                                    + ChatColor.WHITE + "] is Leave");
                runner.UpdateScoreboard();
@@ -257,16 +267,24 @@ public class Race_Core {
                return;
           switch (race.getMode()) {
                case WAIT:
-                    for (UUID key : Race_Run.keySet())
-                         if (Race_UUID == key)
-                              for (Race_Runner val : Race_Run.get(key))
+                    for (UUID key : Race_Run.keySet()) {
+                         if (Race_UUID != null && Race_UUID.equals(key)) {
+                              java.util.List<Race_Runner> __runners_start = Race_Run.get(key);
+                              if (__runners_start == null)
+                                   continue;
+                              for (Race_Runner val : __runners_start)
                                    val.Start();
+                         }
+                    }
                     getRace(Race_UUID).setMode(Race_Mode.RUN);
                     break;
                case EDIT:
                     for (UUID key : Race_Run.keySet())
-                         if (Race_UUID == key) {
-                              for (Race_Runner val : Race_Run.get(key))
+                         if (Race_UUID != null && Race_UUID.equals(key)) {
+                              java.util.List<Race_Runner> __runners_edit = Race_Run.get(key);
+                              if (__runners_edit == null)
+                                   continue;
+                              for (Race_Runner val : __runners_edit)
                                    if (val.getMode() == Race_Runner_Mode.EDIT)
                                         val.getPlayer().sendMessage(CollarMessage.setInfo()
                                                   + getRace(Race_UUID).getRace_name() + " is EDIT now");
@@ -275,8 +293,11 @@ public class Race_Core {
                     break;
                case GOAL:
                     for (UUID key : Race_Run.keySet())
-                         if (Race_UUID == key) {
-                              for (Race_Runner val : Race_Run.get(key))
+                         if (Race_UUID != null && Race_UUID.equals(key)) {
+                              java.util.List<Race_Runner> __runners_end = Race_Run.get(key);
+                              if (__runners_end == null)
+                                   continue;
+                              for (Race_Runner val : __runners_end)
                                    if (val.getMode() == Race_Runner_Mode.EDIT)
                                         val.getPlayer().sendMessage(CollarMessage.setInfo()
                                                   + getRace(Race_UUID).getRace_name() + " is End");
@@ -285,8 +306,11 @@ public class Race_Core {
                     break;
                case RUN:
                     for (UUID key : Race_Run.keySet())
-                         if (Race_UUID == key) {
-                              for (Race_Runner val : Race_Run.get(key))
+                         if (Race_UUID != null && Race_UUID.equals(key)) {
+                              java.util.List<Race_Runner> __runners_active = Race_Run.get(key);
+                              if (__runners_active == null)
+                                   continue;
+                              for (Race_Runner val : __runners_active)
                                    if (val.getMode() == Race_Runner_Mode.EDIT)
                                         val.getPlayer().sendMessage(CollarMessage.setInfo()
                                                   + getRace(Race_UUID).getRace_name() + " is Active Race Please wait");
@@ -302,13 +326,16 @@ public class Race_Core {
           val.getPlayer().sendMessage(
                     "------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
           val.getPlayer().sendMessage("[" + ChatColor.GREEN + RACE_NAME + ChatColor.WHITE + "]");
-          for (Race_Runner sc : Race_Run.get(val.getRaceID())) {
-               if (sc.getPlayer().getUniqueId().equals(val.getPlayer().getUniqueId())) {
-                    val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
-                              + "] : " + ChatColor.YELLOW + sc.getTimest());
-               } else {
-                    val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
-                              + "] : " + sc.getTimest());
+          java.util.List<Race_Runner> __runners_say = Race_Run.get(val.getRaceID());
+          if (__runners_say != null) {
+               for (Race_Runner sc : __runners_say) {
+                    if (sc.getPlayer().getUniqueId().equals(val.getPlayer().getUniqueId())) {
+                         val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
+                                   + "] : " + ChatColor.YELLOW + sc.getTimest());
+                    } else {
+                         val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
+                                   + "] : " + sc.getTimest());
+                    }
                }
           }
 
@@ -320,7 +347,7 @@ public class Race_Core {
 
      public static void Race_Goal(UUID Race_UUID) {
           for (UUID key : Race_Run.keySet())
-               if (Race_UUID == key) {
+               if (Race_UUID != null && Race_UUID.equals(key)) {
                     getRace(Race_UUID).setMode(Race_Mode.GOAL);
                     return;
                }
