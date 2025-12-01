@@ -1,7 +1,5 @@
 package waterpunch.atamamozi_d.plugin.tool.Scoreboaed;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -18,7 +17,6 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Race_Scoreboard {
 
-     private ArrayList<Score> Scoreboards; // kept for backwards compatibility if needed
      private Scoreboard board;
      private Objective objective;
 
@@ -27,7 +25,11 @@ public class Race_Scoreboard {
       * get the content first and avoid rebuilding when content didn't change.
       */
      public Scoreboard buildBoardFromLines(List<String> lines) {
-          board = Bukkit.getScoreboardManager().getNewScoreboard();
+          ScoreboardManager manager = Bukkit.getScoreboardManager();
+          if (manager == null) {
+               return null;
+          }
+          board = manager.getNewScoreboard();
           
           // Try modern 3-arg method first (1.13+), fall back to legacy 2-arg method (1.12.2)
           try {
@@ -36,7 +38,9 @@ public class Race_Scoreboard {
           } catch (NoSuchMethodError e) {
                // Legacy API: registerNewObjective(name, criteria)
                // Display name is set separately
-               objective = board.registerNewObjective("Stats", "dummy");
+               @SuppressWarnings("deprecation")
+               Objective legacyObj = board.registerNewObjective("Stats", "dummy");
+               objective = legacyObj;
           }
           
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
