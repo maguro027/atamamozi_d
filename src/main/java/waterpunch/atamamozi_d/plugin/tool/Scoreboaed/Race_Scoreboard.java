@@ -1,7 +1,5 @@
 package waterpunch.atamamozi_d.plugin.tool.Scoreboaed;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,17 +16,13 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Race_Scoreboard {
 
-     private ArrayList<Score> Scoreboards; // kept for backwards compatibility if needed
-     private Scoreboard board;
-     private Objective objective;
-
      /**
       * Build the actual Scoreboard object from a list of lines. Use buildLines() to
       * get the content first and avoid rebuilding when content didn't change.
       */
      public Scoreboard buildBoardFromLines(List<String> lines) {
-          board = Bukkit.getScoreboardManager().getNewScoreboard();
-          objective = board.registerNewObjective("Stats", "dummy", "a");
+          Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+          Objective objective = board.registerNewObjective("Stats", "dummy", "a");
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 

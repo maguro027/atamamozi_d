@@ -175,13 +175,11 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 20 || event.getRawSlot() == 29) {
                          Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.WALK);
                          p.openInventory(Menus.getRaceType(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     } else if (event.getRawSlot() == 24 || event.getRawSlot() == 33) {
                          Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.BOAT);
                          p.openInventory(Menus.getRaceType(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_RAP":
@@ -191,16 +189,14 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 20) {
                          Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() + 1);
                          p.openInventory(Menus.getRaceRap(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
                          if (Race_Core.getRace(run.getRaceID()).getRap() == 1)
                               return;
                          Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() - 1);
                          p.openInventory(Menus.getRaceRap(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_AMOUNT":
@@ -211,8 +207,7 @@ public class Event implements Listener {
                          Race_Core.getRace(run.getRaceID())
                                    .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() + 1);
                          p.openInventory(Menus.getRaceAmount(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
                          if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 1)
@@ -220,8 +215,7 @@ public class Event implements Listener {
                          Race_Core.getRace(run.getRaceID())
                                    .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() - 1);
                          p.openInventory(Menus.getRaceAmount(p));
-                         if (run != null)
-                              run.UpdateScoreboard();
+                         run.UpdateScoreboard();
                     }
                     break;
                case "RACE_CREATE_ICON":

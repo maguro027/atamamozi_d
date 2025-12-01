@@ -22,6 +22,7 @@ public class Items {
       * Get black glass pane for menu borders.
       * Tries modern material first, falls back to legacy versions for compatibility.
       */
+     @SuppressWarnings("deprecation")
      static ItemStack getBlack() {
           Material material = null;
           short data = 0;
@@ -62,6 +63,7 @@ public class Items {
           race_LIST_Meta.setDisplayName(ChatColor.GOLD + "RACE_LIST");
           List<String> lores = new ArrayList<String>();
           lores.add(ChatColor.AQUA + "- Click to View-");
+          race_LIST_Meta.setLore(lores);
           race_LIST.setItemMeta(race_LIST_Meta);
           return race_LIST;
      }
@@ -95,6 +97,7 @@ public class Items {
       * Get player head item.
       * Tries modern material first, falls back to legacy versions for compatibility.
       */
+     @SuppressWarnings("deprecation")
      static ItemStack getCreater(String Name) {
           Material material = null;
           short data = 0;

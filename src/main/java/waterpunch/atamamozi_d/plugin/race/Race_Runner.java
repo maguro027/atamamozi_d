@@ -24,7 +24,6 @@ public class Race_Runner {
 
      private Player Player;
      private UUID Race_ID;
-     private String Race_Name;
      private Race_Runner_Mode Race_mode;
      private int Join_Count, CheckPoint, Rap;
      private long start_time, end_time;
@@ -303,7 +302,7 @@ public class Race_Runner {
                default:
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "A fatal error has occurred");
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + Race_Name);
+                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + RACE.getRace_name());
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type ["
                               + RACE.getRace_Type() + "]");
                     Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
