@@ -29,7 +29,7 @@ public class CreateJson {
           try {
                Files.createFile(Paths.get(string));
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to create file: " + string, e);
           }
      }
 

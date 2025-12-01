@@ -51,8 +51,7 @@ public class Event implements Listener {
           // return "PLZ INVITE";
           // }
           // } catch (Exception e) {
-          // System.out.println("--UNKNOWN STATUS-- /n Ask Me is Secret /n plz send
-          // messeages");
+          //     // Unknown status in handler (debug output removed)
           // }
           // quick validations and use locals to avoid repeated casts and expensive string
           // matching
