@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.Bukkit;
+import java.util.logging.Level;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Package;
@@ -48,7 +50,7 @@ public class Main {
                Race_Core.TOP_MENU = new Gson().fromJson(reader,
                          new LinkedHashMap<Integer, ArrayList<Inventory>>().getClass());
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to load top menu JSON", e);
           }
      }
 
@@ -75,9 +77,9 @@ public class Main {
                          }
                          Race_Core.addRace(r);
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         System.out.println(CollarMessage.setWarning() + "Race Data Broken...");
-                         System.out.println(tmpFile.getName());
-                         e.printStackTrace();
+                         Bukkit.getLogger().warning(CollarMessage.setWarning() + "Race Data Broken...");
+                         Bukkit.getLogger().warning(tmpFile.getName());
+                         Bukkit.getLogger().log(Level.WARNING, "Failed to parse race JSON: " + tmpFile.getName(), e);
                          break;
                     }
                }
@@ -106,7 +108,7 @@ public class Main {
 
                               r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
                          } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                              e.printStackTrace();
+                              Bukkit.getLogger().log(Level.WARNING, "Failed to load score JSON: " + tmpFile.getName(), e);
                          }
                     }
                }
@@ -118,6 +120,7 @@ public class Main {
           try {
                Files.createFile(Paths.get(string));
           } catch (IOException e) {
+               Bukkit.getLogger().log(Level.WARNING, "Failed to create file: " + string, e);
           }
      }
 }

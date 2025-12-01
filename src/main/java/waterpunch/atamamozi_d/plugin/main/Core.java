@@ -3,6 +3,8 @@ package waterpunch.atamamozi_d.plugin.main;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.Bukkit;
+import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -31,7 +33,7 @@ public class Core extends JavaPlugin {
 
      @Override
      public void onEnable() {
-          System.out.println("ATAMAMOZI-D ENGINE START");
+          Bukkit.getLogger().info("ATAMAMOZI-D ENGINE START");
 
           saveDefaultConfig();
           getConfig();
@@ -68,7 +70,7 @@ public class Core extends JavaPlugin {
 
      @Override
      public void onDisable() {
-          System.out.println("ATAMAMOZI-D ENGINE STOP");
+          Bukkit.getLogger().info("ATAMAMOZI-D ENGINE STOP");
           for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score)
                CreateJson.Scoresave(ps);
           Race_Core.clear();
@@ -92,9 +94,13 @@ public class Core extends JavaPlugin {
                     onhelp((Player) sender);
                     break;
                case "view":
-                    System.out.println("----------------------");
-                    System.out.println(Collections.singletonList(Race_Core.Race_Run));
-                    System.out.println("----------------------");
+                         Bukkit.getLogger().info("----------------------");
+                         try {
+                              Bukkit.getLogger().info(Collections.singletonList(Race_Core.Race_Run).toString());
+                         } catch (Exception ex) {
+                              Bukkit.getLogger().log(Level.WARNING, "Failed to log race run data", ex);
+                         }
+                         Bukkit.getLogger().info("----------------------");
                     break;
                case "list":
                     ((Player) sender).openInventory(Menus.getRaceList(((Player) sender)));

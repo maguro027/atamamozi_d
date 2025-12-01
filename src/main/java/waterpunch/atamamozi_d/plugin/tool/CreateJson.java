@@ -1,5 +1,8 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
+import org.bukkit.Bukkit;
+import java.util.logging.Level;
+
 import com.google.gson.Gson;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -51,12 +54,12 @@ public class CreateJson {
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
-               System.out.println(CollarMessage.setInfo() + player.getName() + "is Race Create");
-               System.out.println(CollarMessage.setInfo() + "NAME :" + race.getRace_name());
+               Bukkit.getLogger().info(CollarMessage.setInfo() + player.getName() + " is Race Create");
+               Bukkit.getLogger().info(CollarMessage.setInfo() + "NAME :" + race.getRace_name());
                Race_Core.removeRunner(player);
                player.closeInventory();
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to save race JSON: " + URL, e);
           }
      }
 
@@ -69,7 +72,7 @@ public class CreateJson {
                gson.toJson(race, writer);
                race.setMode(Race_Mode.WAIT);
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to save race JSON: " + URL, e);
           }
      }
 
@@ -81,7 +84,7 @@ public class CreateJson {
                Gson gson = new Gson();
                gson.toJson(Score, writer);
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to save scores JSON: " + URL, e);
           }
      }
 
@@ -93,7 +96,7 @@ public class CreateJson {
                Gson gson = new Gson();
                gson.toJson(Data, writer);
           } catch (IOException e) {
-               e.printStackTrace();
+               Bukkit.getLogger().log(Level.SEVERE, "Failed to save menu JSON: " + URL, e);
           }
      }
 }

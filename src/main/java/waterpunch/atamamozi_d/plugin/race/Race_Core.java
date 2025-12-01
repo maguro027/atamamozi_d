@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -363,6 +364,6 @@ public class Race_Core {
                          RemoveCar(val.getPlayer());
                     }
 
-          System.out.println(CollarMessage.setInfo() + "Atamamozi_D Memory clear");
+          Bukkit.getLogger().info(CollarMessage.setInfo() + "Atamamozi_D Memory clear");
      }
 }
