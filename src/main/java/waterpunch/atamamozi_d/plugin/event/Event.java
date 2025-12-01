@@ -30,15 +30,37 @@ import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
+/**
+ * イベントハンドラークラス
+ * プレイヤーの操作やゲーム内イベントを処理する
+ * 
+ * Event handler class
+ * Handles player actions and in-game events
+ */
 public class Event implements Listener {
 
+     /** プラグインインスタンスへの参照 / Reference to plugin instance */
      Plugin plugin_data = null;
 
+     /**
+      * イベントリスナーを登録する
+      * 
+      * Registers event listeners
+      * 
+      * @param plugin プラグインインスタンス / Plugin instance
+      */
      public Event(Plugin plugin) {
           plugin.getServer().getPluginManager().registerEvents(this, plugin);
           plugin_data = plugin;
      }
 
+     /**
+      * インベントリクリックイベントを処理する
+      * レースメニューの操作を制御
+      * 
+      * Handles inventory click events
+      * Controls race menu operations
+      */
      @EventHandler
      public void onInventoryClickEvent(InventoryClickEvent event) {
           // try {
@@ -265,6 +287,13 @@ public class Event implements Listener {
           }
      }
 
+     /**
+      * 看板変更イベントを処理する
+      * レース用看板の設定を行う
+      * 
+      * Handles sign change events
+      * Sets up race signs
+      */
      @EventHandler
      public void SignChangeEvent(SignChangeEvent e) {
           if (e.getLine(0).equals("[race]") || e.getLine(0).equals("[Race]"))
@@ -273,7 +302,7 @@ public class Event implements Listener {
                return;
           String name_cash = e.getLine(1);
 
-          e.setLine(1, "Loaging...");
+          e.setLine(1, "Loading...");
           Race Race = Race_Core.getRace(name_cash);
           if (Race == null) {
                e.setLine(1, ChatColor.RED + "Error");
@@ -285,11 +314,24 @@ public class Event implements Listener {
           }
      }
 
+     /**
+      * 看板クリックイベントを処理する
+      * レース用看板をクリックするとそのレースに参加する
+      * 
+      * Handles sign click events
+      * Clicking a race sign joins that race
+      * 
+      * @deprecated 新しいAPIへの移行を推奨
+      */
      @Deprecated
      @EventHandler(ignoreCancelled = true)
      public void onEnSignClick(PlayerInteractEvent e) {
+          // クリックされたブロックのnullチェックを追加
+          // Added null check for clicked block
+          if (e.getClickedBlock() == null || !e.hasBlock())
+               return;
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign)
-                    || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock())
+                    || e.getAction() != Action.RIGHT_CLICK_BLOCK)
                return;
           if (!(((Sign) e.getClickedBlock().getState()).getLine(0).equals(ChatColor.AQUA + "[Race]")))
                return;
@@ -303,6 +345,13 @@ public class Event implements Listener {
           Race_Core.joinRace(Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), e.getPlayer());
      }
 
+     /**
+      * プレイヤー移動イベントを処理する
+      * チェックポイント通過の判定とパーティクル表示を行う
+      * 
+      * Handles player move events
+      * Detects checkpoint passage and displays particles
+      */
      @EventHandler
      public void onPlayerMove(final PlayerMoveEvent event) {
           // Avoid handling movement every tiny delta — only run logic when player changes
@@ -371,6 +420,13 @@ public class Event implements Listener {
           }
      }
 
+     /**
+      * プレイヤー退出イベントを処理する
+      * レースからランナーを削除する
+      * 
+      * Handles player quit events
+      * Removes runner from race
+      */
      @EventHandler
      public void Quit(PlayerQuitEvent event) {
           // removeRunner already handles cleaning up the runner and scoreboard — don't
@@ -378,11 +434,27 @@ public class Event implements Listener {
           Race_Core.removeRunner(event.getPlayer());
      }
 
+     /**
+      * プレイヤー参加イベントを処理する
+      * 新しいランナーを作成する
+      * 
+      * Handles player join events
+      * Creates a new runner
+      */
      @EventHandler
      public void join(PlayerJoinEvent event) {
           new Race_Runner(event.getPlayer());
      }
 
+     /**
+      * ボートダメージイベントを処理する
+      * レース中のボートへのダメージをキャンセル
+      * 
+      * Handles boat damage events
+      * Cancels damage to boats during race
+      * 
+      * @deprecated 新しいAPIへの移行を推奨
+      */
      @Deprecated
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
@@ -398,6 +470,15 @@ public class Event implements Listener {
                     }
      }
 
+     /**
+      * ボート退出イベントを処理する
+      * レース中のボートからの離脱を防止
+      * 
+      * Handles boat exit events
+      * Prevents exiting boat during race
+      * 
+      * @deprecated 新しいAPIへの移行を推奨
+      */
      @Deprecated
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {

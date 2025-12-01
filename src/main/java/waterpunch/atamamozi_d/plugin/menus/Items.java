@@ -16,8 +16,16 @@ import waterpunch.atamamozi_d.plugin.race.Race_Package;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 
+/**
+ * メニューアイテムクラス
+ * メニューで使用する各種アイテムを生成する
+ * 
+ * Menu items class
+ * Generates various items used in menus
+ */
 public class Items {
 
+     /** 黒いガラスパネル（ボーダー用） / Black glass pane (for borders) */
      static ItemStack getBlack() {
           ItemStack BLACK = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
           ItemMeta BLACK_Meta = BLACK.getItemMeta();
@@ -26,6 +34,7 @@ public class Items {
           return BLACK;
      }
 
+     /** 戻るアイテム / Back item */
      static ItemStack getBack() {
           ItemStack BACK = new ItemStack(Material.ARROW);
           ItemMeta BACK_Meta = BACK.getItemMeta();
@@ -34,6 +43,7 @@ public class Items {
           return BACK;
      }
 
+     /** レース一覧アイテム / Race list item */
      static ItemStack getRace_LIST() {
           ItemStack race_LIST = new ItemStack(Material.BOOKSHELF);
           ItemMeta race_LIST_Meta = race_LIST.getItemMeta();
@@ -44,6 +54,7 @@ public class Items {
           return race_LIST;
      }
 
+     /** ランキングアイテム / Ranking item */
      static ItemStack getRanking() {
           ItemStack Ranking = new ItemStack(Material.TOTEM_OF_UNDYING);
           ItemMeta Ranking_Meta = Ranking.getItemMeta();

@@ -8,11 +8,30 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 
+/**
+ * プレイヤースコア管理コアクラス
+ * 全プレイヤーのスコアとランキングを管理する
+ * 
+ * Player score management core class
+ * Manages all player scores and rankings
+ */
 public class Player_Score_Core {
 
+     /** 全プレイヤースコアリスト / List of all player scores */
      public static ArrayList<Player_Score> Score = new ArrayList<Player_Score>();
+     
+     /** レースごとのランキングマップ / Ranking map by race */
      public static LinkedHashMap<UUID, List<Ranking_parts>> Ranking = new LinkedHashMap<>();
 
+     /**
+      * プレイヤーのスコアを追加/更新する
+      * 
+      * Adds or updates a player's score
+      * 
+      * @param Player プレイヤー / Player
+      * @param RACE_ID レースUUID / Race UUID
+      * @param score スコア / Score
+      */
      public static void addPlayer_Score(Player Player, UUID RACE_ID, Long score) {
           if (Score.isEmpty()) Score.add(new Player_Score(Player));
           for (Player_Score val : Score) if (val.getUUID().equals(Player.getUniqueId())) {
@@ -23,12 +42,30 @@ public class Player_Score_Core {
           for (Player_Score val : Score) if (val.getUUID().equals(Player.getUniqueId())) val.setScore(RACE_ID, score);
      }
 
+     /**
+      * プレイヤーのベストスコアを取得する
+      * 
+      * Gets a player's best score
+      * 
+      * @param Player プレイヤー / Player
+      * @param RACE_ID レースUUID / Race UUID
+      * @return ベストスコア、またはnull / Best score, or null
+      */
      public static Long getPlayer_TOP_Score(Player Player, UUID RACE_ID) {
           if (Score.isEmpty()) return null;
           for (Player_Score val : Score) if (val.getUUID().equals(Player.getUniqueId())) return val.getTOPScore(RACE_ID);
           return null;
      }
 
+     /**
+      * ランキングにエントリを追加する
+      * 
+      * Adds an entry to the ranking
+      * 
+      * @param RACE_ID レースUUID / Race UUID
+      * @param Player プレイヤー名 / Player name
+      * @param score スコア / Score
+      */
      public static void addRanking(UUID RACE_ID, String Player, Long score) {
           if (Ranking.isEmpty()) Ranking.put(RACE_ID, new ArrayList<Ranking_parts>());
           if (Ranking.get(RACE_ID) == null) Ranking.put(RACE_ID, new ArrayList<Ranking_parts>());
@@ -41,6 +78,13 @@ public class Player_Score_Core {
           }
      }
 
+     /**
+      * ランキングをソートする
+      * 
+      * Sorts the ranking
+      * 
+      * @param RACE_ID レースUUID / Race UUID
+      */
      public static void SortRanking(UUID RACE_ID) {
           if (Ranking.isEmpty()) return;
           if (Ranking.get(RACE_ID) == null) return;
@@ -50,6 +94,15 @@ public class Player_Score_Core {
           Ranking.get(RACE_ID).addAll(onetime);
      }
 
+     /**
+      * プレイヤーのランクを取得する
+      * 
+      * Gets a player's rank
+      * 
+      * @param RACE_ID レースUUID / Race UUID
+      * @param Player プレイヤー名 / Player name
+      * @return ランク（1から始まる）、または見つからない場合は-1 / Rank (1-based), or -1 if not found
+      */
      public static int getRank(UUID RACE_ID, String Player) {
           if (Ranking.isEmpty()) return -1;
           if (Ranking.get(RACE_ID) == null) return -1;
@@ -57,6 +110,14 @@ public class Player_Score_Core {
           return -1;
      }
 
+     /**
+      * レースのランキングリストを取得する
+      * 
+      * Gets the ranking list for a race
+      * 
+      * @param RACE_ID レースUUID / Race UUID
+      * @return ランキングリスト、またはnull / Ranking list, or null
+      */
      public static List<Ranking_parts> getRanking(UUID RACE_ID) {
           if (Ranking.isEmpty()) return null;
           if (Ranking.get(RACE_ID) == null) return null;

@@ -16,15 +16,33 @@ import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
+/**
+ * レーススコアボードクラス
+ * レース中のサイドバースコアボードを構築・表示する
+ * 
+ * Race scoreboard class
+ * Builds and displays sidebar scoreboard during races
+ */
 public class Race_Scoreboard {
 
+     /** スコアリスト（後方互換性のため保持） / Score list (kept for backwards compatibility) */
      private ArrayList<Score> Scoreboards; // kept for backwards compatibility if needed
+     
+     /** スコアボード / Scoreboard */
      private Scoreboard board;
+     
+     /** オブジェクティブ / Objective */
      private Objective objective;
 
      /**
-      * Build the actual Scoreboard object from a list of lines. Use buildLines() to
-      * get the content first and avoid rebuilding when content didn't change.
+      * 行リストからスコアボードオブジェクトを構築する
+      * 先にbuildLines()でコンテンツを取得し、内容が変わらない場合は再構築を避ける
+      * 
+      * Builds Scoreboard object from list of lines
+      * Use buildLines() to get content first and avoid rebuilding when content didn't change
+      * 
+      * @param lines 表示する行のリスト / List of lines to display
+      * @return 構築されたスコアボード / Built scoreboard
       */
      public Scoreboard buildBoardFromLines(List<String> lines) {
           board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -43,6 +61,14 @@ public class Race_Scoreboard {
           return board;
      }
 
+     /**
+      * ランナーの状態に基づいてスコアボード行を構築する
+      * 
+      * Builds scoreboard lines based on runner state
+      * 
+      * @param runner ランナー / Runner
+      * @return 行リスト、またはスコアボード不要の場合はnull / Line list, or null if no scoreboard needed
+      */
      public List<String> buildLines(Race_Runner runner) {
           Race RACE = Race_Core.getRace(runner.getRaceID());
           if (RACE == null)

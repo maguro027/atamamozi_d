@@ -22,23 +22,59 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Leave_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
+/**
+ * レースのコアロジッククラス
+ * レースデータ、ランナー、タイマーの管理を行う
+ * 
+ * Core logic class for races
+ * Manages race data, runners, and timers
+ */
 public class Race_Core {
 
+     /** 登録済みレースのリスト / List of registered races */
      public static ArrayList<Race> Race_list = new ArrayList<>();
-     // Keep a list for iteration compat and also a map for fast lookups by player
-     // UUID
+     
+     /** ランナーリスト（互換性のため保持） / Runner list (kept for compatibility) */
+     // Keep a list for iteration compat and also a map for fast lookups by player UUID
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
+     
+     /** ランナーの高速検索用マップ / Map for fast runner lookup */
      public static Map<UUID, Race_Runner> Race_Runner_Map = new ConcurrentHashMap<>();
+     
+     /** レースパッケージリスト / List of race packages */
      public static ArrayList<Race_Package> Race_packages = new ArrayList<>();
+     
+     /** 実行中レースとそのランナーのマップ / Map of running races and their runners */
      public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
+     
+     /** アクティブなタイマーリスト / List of active timers */
      public static ArrayList<Race_Timer> Timers = new ArrayList<>();
+     
+     /** トップメニューデータ / Top menu data */
      public static LinkedHashMap<Integer, ArrayList<Inventory>> TOP_MENU = new LinkedHashMap<>();
 
+     /**
+      * レースを登録する
+      * 
+      * Registers a race
+      * 
+      * @param Race 登録するレース / Race to register
+      */
      public static void addRace(Race Race) {
           Race_list.add(Race);
           Race_packages.add(new Race_Package(Race.getUUID()));
      }
 
+     /**
+      * プレイヤーをレースに参加させる
+      * レースのモードに応じた処理を行う
+      * 
+      * Makes a player join a race
+      * Processes according to race mode
+      * 
+      * @param Race 参加するレース / Race to join
+      * @param player 参加するプレイヤー / Player joining
+      */
      public static void joinRace(Race Race, Player player) {
           // Ensure a Race_Runner exists for the player. PlayerJoin usually creates one
           // but be defensive.
@@ -89,6 +125,15 @@ public class Race_Core {
           }
      }
 
+     /**
+      * プレイヤーをレースから削除する
+      * スコアボードのクリアとテレポート処理を行う
+      * 
+      * Removes a player from a race
+      * Clears scoreboard and handles teleportation
+      * 
+      * @param player 削除するプレイヤー / Player to remove
+      */
      public static void removeRunner(Player player) {
           // If the player is not in a race or runner doesn't exist, clear scoreboard if
           // present and return.
@@ -150,6 +195,15 @@ public class Race_Core {
           }
      }
 
+     /**
+      * 全員ゴール後の処理を行う
+      * スコアを表示し、ランキングをソートする
+      * 
+      * Handles post-race processing when all runners finish
+      * Displays scores and sorts rankings
+      * 
+      * @param Race_ID レースのUUID / Race UUID
+      */
      public static void AllGoal(UUID Race_ID) {
           Race RACE = Race_Core.getRace(Race_ID);
           if (RACE == null)
@@ -177,6 +231,14 @@ public class Race_Core {
           Race_Run.remove(RACE.getUUID());
      }
 
+     /**
+      * プレイヤーがレースに参加中かどうかを確認する
+      * 
+      * Checks if a player is currently in a race
+      * 
+      * @param player 確認するプレイヤー / Player to check
+      * @return 参加中ならtrue / True if in race
+      */
      public static boolean isJoin(Player player) {
           Race_Runner runner = getRunner(player);
           if (runner == null)
@@ -184,6 +246,14 @@ public class Race_Core {
           return runner.getMode() != Race_Runner_Mode.NO_ENTRY;
      }
 
+     /**
+      * レース参加メッセージを全参加者に送信する
+      * 
+      * Sends join message to all race participants
+      * 
+      * @param race レース / Race
+      * @param player 参加したプレイヤー / Player who joined
+      */
      public static void JoinMesseage(Race race, Player player) {
           java.util.List<Race_Runner> __join_runners = Race_Run.get(race.getUUID());
           if (__join_runners == null)
@@ -199,6 +269,14 @@ public class Race_Core {
           }
      }
 
+     /**
+      * レース離脱メッセージを全参加者に送信する
+      * 
+      * Sends leave message to all race participants
+      * 
+      * @param race レース / Race
+      * @param player 離脱したプレイヤー / Player who left
+      */
      public static void LeaveMesseage(Race race, Player player) {
           java.util.List<Race_Runner> __leave_runners = Race_Run.get(race.getUUID());
           if (__leave_runners == null)
@@ -213,6 +291,13 @@ public class Race_Core {
           }
      }
 
+     /**
+      * プレイヤーの乗り物（ボート）を削除する
+      * 
+      * Removes player's vehicle (boat)
+      * 
+      * @param player 対象プレイヤー / Target player
+      */
      public static void RemoveCar(Player player) {
           Race_Runner run = getRunner(player);
           if (run == null)
@@ -226,6 +311,16 @@ public class Race_Core {
           }
      }
 
+     /**
+      * プレイヤーに対応するランナーを取得する
+      * まずマップから高速検索し、見つからなければリストを走査する
+      * 
+      * Gets the runner for a player
+      * First checks map for fast lookup, then scans list if not found
+      * 
+      * @param player プレイヤー / Player
+      * @return ランナー、または見つからない場合はnull / Runner, or null if not found
+      */
      public static Race_Runner getRunner(Player player) {
           if (player == null)
                return null;
@@ -246,6 +341,14 @@ public class Race_Core {
           return null;
      }
 
+     /**
+      * レース名からレースを取得する
+      * 
+      * Gets a race by name
+      * 
+      * @param race_st レース名 / Race name
+      * @return レース、または見つからない場合はnull / Race, or null if not found
+      */
      public static Race getRace(String race_st) {
           if (Race_list.isEmpty())
                return null;
@@ -255,6 +358,14 @@ public class Race_Core {
           return null;
      }
 
+     /**
+      * UUIDからレースを取得する
+      * 
+      * Gets a race by UUID
+      * 
+      * @param race_uu レースのUUID / Race UUID
+      * @return レース、または見つからない場合はnull / Race, or null if not found
+      */
      public static Race getRace(UUID race_uu) {
           for (Race val : Race_list)
                if (val.getUUID().equals(race_uu))
@@ -262,6 +373,15 @@ public class Race_Core {
           return null;
      }
 
+     /**
+      * レースを開始する
+      * モードに応じた開始処理を行う
+      * 
+      * Starts a race
+      * Handles start processing according to mode
+      * 
+      * @param Race_UUID レースのUUID / Race UUID
+      */
      public static void Race_Start(UUID Race_UUID) {
           Race race = getRace(Race_UUID);
           if (race == null)
@@ -323,6 +443,14 @@ public class Race_Core {
           }
      }
 
+     /**
+      * ランナーにスコアを表示する
+      * 
+      * Displays score to a runner
+      * 
+      * @param val ランナー / Runner
+      * @param RACE_NAME レース名 / Race name
+      */
      public static void sayScore(Race_Runner val, String RACE_NAME) {
           val.getPlayer().sendMessage(
                     "------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
@@ -346,6 +474,13 @@ public class Race_Core {
                     .sendMessage(CollarMessage.setInfo() + "Race leave is " + ChatColor.LIGHT_PURPLE + "/atd leave");
      }
 
+     /**
+      * レースをゴール状態に設定する
+      * 
+      * Sets a race to goal state
+      * 
+      * @param Race_UUID レースのUUID / Race UUID
+      */
      public static void Race_Goal(UUID Race_UUID) {
           for (UUID key : Race_Run.keySet())
                if (Race_UUID != null && Race_UUID.equals(key)) {
@@ -354,6 +489,13 @@ public class Race_Core {
                }
      }
 
+     /**
+      * 全てのレースデータとランナーをクリアする
+      * プラグイン無効化時に呼び出される
+      * 
+      * Clears all race data and runners
+      * Called when plugin is disabled
+      */
      public static void clear() {
           Race_Run.clear();
           Race_Runner_Map.clear();

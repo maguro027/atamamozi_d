@@ -23,8 +23,22 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
+/**
+ * JSONファイル操作ユーティリティクラス
+ * レースデータ、スコアデータ、メニューデータのJSON保存を担当
+ * 
+ * JSON file operation utility class
+ * Handles JSON saving for race data, score data, and menu data
+ */
 public class CreateJson {
 
+     /**
+      * 指定されたパスにファイルを作成する
+      * 
+      * Creates a file at the specified path
+      * 
+      * @param string ファイルパス / File path
+      */
      public static void createfile(String string) {
           try {
                Files.createFile(Paths.get(string));
@@ -33,6 +47,15 @@ public class CreateJson {
           }
      }
 
+     /**
+      * プレイヤーが編集中のレースを保存する
+      * エラーがない場合のみ保存し、完了メッセージを表示
+      * 
+      * Saves the race being edited by a player
+      * Only saves if no errors, displays completion message
+      * 
+      * @param player 編集中のプレイヤー / Player editing
+      */
      public static void saveRace(Player player) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT))
@@ -65,6 +88,13 @@ public class CreateJson {
           }
      }
 
+     /**
+      * レースデータをJSONファイルに保存する
+      * 
+      * Saves race data to JSON file
+      * 
+      * @param race 保存するレース / Race to save
+      */
      public static void save(Race race) {
           if (!(Main.file_Race.exists()))
                Main.file_Race.mkdir();
@@ -79,6 +109,13 @@ public class CreateJson {
           }
      }
 
+     /**
+      * プレイヤースコアをJSONファイルに保存する
+      * 
+      * Saves player score to JSON file
+      * 
+      * @param Score 保存するスコア / Score to save
+      */
      public static void Scoresave(Player_Score Score) {
           if (!(Main.file_SCORE.exists()))
                Main.file_SCORE.mkdir();
@@ -92,6 +129,13 @@ public class CreateJson {
           }
      }
 
+     /**
+      * トップメニューデータをJSONファイルに保存する
+      * 
+      * Saves top menu data to JSON file
+      * 
+      * @param Data 保存するメニューデータ / Menu data to save
+      */
      public static void saveTop_Menu(LinkedHashMap<Integer, ArrayList<Inventory>> Data) {
           if (!(Main.file_SCORE.exists()))
                Main.file_SCORE.mkdir();

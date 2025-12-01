@@ -26,11 +26,29 @@ import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
+/**
+ * Atamamozi_D プラグインのメインクラス
+ * Minecraftサーバーでレースゲームを管理するプラグイン
+ * 
+ * Main class for the Atamamozi_D plugin
+ * Plugin that manages race games on Minecraft servers
+ */
 public class Core extends JavaPlugin {
 
+     /** プラグインインスタンスへの静的参照 / Static reference to plugin instance */
      static Plugin Data;
+     
+     /** 設定値: 待機時間、スタート時間、余韻時間、離脱時間、メニューランキング表示数 */
+     /** Config values: wait time, start time, lingering time, leave time, menu ranking display count */
      public static int WAIT_TIME, START_TIME, YOIN_TIME, LEAVE_TIME, MENU_RANK_VIEW;
 
+     /**
+      * プラグイン有効化時の処理
+      * 設定ファイルの読み込み、イベントリスナーの登録、データのロードを行う
+      * 
+      * Called when the plugin is enabled
+      * Loads config files, registers event listeners, and loads data
+      */
      @Override
      public void onEnable() {
           Bukkit.getLogger().info("ATAMAMOZI-D ENGINE START");
@@ -38,11 +56,15 @@ public class Core extends JavaPlugin {
           saveDefaultConfig();
           getConfig();
 
+          // 設定値の読み込み / Load configuration values
           WAIT_TIME = getConfig().getInt("Setting.CountDown.WAIT");
           START_TIME = getConfig().getInt("Setting.CountDown.START");
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
           LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
+          
+          // デフォルト設定の保存（存在しない場合）
+          // Save default settings (if not present)
           if (!getConfig().contains("Setting.CountDown.WAIT"))
                getConfig().set("Setting.CountDown.WAIT", 30);
           if (!getConfig().contains("Setting.CountDown.START"))
@@ -55,8 +77,15 @@ public class Core extends JavaPlugin {
                getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
           this.saveConfig();
           Data = this;
+          
+          // イベントリスナー登録 / Register event listener
           new Event(this);
+          
+          // データ読み込み / Load data
           Main.loadData();
+          
+          // オンラインプレイヤーの初期化
+          // Initialize online players
           for (Player p : this.getServer().getOnlinePlayers()) {
                if (p.getOpenInventory().getTitle().equals("RACE_CREATE"))
                     p.closeInventory();
@@ -68,20 +97,50 @@ public class Core extends JavaPlugin {
           }
      }
 
+     /**
+      * プラグイン無効化時の処理
+      * プレイヤースコアを保存し、メモリをクリアする
+      * 
+      * Called when the plugin is disabled
+      * Saves player scores and clears memory
+      */
      @Override
      public void onDisable() {
           Bukkit.getLogger().info("ATAMAMOZI-D ENGINE STOP");
+          // 全プレイヤースコアを保存 / Save all player scores
           for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score)
                CreateJson.Scoresave(ps);
           Race_Core.clear();
      }
 
+     /**
+      * プラグインインスタンスを取得する
+      * 
+      * Gets the plugin instance
+      * 
+      * @return プラグインインスタンス / Plugin instance
+      */
      public static Plugin getthis() {
           return Data;
      }
 
+     /**
+      * プラグインコマンドを処理する
+      * /atamamozi_d または /atd コマンドのハンドラー
+      * 
+      * Handles plugin commands
+      * Handler for /atamamozi_d or /atd commands
+      * 
+      * @param sender コマンド送信者 / Command sender
+      * @param cmd コマンド / Command
+      * @param commandLabel コマンドラベル / Command label
+      * @param args コマンド引数 / Command arguments
+      * @return 常にfalseを返す / Always returns false
+      */
      @Override
      public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+          // プレイヤー以外からのコマンドは無視
+          // Ignore commands from non-players
           if (!(sender instanceof Player))
                return false;
           if (args.length == 0) {
@@ -94,6 +153,8 @@ public class Core extends JavaPlugin {
                     onhelp((Player) sender);
                     break;
                case "view":
+                    // デバッグ用: レース実行状況を表示
+                    // Debug: display race run status
                     Bukkit.getLogger().info("----------------------");
                     try {
                          Bukkit.getLogger().info(Collections.singletonList(Race_Core.Race_Run).toString());
@@ -113,6 +174,8 @@ public class Core extends JavaPlugin {
                     break;
                case "setName":
                case "setname":
+                    // レース名を設定
+                    // Set race name
                     if (args.length == 1) {
                          ((Player) sender).sendMessage(CollarMessage.setWarning() + "Need Name");
                          return false;
@@ -134,6 +197,8 @@ public class Core extends JavaPlugin {
                     break;
                case "addCheckPoint":
                case "addcheckpoint":
+                    // チェックポイントを追加（半径指定必須）
+                    // Add checkpoint (radius required)
                     if (args.length == 1) {
                          ((Player) sender).sendMessage(CollarMessage.setWarning() + "Please int");
                          return false;
@@ -141,6 +206,8 @@ public class Core extends JavaPlugin {
                     onaddCheckpoint((Player) sender, args[1]);
                     break;
                case "start":
+                    // レースを開始
+                    // Start race
                     run = Race_Core.getRunner((Player) sender);
                     if (run == null)
                          return false;
@@ -157,6 +224,8 @@ public class Core extends JavaPlugin {
                     onrespawn((Player) sender);
                     break;
                case "join":
+                    // レースに参加
+                    // Join race
                     if (args.length == 1) {
                          ((Player) sender).sendMessage(CollarMessage.setWarning() + "Need Race Name");
                          return false;
@@ -173,6 +242,13 @@ public class Core extends JavaPlugin {
           return false;
      }
 
+     /**
+      * タブ補完候補を返す
+      * プレイヤーのモードに応じて適切なコマンドを提案
+      * 
+      * Returns tab completion suggestions
+      * Suggests appropriate commands based on player's mode
+      */
      @Override
      public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
           Race_Runner r = Race_Core.getRunner((Player) sender);
@@ -212,6 +288,13 @@ public class Core extends JavaPlugin {
           return subcmd;
      }
 
+     /**
+      * ヘルプメッセージを表示する
+      * 
+      * Displays help message
+      * 
+      * @param player 対象プレイヤー / Target player
+      */
      void onhelp(Player player) {
           player.sendMessage("---------------------");
           player.sendMessage("[help] this messeage");
@@ -221,16 +304,34 @@ public class Core extends JavaPlugin {
           player.sendMessage("---------------------");
      }
 
+     /** データ読み込み処理（未実装） / Load data (not implemented) */
      void onload(Player player) {
      }
 
+     /** 停止処理（未実装） / Stop process (not implemented) */
      void onstop(Player player) {
      }
 
+     /**
+      * プレイヤーをレースから離脱させる
+      * 
+      * Makes player leave the race
+      * 
+      * @param player 離脱するプレイヤー / Player to leave
+      */
      void onleave(Player player) {
           Race_Core.removeRunner(player);
      }
 
+     /**
+      * スタートポイントを追加する
+      * 編集モードのプレイヤーのみ使用可能
+      * 
+      * Adds a start point
+      * Only available for players in edit mode
+      * 
+      * @param player 追加するプレイヤー / Player adding the point
+      */
      void onaddStartpoint(Player player) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
@@ -242,6 +343,16 @@ public class Core extends JavaPlugin {
           run.UpdateScoreboard();
      }
 
+     /**
+      * チェックポイントを追加する
+      * 半径を指定して現在位置にチェックポイントを設定
+      * 
+      * Adds a checkpoint
+      * Sets checkpoint at current position with specified radius
+      * 
+      * @param player 追加するプレイヤー / Player adding the checkpoint
+      * @param r 半径（文字列） / Radius (as string)
+      */
      void onaddCheckpoint(Player player, String r) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
@@ -262,6 +373,15 @@ public class Core extends JavaPlugin {
           run.UpdateScoreboard();
      }
 
+     /**
+      * チェックポイントを設定/更新する
+      * 
+      * Sets or updates a checkpoint
+      * 
+      * @param player プレイヤー / Player
+      * @param r 半径 / Radius
+      * @param no チェックポイント番号 / Checkpoint number
+      */
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
@@ -275,6 +395,13 @@ public class Core extends JavaPlugin {
           run.UpdateScoreboard();
      }
 
+     /**
+      * プレイヤーを最後のチェックポイントにリスポーンさせる
+      * 
+      * Respawns player at last checkpoint
+      * 
+      * @param player リスポーンするプレイヤー / Player to respawn
+      */
      void onrespawn(Player player) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() == Race_Runner_Mode.EDIT) {
@@ -285,6 +412,14 @@ public class Core extends JavaPlugin {
           return;
      }
 
+     /**
+      * プレイヤーをレースに参加させる
+      * 
+      * Makes player join a race
+      * 
+      * @param player 参加するプレイヤー / Player joining
+      * @param args レース名 / Race name
+      */
      private void onjoin(Player player, String args) {
           Race race = Race_Core.getRace(args);
           if (race == null)
@@ -292,6 +427,14 @@ public class Core extends JavaPlugin {
           Race_Core.joinRace(race, player);
      }
 
+     /**
+      * チェックポイントを削除する
+      * 
+      * Removes a checkpoint
+      * 
+      * @param player プレイヤー / Player
+      * @param no 削除するチェックポイント番号 / Checkpoint number to remove
+      */
      void remCheckPoint(Player player, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)

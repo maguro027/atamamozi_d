@@ -7,16 +7,42 @@ import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
+/**
+ * 位置表示クラス
+ * チェックポイントをパーティクルで円形に表示する
+ * 
+ * Location viewer class
+ * Displays checkpoints as circular particles
+ */
 public class LocationViewer {
 
+     /** 関連するランナー / Associated runner */
      private Race_Runner runner;
+     
+     /** パーティクル描画スロットリング用タイムスタンプ / Timestamp for particle rendering throttling */
      // throttle particle rendering to avoid heavy per-tick overhead (ms)
      private long lastDrawTime = 0L;
 
+     /**
+      * ロケーションビューワーを作成する
+      * 
+      * Creates a location viewer
+      * 
+      * @param runner ランナー / Runner
+      */
      public LocationViewer(Race_Runner runner) {
           this.runner = runner;
      }
 
+     /**
+      * チェックポイントを円形のパーティクルで描画する
+      * 250msごとに最大4回/秒で描画
+      * 
+      * Draws checkpoint as circular particles
+      * Draws at most ~4 times/sec with 250ms interval
+      * 
+      * @param checkNo チェックポイント番号 / Checkpoint number
+      */
      public void DrawCircle(int checkNo) {
           // Avoid drawing particles too often — this method can be invoked very
           // frequently
@@ -64,6 +90,18 @@ public class LocationViewer {
           }
      }
 
+     /**
+      * 垂直ベクトルを取得する
+      * 
+      * Gets vertical vector
+      * 
+      * @param loc 位置 / Location
+      * @param r 半径 / Radius
+      * @param a 平面係数a / Plane coefficient a
+      * @param b 平面係数b / Plane coefficient b
+      * @param c 平面係数c / Plane coefficient c
+      * @return 垂直ベクトル / Vertical vector
+      */
      public double[] GetVerticalVector(Location loc, int r, double a, double b, double c) {
           double[] rtn = new double[3];
           if (a == 0) {

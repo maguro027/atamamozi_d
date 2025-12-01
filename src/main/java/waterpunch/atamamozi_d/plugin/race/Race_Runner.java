@@ -20,27 +20,68 @@ import waterpunch.atamamozi_d.plugin.tool.Scoreboaed.Race_Scoreboard;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
+/**
+ * レースランナークラス
+ * レースに参加しているプレイヤーの状態を管理する
+ * 
+ * Race runner class
+ * Manages the state of players participating in a race
+ */
 public class Race_Runner {
 
+     /** プレイヤー / Player */
      private Player Player;
+     
+     /** 参加中レースのUUID / UUID of joined race */
      private UUID Race_ID;
+     
+     /** レース名 / Race name */
      private String Race_Name;
+     
+     /** ランナーモード / Runner mode */
      private Race_Runner_Mode Race_mode;
+     
+     /** 参加順番、チェックポイント、周回数 / Join order, checkpoint, lap count */
      private int Join_Count, CheckPoint, Rap;
+     
+     /** 開始時刻、終了時刻 / Start time, end time */
      private long start_time, end_time;
+     
+     /** 開始位置、前の位置、現在位置 / Start location, old location, new location */
      private Location st_Location, old_Location, new_Location;
+     
+     /** スコアボード / Scoreboard */
      private Race_Scoreboard scoreboard;
+     
+     /** 位置表示用 / Location viewer */
      private LocationViewer locationViewer;
+     
+     /** スコアボード更新のスロットリング用タイムスタンプ / Timestamp for scoreboard update throttling */
      // Timestamp used to throttle scoreboard updates to avoid rebuilding every tick
      private long lastScoreUpdate = 0L;
+     
+     /** 前回のスコアボード行キャッシュ / Cache of previous scoreboard lines */
      // Cache previous rendered scoreboard lines to do diff updates
      private List<String> lastScoreLines = new ArrayList<>();
+     
+     /** スピードメーター更新用キャッシュ（100msごとに更新） */
      // Speed meter caching (update at most every 100ms)
      private long lastSpeedUpdate = 0L;
      private int cachedSpeed = 0;
+     
+     /** 乗り物のUUID / Vehicle UUID */
      private UUID Car;
+     
+     /** 乗車フラグ / Enter flag */
      private boolean Enter;
 
+     /**
+      * 新しいランナーを作成する
+      * 
+      * Creates a new runner
+      * 
+      * @param player プレイヤー / Player
+      */
      public Race_Runner(Player player) {
           this.Player = player;
           this.Race_mode = Race_Runner_Mode.NO_ENTRY;
@@ -52,6 +93,14 @@ public class Race_Runner {
                Race_Core.Race_Runner_Map.put(this.Player.getUniqueId(), this);
      }
 
+     /**
+      * ランナーをレースに参加させる状態に更新する
+      * 
+      * Updates runner to race participation state
+      * 
+      * @param Race_ID レースのUUID / Race UUID
+      * @return 成功したらtrue / True if successful
+      */
      public Boolean UPDate(UUID Race_ID) {
           // if (Race_Core.getRace(Race_ID).getJoin_Amount() ==
           // Race_Core.Race_Run.get(getRaceID()).size()) {
@@ -80,6 +129,13 @@ public class Race_Runner {
           return true;
      }
 
+     /**
+      * スコアボードを更新する
+      * 500msのクールダウンで頻繁な更新を防ぐ
+      * 
+      * Updates the scoreboard
+      * Prevents frequent updates with 500ms cooldown
+      */
      public void UpdateScoreboard() {
           // Basic rate-limit: avoid rebuilding scoreboard too frequently
           final long now = System.currentTimeMillis();

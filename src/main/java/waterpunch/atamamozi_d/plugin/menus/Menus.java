@@ -17,8 +17,23 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 
+/**
+ * メニューUIクラス
+ * レース管理用のインベントリメニューを生成する
+ * 
+ * Menu UI class
+ * Generates inventory menus for race management
+ */
 public class Menus {
 
+     /**
+      * インベントリの上下のボーダーを設定する
+      * 
+      * Sets top and bottom borders of inventory
+      * 
+      * @param inv インベントリ / Inventory
+      * @return ボーダー設定済みインベントリ / Inventory with borders set
+      */
      static Inventory setBorder(Inventory inv) {
           ItemStack cash = null;
           for (int i = 0; i < 54; ++i) {
@@ -30,6 +45,14 @@ public class Menus {
           return inv;
      }
 
+     /**
+      * トップメニューを取得する
+      * 
+      * Gets the top menu
+      * 
+      * @param player プレイヤー / Player
+      * @return トップメニューインベントリ / Top menu inventory
+      */
      public static Inventory getTop(Player player) {
           Inventory RACE_TOP_MENU = Bukkit.createInventory(player, 9, "RACE_TOP_MENU");
           RACE_TOP_MENU.setItem(1, new ItemStack(Items.getRace_LIST()));
@@ -37,6 +60,14 @@ public class Menus {
           return RACE_TOP_MENU;
      }
 
+     /**
+      * レース一覧メニューを取得する
+      * 
+      * Gets the race list menu
+      * 
+      * @param player プレイヤー / Player
+      * @return レース一覧インベントリ / Race list inventory
+      */
      @SuppressWarnings("deprecation")
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
@@ -49,6 +80,14 @@ public class Menus {
           return RACE_LIST;
      }
 
+     /**
+      * ランキングメニューを取得する
+      * 
+      * Gets the ranking menu
+      * 
+      * @param player プレイヤー / Player
+      * @return ランキングインベントリ / Ranking inventory
+      */
      @SuppressWarnings("deprecation")
      public static Inventory getRaceRanking(Player player) {
           Inventory RACE_RANKING = Bukkit.createInventory(player, 9 * 6, "RACE_RANKING");
@@ -61,14 +100,34 @@ public class Menus {
           return RACE_RANKING;
      }
 
+     /**
+      * レース編集メニューを取得する
+      * 
+      * Gets the race edit menu
+      * 
+      * @param player プレイヤー / Player
+      * @return レース編集インベントリ / Race edit inventory
+      */
      public static Inventory getRaceEdit(Player player) {
           Inventory RACE_EDIT = Bukkit.createInventory(player, 9 * 6, "RACE_EDIT");
           setBorder(RACE_EDIT);
           return RACE_EDIT;
      }
 
+     /**
+      * レース作成メニューを取得する
+      * 権限チェックを行い、編集モードでレースを作成する
+      * 
+      * Gets the race create menu
+      * Checks permissions and creates race in edit mode
+      * 
+      * @param player プレイヤー / Player
+      * @return レース作成インベントリ / Race create inventory
+      */
      public static Inventory getRaceCreate(Player player) {
-          if (!player.hasPermission("atamamozi_d.player.create") || !player.isOp()) {
+          // 権限チェック: OPまたはatamamozi_d.player.create権限が必要
+          // Permission check: requires OP or atamamozi_d.player.create permission
+          if (!player.hasPermission("atamamozi_d.player.create") && !player.isOp()) {
                player.sendMessage(CollarMessage.setNotPermission());
                return waterpunch.atamamozi_d.plugin.menus.Menus.getTop(player);
           }

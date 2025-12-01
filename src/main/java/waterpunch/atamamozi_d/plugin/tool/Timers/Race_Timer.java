@@ -10,13 +10,35 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 
+/**
+ * レースタイマークラス
+ * 待機時間、開始カウントダウン、余韻タイマーを管理する
+ * 
+ * Race timer class
+ * Manages wait time, start countdown, and lingering timers
+ */
 public class Race_Timer extends BukkitRunnable {
 
+     /** タイマータイプ / Timer type */
      private Race_Timer_Type Type;
+     
+     /** 残り時間（秒） / Remaining time (seconds) */
      private int time;
+     
+     /** 対象レースのUUID / Target race UUID */
      private UUID Race_UUID;
+     
+     /** 対象プレイヤー（YOIN用） / Target player (for YOIN) */
      private Player player;
 
+     /**
+      * レースタイマーを作成する
+      * 
+      * Creates a race timer
+      * 
+      * @param type タイマータイプ / Timer type
+      * @param race レースUUID / Race UUID
+      */
      public Race_Timer(Race_Timer_Type type, UUID race) {
           this.Type = type;
           this.Race_UUID = race;
@@ -33,34 +55,54 @@ public class Race_Timer extends BukkitRunnable {
                default:
                     break;
           }
+          // 同じレースの既存タイマーをキャンセル
+          // Cancel existing timer for the same race
           for (int i = 0; i < Race_Core.Timers.size(); i++)
                if (Race_Core.Timers.get(i).getUUID() != null && Race_Core.Timers.get(i).getUUID().equals(getUUID()))
                     Race_Core.Timers.get(i).cancel();
           Race_Core.Timers.add(this);
      }
 
+     /**
+      * プレイヤー用余韻タイマーを作成する
+      * 
+      * Creates a lingering timer for a player
+      * 
+      * @param player プレイヤー / Player
+      */
      public Race_Timer(Player player) {
           this.Type = Race_Timer_Type.YOIN;
           this.time = waterpunch.atamamozi_d.plugin.main.Core.YOIN_TIME;
           this.player = player;
      }
 
+     /** カウントダウン残り時間を取得 / Gets remaining countdown time */
      public int getCountDown() {
           return this.time;
      }
 
+     /** タイマータイプを取得 / Gets timer type */
      public Race_Timer_Type getType() {
           return this.Type;
      }
 
+     /** レースUUIDを取得 / Gets race UUID */
      public UUID getUUID() {
           return this.Race_UUID;
      }
 
+     /** タイマーを停止する / Stops the timer */
      public void stop() {
           cancel();
      }
 
+     /**
+      * タイマーのメイン処理
+      * 各タイプに応じたカウントダウンと処理を行う
+      * 
+      * Main timer processing
+      * Performs countdown and processing according to type
+      */
      @Override
      public void run() {
           if (Type == Race_Timer_Type.YOIN) {
