@@ -316,7 +316,6 @@ public class Event implements Listener {
           }
      }
 
-     @Deprecated
      @EventHandler(ignoreCancelled = true)
      public void onEnSignClick(PlayerInteractEvent e) {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign)
@@ -415,22 +414,26 @@ public class Event implements Listener {
           new Race_Runner(event.getPlayer());
      }
 
-     @Deprecated
      @EventHandler
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
-          if (!(event.getVehicle().getPassenger() instanceof Player)
-                    || !(event.getVehicle().getType() == EntityType.BOAT))
+          if (event.getVehicle().getType() != EntityType.BOAT)
                return;
-          if (Race_Core.isJoin((Player) event.getVehicle().getPassenger()))
+          // Use getPassengers() instead of deprecated getPassenger()
+          if (event.getVehicle().getPassengers().isEmpty())
+               return;
+          org.bukkit.entity.Entity passenger = event.getVehicle().getPassengers().get(0);
+          if (!(passenger instanceof Player))
+               return;
+          Player player = (Player) passenger;
+          if (Race_Core.isJoin(player))
                for (Race_Runner val : Race_Core.Race_Runner_List)
-                    if (val.getPlayer().getUniqueId().equals(event.getVehicle().getPassenger().getUniqueId())
+                    if (val.getPlayer().getUniqueId().equals(player.getUniqueId())
                               && val.getMode() == Race_Runner_Mode.RUN) {
                          event.setCancelled(true);
                          return;
                     }
      }
 
-     @Deprecated
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
           if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT))
