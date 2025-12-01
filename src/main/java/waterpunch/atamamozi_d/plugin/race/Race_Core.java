@@ -179,6 +179,10 @@ public class Race_Core {
                case EDIT:
                     if (race != null)
                          Race_list.remove(race);
+                    // Remove from Race_Run if present (player was added during creation)
+                    for (UUID a : Race_Run.keySet())
+                         if (run.getRaceID() != null && run.getRaceID().equals(a) && Race_Run.get(a) != null)
+                              Race_Run.get(a).remove(run);
                     player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                     player.sendMessage(CollarMessage.setInfo() + "Leave the race");
                     run.Complete();

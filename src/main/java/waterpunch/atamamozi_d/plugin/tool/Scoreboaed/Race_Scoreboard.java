@@ -28,7 +28,17 @@ public class Race_Scoreboard {
       */
      public Scoreboard buildBoardFromLines(List<String> lines) {
           board = Bukkit.getScoreboardManager().getNewScoreboard();
-          objective = board.registerNewObjective("Stats", "dummy", "a");
+          
+          // Try modern 3-arg method first (1.13+), fall back to legacy 2-arg method (1.12.2)
+          try {
+               // Modern API: registerNewObjective(name, criteria, displayName)
+               objective = board.registerNewObjective("Stats", "dummy", "a");
+          } catch (NoSuchMethodError e) {
+               // Legacy API: registerNewObjective(name, criteria)
+               // Display name is set separately
+               objective = board.registerNewObjective("Stats", "dummy");
+          }
+          
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
