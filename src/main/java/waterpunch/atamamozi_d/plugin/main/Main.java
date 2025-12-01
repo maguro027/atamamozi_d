@@ -108,7 +108,8 @@ public class Main {
 
                               r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
                          } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                              Bukkit.getLogger().log(Level.WARNING, "Failed to load score JSON: " + tmpFile.getName(), e);
+                              Bukkit.getLogger().log(Level.WARNING, "Failed to load score JSON: " + tmpFile.getName(),
+                                        e);
                          }
                     }
                }

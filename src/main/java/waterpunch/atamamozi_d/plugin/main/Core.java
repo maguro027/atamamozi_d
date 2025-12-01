@@ -94,13 +94,13 @@ public class Core extends JavaPlugin {
                     onhelp((Player) sender);
                     break;
                case "view":
-                         Bukkit.getLogger().info("----------------------");
-                         try {
-                              Bukkit.getLogger().info(Collections.singletonList(Race_Core.Race_Run).toString());
-                         } catch (Exception ex) {
-                              Bukkit.getLogger().log(Level.WARNING, "Failed to log race run data", ex);
-                         }
-                         Bukkit.getLogger().info("----------------------");
+                    Bukkit.getLogger().info("----------------------");
+                    try {
+                         Bukkit.getLogger().info(Collections.singletonList(Race_Core.Race_Run).toString());
+                    } catch (Exception ex) {
+                         Bukkit.getLogger().log(Level.WARNING, "Failed to log race run data", ex);
+                    }
+                    Bukkit.getLogger().info("----------------------");
                     break;
                case "list":
                     ((Player) sender).openInventory(Menus.getRaceList(((Player) sender)));

@@ -36,13 +36,15 @@ public class CreateJson {
      public static void saveRace(Player player) {
           Race_Runner run = Race_Core.getRunner(player);
           Race race = Race_Core.getRace(run.getRaceID());
-          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) return;
+          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT))
+               return;
           if (!(race.getErrorCount() == 0)) {
                player.openInventory(Menus.getRaceCreate(player));
                return;
           }
           race.setMode(Race_Mode.WAIT);
-          if (!(Main.file_Race.exists())) Main.file_Race.mkdir();
+          if (!(Main.file_Race.exists()))
+               Main.file_Race.mkdir();
           String URL = Main.file_Race + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
           Race_Core.addRace(race);
@@ -64,7 +66,8 @@ public class CreateJson {
      }
 
      public static void save(Race race) {
-          if (!(Main.file_Race.exists())) Main.file_Race.mkdir();
+          if (!(Main.file_Race.exists()))
+               Main.file_Race.mkdir();
           String URL = Main.file_Race + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
@@ -77,7 +80,8 @@ public class CreateJson {
      }
 
      public static void Scoresave(Player_Score Score) {
-          if (!(Main.file_SCORE.exists())) Main.file_SCORE.mkdir();
+          if (!(Main.file_SCORE.exists()))
+               Main.file_SCORE.mkdir();
           String URL = Main.file_SCORE + "/" + Score.getUUID() + ".json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
@@ -89,7 +93,8 @@ public class CreateJson {
      }
 
      public static void saveTop_Menu(LinkedHashMap<Integer, ArrayList<Inventory>> Data) {
-          if (!(Main.file_SCORE.exists())) Main.file_SCORE.mkdir();
+          if (!(Main.file_SCORE.exists()))
+               Main.file_SCORE.mkdir();
           String URL = Main.file_Rase_Menu + "/race_list.json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
