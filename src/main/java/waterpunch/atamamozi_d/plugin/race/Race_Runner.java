@@ -311,8 +311,8 @@ public class Race_Runner {
                     break;
           }
           this.Player.sendMessage(CollarMessage.setInfo() + "START");
+          // Set start time for race timing
           this.start_time = System.currentTimeMillis();
-          start_time = System.currentTimeMillis();
           // immediate update for start
           lastScoreUpdate = 0L;
           UpdateScoreboard();

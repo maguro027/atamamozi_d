@@ -11,6 +11,14 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
+/**
+ * Represents a racing course with checkpoints, start points, and configuration.
+ * 
+ * <p>Each race has a unique UUID, supports multiple players, and can be configured
+ * with various race types (WALK, BOAT), lap counts, and checkpoint locations.</p>
+ * 
+ * @author waterpunch
+ */
 public class Race {
 
      private String creator, race_name;
@@ -22,6 +30,11 @@ public class Race {
      private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
 
+     /**
+      * Create a new race with default settings.
+      * 
+      * @param creator Player creating the race
+      */
      public Race(Player creator) {
           this.creator = creator.getName();
           this.race_ID = UUID.randomUUID();
@@ -34,18 +47,40 @@ public class Race {
           this.TIME = Core.WAIT_TIME;
      }
 
+     /**
+      * Add a start point location to this race.
+      * Players will spawn at these locations based on their join order.
+      * 
+      * @param loc Location to add as a start point
+      */
      public void addStartPointLoc(Location loc) {
           StartPoint.add(new Loc_parts(loc));
      }
 
+     /**
+      * Get all start point locations for this race.
+      * 
+      * @return List of start point locations
+      */
      public ArrayList<Loc_parts> getStartPointLoc() {
           return this.StartPoint;
      }
 
+     /**
+      * Add a checkpoint to this race with specified trigger radius.
+      * 
+      * @param loc Checkpoint location
+      * @param r Trigger radius (distance required to activate checkpoint)
+      */
      public void addCheckPointLoc(Location loc, int r) {
           CheckPoint_Loc.add(new CheckPointLoc(loc, r));
      }
 
+     /**
+      * Get all checkpoints for this race.
+      * 
+      * @return List of checkpoint locations with radii
+      */
      public ArrayList<CheckPointLoc> getCheckPointLoc() {
           return this.CheckPoint_Loc;
      }

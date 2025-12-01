@@ -30,15 +30,50 @@ import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
+/**
+ * Event handler for all race-related gameplay events.
+ * 
+ * <p>Handles:
+ * <ul>
+ * <li>Inventory click events for race menus (create, join, configure)</li>
+ * <li>Player movement for checkpoint detection</li>
+ * <li>Sign interaction for race join/leave</li>
+ * <li>Player join/quit for state initialization</li>
+ * <li>Vehicle events for boat races</li>
+ * </ul>
+ * 
+ * @author waterpunch
+ */
 public class Event implements Listener {
 
+     /** Reference to plugin instance */
      Plugin plugin_data = null;
 
+     /**
+      * Register this event listener with the plugin.
+      * 
+      * @param plugin Plugin instance
+      */
      public Event(Plugin plugin) {
           plugin.getServer().getPluginManager().registerEvents(this, plugin);
           plugin_data = plugin;
      }
 
+     /**
+      * Handle inventory click events for race menus.
+      * 
+      * <p>Processes clicks in:
+      * <ul>
+      * <li>RACE_TOP_MENU - Main race menu</li>
+      * <li>RACE_LIST - Browse available races</li>
+      * <li>RACE_CREATE - Configure new race</li>
+      * <li>RACE_CREATE_TYPE/RAP/AMOUNT/ICON - Race parameter selection</li>
+      * <li>RACE_RANKING - View leaderboards</li>
+      * <li>RACE_EDIT - Modify existing race</li>
+      * </ul>
+      * 
+      * @param event Inventory click event
+      */
      @EventHandler
      public void onInventoryClickEvent(InventoryClickEvent event) {
           // try {
@@ -324,7 +359,8 @@ public class Event implements Listener {
                     // Draw only checkpoints that are near the player (or at most a small number) to
                     // keep things lightweight.
                     Race raceEdit = Race_Core.getRace(run.getRaceID());
-                    if (raceEdit != null && raceEdit.getCheckPointLoc() != null && raceEdit.getCheckPointLoc().size() != 0) {
+                    if (raceEdit != null && raceEdit.getCheckPointLoc() != null
+                              && raceEdit.getCheckPointLoc().size() != 0) {
                          int drawn = 0;
                          for (int i = 0; i < raceEdit.getCheckPointLoc().size(); i++) {
                               Location cpLoc = raceEdit.getCheckPointLoc().get(i).getLocation();
