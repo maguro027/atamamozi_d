@@ -20,7 +20,14 @@
     "cSpell.words": [
         "addcheckpoint",
         "addstartpoint",
+        "Anit",
         "Atamamozi",
+        "chackpoint",
+        "cooldown",
+        "createfile",
+        "Creater",
+        "getnew",
+        "getold",
         "getst",
         "getthis",
         "Hachitai",
@@ -30,11 +37,18 @@
         "onhelp",
         "onjoin",
         "onleave",
+        "onrespawn",
+        "Raceing",
         "respawn",
+        "Runnig",
         "Scoreboaed",
+        "Scoresave",
         "setname",
+        "setnew",
+        "setold",
         "Startpoint",
         "subcmd",
+        "Timest",
         "YOIN"
     ]
 }

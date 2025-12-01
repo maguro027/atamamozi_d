@@ -2,9 +2,11 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
 import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;

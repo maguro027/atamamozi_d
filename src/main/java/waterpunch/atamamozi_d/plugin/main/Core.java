@@ -303,7 +303,7 @@ public class Core extends JavaPlugin {
       */
      void onhelp(Player player) {
           player.sendMessage("---------------------");
-          player.sendMessage("[help] this messeage");
+          player.sendMessage("[help] this message");
           player.sendMessage("[list] /atamamozi_d list Open Race menu");
           player.sendMessage("[respawn] /atamamozi_d respawn :)");
           player.sendMessage("[leave] leave player");

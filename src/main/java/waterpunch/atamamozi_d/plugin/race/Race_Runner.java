@@ -1,8 +1,9 @@
 package waterpunch.atamamozi_d.plugin.race;
 
-import java.util.UUID;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
+
 import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
