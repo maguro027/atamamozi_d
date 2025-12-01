@@ -25,11 +25,16 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 /**
  * Central management class for all races and race runners.
  * 
- * <p>This class maintains global collections of active races, players participating
+ * <p>
+ * This class maintains global collections of active races, players
+ * participating
  * in races (runners), and provides static methods for race lifecycle management
- * (creation, joining, leaving, completion).</p>
+ * (creation, joining, leaving, completion).
+ * </p>
  * 
- * <p><b>Key Data Structures:</b></p>
+ * <p>
+ * <b>Key Data Structures:</b>
+ * </p>
  * <ul>
  * <li>{@code Race_list} - All created races</li>
  * <li>{@code Race_Runner_List} - All player race states (for iteration)</li>
@@ -44,23 +49,24 @@ public class Race_Core {
 
      /** List of all created races */
      public static ArrayList<Race> Race_list = new ArrayList<>();
-     
+
      /** List of all race runners (for iteration) */
-     // Keep a list for iteration compat and also a map for fast lookups by player UUID
+     // Keep a list for iteration compat and also a map for fast lookups by player
+     // UUID
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
-     
+
      /** Fast lookup map: player UUID -> Race_Runner */
      public static Map<UUID, Race_Runner> Race_Runner_Map = new ConcurrentHashMap<>();
-     
+
      /** Race packages for data export */
      public static ArrayList<Race_Package> Race_packages = new ArrayList<>();
-     
+
      /** Map of race UUID -> list of participants in that race */
      public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
-     
+
      /** Active race timers (countdown, start, goal, etc.) */
      public static ArrayList<Race_Timer> Timers = new ArrayList<>();
-     
+
      /** Cached ranking menu inventories */
      public static LinkedHashMap<Integer, ArrayList<Inventory>> TOP_MENU = new LinkedHashMap<>();
 
@@ -77,10 +83,12 @@ public class Race_Core {
      /**
       * Add a player to a race.
       * 
-      * <p>Validates race state (WAIT/RUN/GOAL/EDIT) and player capacity before joining.
-      * Creates a Race_Runner if one doesn't exist for the player.</p>
+      * <p>
+      * Validates race state (WAIT/RUN/GOAL/EDIT) and player capacity before joining.
+      * Creates a Race_Runner if one doesn't exist for the player.
+      * </p>
       * 
-      * @param Race Race to join
+      * @param Race   Race to join
       * @param player Player joining the race
       */
      public static void joinRace(Race Race, Player player) {
@@ -136,7 +144,8 @@ public class Race_Core {
      /**
       * Remove a player from their current race.
       * 
-      * <p>Handles different race states:
+      * <p>
+      * Handles different race states:
       * <ul>
       * <li>EDIT mode: Deletes the race being edited</li>
       * <li>WAIT mode: Removes from waiting list</li>
@@ -147,7 +156,8 @@ public class Race_Core {
       * @param player Player to remove from race
       */
      public static void removeRunner(Player player) {
-          // If the player is not in a race or runner doesn't exist, clear scoreboard if present and return.
+          // If the player is not in a race or runner doesn't exist, clear scoreboard if
+          // present and return.
           if (!isJoin(player)) {
                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null)
                     if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName()
@@ -159,7 +169,7 @@ public class Race_Core {
           Race_Runner run = getRunner(player);
           if (run == null)
                return; // defensive: nothing else to do
-          
+
           Race race = getRace(run.getRaceID());
 
           switch (run.getMode()) {

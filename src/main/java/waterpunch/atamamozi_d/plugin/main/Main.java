@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -117,9 +118,18 @@ public class Main {
                Player_Score_Core.SortRanking(r.getUUID());
      }
 
+     /**
+      * Create a file if it doesn't already exist.
+      * 
+      * @param string Path to the file to create
+      */
      public static void createfile(String string) {
           try {
-               Files.createFile(Paths.get(string));
+               Path path = Paths.get(string);
+               // Only create if file doesn't exist
+               if (!Files.exists(path)) {
+                    Files.createFile(path);
+               }
           } catch (IOException e) {
                Bukkit.getLogger().log(Level.WARNING, "Failed to create file: " + string, e);
           }

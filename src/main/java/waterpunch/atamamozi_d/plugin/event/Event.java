@@ -33,7 +33,8 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 /**
  * Event handler for all race-related gameplay events.
  * 
- * <p>Handles:
+ * <p>
+ * Handles:
  * <ul>
  * <li>Inventory click events for race menus (create, join, configure)</li>
  * <li>Player movement for checkpoint detection</li>
@@ -62,7 +63,8 @@ public class Event implements Listener {
      /**
       * Handle inventory click events for race menus.
       * 
-      * <p>Processes clicks in:
+      * <p>
+      * Processes clicks in:
       * <ul>
       * <li>RACE_TOP_MENU - Main race menu</li>
       * <li>RACE_LIST - Browse available races</li>

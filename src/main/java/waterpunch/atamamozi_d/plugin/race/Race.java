@@ -14,8 +14,10 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 /**
  * Represents a racing course with checkpoints, start points, and configuration.
  * 
- * <p>Each race has a unique UUID, supports multiple players, and can be configured
- * with various race types (WALK, BOAT), lap counts, and checkpoint locations.</p>
+ * <p>
+ * Each race has a unique UUID, supports multiple players, and can be configured
+ * with various race types (WALK, BOAT), lap counts, and checkpoint locations.
+ * </p>
  * 
  * @author waterpunch
  */
@@ -70,7 +72,7 @@ public class Race {
       * Add a checkpoint to this race with specified trigger radius.
       * 
       * @param loc Checkpoint location
-      * @param r Trigger radius (distance required to activate checkpoint)
+      * @param r   Trigger radius (distance required to activate checkpoint)
       */
      public void addCheckPointLoc(Location loc, int r) {
           CheckPoint_Loc.add(new CheckPointLoc(loc, r));

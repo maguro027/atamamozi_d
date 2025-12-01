@@ -29,9 +29,11 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 /**
  * ATAMAMOZI-D Racing Plugin - Core Plugin Class
  * 
- * <p>This plugin provides a comprehensive racing system for Minecraft servers,
- * supporting both walking and boat races with checkpoint management, 
- * scoreboard tracking, and player ranking features.</p>
+ * <p>
+ * This plugin provides a comprehensive racing system for Minecraft servers,
+ * supporting both walking and boat races with checkpoint management,
+ * scoreboard tracking, and player ranking features.
+ * </p>
  * 
  * @author waterpunch
  * @version 0.1
@@ -40,12 +42,13 @@ public class Core extends JavaPlugin {
 
      /** Plugin instance reference for static access */
      static Plugin Data;
-     
+
      /** Global timing configuration values (in seconds) */
      public static int WAIT_TIME, START_TIME, YOIN_TIME, LEAVE_TIME, MENU_RANK_VIEW;
 
      /**
-      * Plugin initialization - loads configuration, registers events, and restores player states.
+      * Plugin initialization - loads configuration, registers events, and restores
+      * player states.
       * Called automatically by Bukkit when the plugin is enabled.
       */
      @Override
@@ -54,7 +57,7 @@ public class Core extends JavaPlugin {
 
           // Load or create config file
           saveDefaultConfig();
-          
+
           // Set default values for missing config keys BEFORE reading them
           if (!getConfig().contains("Setting.CountDown.WAIT"))
                getConfig().set("Setting.CountDown.WAIT", 30);
@@ -67,32 +70,32 @@ public class Core extends JavaPlugin {
           if (!getConfig().contains("Setting.CountDown.MENU_RANK_VIEW"))
                getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
           this.saveConfig();
-          
+
           // Now read the configuration values (with defaults applied)
           WAIT_TIME = getConfig().getInt("Setting.CountDown.WAIT");
           START_TIME = getConfig().getInt("Setting.CountDown.START");
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
           LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
-          
+
           // Store plugin instance for static access
           Data = this;
-          
+
           // Register event listeners
           new Event(this);
-          
+
           // Load saved race and score data from JSON files
           Main.loadData();
-          
+
           // Initialize Race_Runner for all online players (handles plugin reload case)
           for (Player p : this.getServer().getOnlinePlayers()) {
                // Close any race creation menus that may be open from previous session
                if (p.getOpenInventory().getTitle().equals("RACE_CREATE"))
                     p.closeInventory();
-               
+
                // Create runner instance for player tracking
                new Race_Runner(p);
-               
+
                // Clear any existing plugin scoreboards from previous session
                if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null)
                     if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName()
@@ -108,11 +111,11 @@ public class Core extends JavaPlugin {
      @Override
      public void onDisable() {
           Bukkit.getLogger().info("ATAMAMOZI-D ENGINE STOP");
-          
+
           // Save all player scores to JSON files
           for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score)
                CreateJson.Scoresave(ps);
-          
+
           // Clear all active race data and timers
           Race_Core.clear();
      }
@@ -129,7 +132,8 @@ public class Core extends JavaPlugin {
      /**
       * Handle /atd (or /race) commands for race management.
       * 
-      * <p>Supported commands:
+      * <p>
+      * Supported commands:
       * <ul>
       * <li>/atd - Open main race menu</li>
       * <li>/atd list - Show available races</li>
@@ -141,10 +145,10 @@ public class Core extends JavaPlugin {
       * <li>/atd rank - View ranking</li>
       * </ul>
       * 
-      * @param sender Command sender (must be a player)
-      * @param cmd Command object
+      * @param sender       Command sender (must be a player)
+      * @param cmd          Command object
       * @param commandLabel Command label used
-      * @param args Command arguments
+      * @param args         Command arguments
       * @return false (allows default command handling)
       */
      @Override
@@ -152,13 +156,13 @@ public class Core extends JavaPlugin {
           // Only players can use race commands
           if (!(sender instanceof Player))
                return false;
-          
+
           // No arguments: open main menu
           if (args.length == 0) {
                ((Player) sender).openInventory(Menus.getTop((Player) sender));
                return false;
           }
-          
+
           Race_Runner run = null;
           switch (args[0]) {
                case "help":
@@ -328,7 +332,7 @@ public class Core extends JavaPlugin {
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return;
-          
+
           race.addStartPointLoc(player.getLocation());
           player.sendMessage(CollarMessage.setInfo() + "Set Start Point");
           waterpunch.atamamozi_d.plugin.race.export.Hachitai.setCircle(run, player.getLocation(), 1);
@@ -339,17 +343,17 @@ public class Core extends JavaPlugin {
       * Add a checkpoint at player's current location with specified radius.
       * 
       * @param player Player editing the race (must be in EDIT mode)
-      * @param r Checkpoint radius as string (must be positive integer)
+      * @param r      Checkpoint radius as string (must be positive integer)
       */
      void onaddCheckpoint(Player player, String r) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
                return;
-          
+
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return;
-          
+
           try {
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(CollarMessage.setWarning() + "Please enter Over 0");
@@ -370,18 +374,18 @@ public class Core extends JavaPlugin {
       * Modify an existing checkpoint location and radius.
       * 
       * @param player Player editing the race (must be in EDIT mode)
-      * @param r New checkpoint radius
-      * @param no Checkpoint index to modify
+      * @param r      New checkpoint radius
+      * @param no     Checkpoint index to modify
       */
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
                return;
-          
+
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return;
-          
+
           if (race.getCheckPointLoc().size() == 0) {
                race.addCheckPointLoc(player.getLocation(), r);
           } else {
@@ -391,7 +395,8 @@ public class Core extends JavaPlugin {
      }
 
      /**
-      * Respawn player at their last checkpoint (or start point if no checkpoint passed).
+      * Respawn player at their last checkpoint (or start point if no checkpoint
+      * passed).
       * 
       * @param player Player requesting respawn
       */
@@ -409,7 +414,7 @@ public class Core extends JavaPlugin {
       * Join a race by name.
       * 
       * @param player Player trying to join
-      * @param args Race name to join
+      * @param args   Race name to join
       */
      private void onjoin(Player player, String args) {
           Race race = Race_Core.getRace(args);
@@ -422,17 +427,17 @@ public class Core extends JavaPlugin {
       * Remove a checkpoint from the race being edited.
       * 
       * @param player Player editing the race (must be in EDIT mode)
-      * @param no Checkpoint index to remove
+      * @param no     Checkpoint index to remove
       */
      void remCheckPoint(Player player, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
                return;
-          
+
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return;
-          
+
           race.getCheckPointLoc().remove(no);
           run.UpdateScoreboard();
      }
