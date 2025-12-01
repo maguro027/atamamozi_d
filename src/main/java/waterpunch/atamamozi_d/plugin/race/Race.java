@@ -1,5 +1,6 @@
 package waterpunch.atamamozi_d.plugin.race;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 import org.bukkit.Location;
@@ -20,6 +21,7 @@ public class Race {
      private ArrayList<Loc_parts> StartPoint = new ArrayList<>();
      private ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
      private ArrayList<String> Score = new ArrayList<>();
+     private LocalDateTime createdAt;
 
      public Race(Player creator) {
           this.creator = creator.getName();
@@ -31,6 +33,7 @@ public class Race {
           this.race_Mode = Race_Mode.WAIT;
           this.join_amount = 1;
           this.TIME = Core.WAIT_TIME;
+          this.createdAt = LocalDateTime.now();
      }
 
      public void addStartPointLoc(Location loc) {
