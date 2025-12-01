@@ -18,8 +18,30 @@ import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 
 public class Items {
 
+     /**
+      * Get black glass pane for menu borders.
+      * Tries modern material first, falls back to legacy versions for compatibility.
+      */
      static ItemStack getBlack() {
-          ItemStack BLACK = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+          Material material = null;
+          short data = 0;
+          
+          // Try modern material first (1.13+)
+          try {
+               material = Material.valueOf("BLACK_STAINED_GLASS_PANE");
+          } catch (IllegalArgumentException e) {
+               // Fall back to legacy material (1.12.2)
+               try {
+                    material = Material.valueOf("STAINED_GLASS_PANE");
+                    data = 15; // Black color data value
+               } catch (IllegalArgumentException ex) {
+                    // Ultimate fallback - solid black glass
+                    material = Material.valueOf("STAINED_GLASS");
+                    data = 15;
+               }
+          }
+          
+          ItemStack BLACK = new ItemStack(material, 1, data);
           ItemMeta BLACK_Meta = BLACK.getItemMeta();
           BLACK_Meta.setDisplayName(" ");
           BLACK.setItemMeta(BLACK_Meta);
@@ -44,8 +66,22 @@ public class Items {
           return race_LIST;
      }
 
+     /**
+      * Get ranking menu item.
+      * Tries modern material first, falls back to legacy versions for compatibility.
+      */
      static ItemStack getRanking() {
-          ItemStack Ranking = new ItemStack(Material.TOTEM_OF_UNDYING);
+          Material material = null;
+          
+          // Try modern material first (1.13+)
+          try {
+               material = Material.valueOf("TOTEM_OF_UNDYING");
+          } catch (IllegalArgumentException e) {
+               // Fall back to legacy material (1.12.2)
+               material = Material.valueOf("NETHER_STAR");
+          }
+          
+          ItemStack Ranking = new ItemStack(material);
           ItemMeta Ranking_Meta = Ranking.getItemMeta();
           Ranking_Meta.setDisplayName(ChatColor.GOLD + "Ranking");
           List<String> lores = new ArrayList<String>();
@@ -55,8 +91,30 @@ public class Items {
           return Ranking;
      }
 
+     /**
+      * Get player head item.
+      * Tries modern material first, falls back to legacy versions for compatibility.
+      */
      static ItemStack getCreater(String Name) {
-          ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+          Material material = null;
+          short data = 0;
+          
+          // Try modern material first (1.13+)
+          try {
+               material = Material.valueOf("PLAYER_HEAD");
+          } catch (IllegalArgumentException e) {
+               // Fall back to legacy material (1.12.2)
+               try {
+                    material = Material.valueOf("SKULL_ITEM");
+                    data = 3; // Player skull data value
+               } catch (IllegalArgumentException ex) {
+                    // Ultimate fallback
+                    material = Material.valueOf("SKULL");
+                    data = 3;
+               }
+          }
+          
+          ItemStack item = new ItemStack(material, 1, data);
           SkullMeta skull = (SkullMeta) item.getItemMeta();
           skull.setOwner(Name);
           skull.setDisplayName(ChatColor.GOLD + "Creater Search");
@@ -92,16 +150,44 @@ public class Items {
           return race_CREATE;
      }
 
+     /**
+      * Get UP button item.
+      * Tries modern material first, falls back to legacy versions for compatibility.
+      */
      static ItemStack getUP() {
-          ItemStack UP = new ItemStack(Material.JACK_O_LANTERN);
+          Material material = null;
+          
+          // Try modern material first (1.13+)
+          try {
+               material = Material.valueOf("JACK_O_LANTERN");
+          } catch (IllegalArgumentException e) {
+               // Fall back to legacy material (1.12.2)
+               material = Material.valueOf("PUMPKIN");
+          }
+          
+          ItemStack UP = new ItemStack(material);
           ItemMeta UP_Meta = UP.getItemMeta();
           UP_Meta.setDisplayName(ChatColor.GREEN + "UP");
           UP.setItemMeta(UP_Meta);
           return UP;
      }
 
+     /**
+      * Get DOWN button item.
+      * Tries modern material first, falls back to legacy versions for compatibility.
+      */
      static ItemStack getDown() {
-          ItemStack DOWN = new ItemStack(Material.CARVED_PUMPKIN);
+          Material material = null;
+          
+          // Try modern material first (1.13+)
+          try {
+               material = Material.valueOf("CARVED_PUMPKIN");
+          } catch (IllegalArgumentException e) {
+               // Fall back to legacy material (1.12.2)
+               material = Material.valueOf("PUMPKIN");
+          }
+          
+          ItemStack DOWN = new ItemStack(material);
           ItemMeta DOWN_Meta = DOWN.getItemMeta();
           DOWN_Meta.setDisplayName(ChatColor.GREEN + "DOWN");
           DOWN.setItemMeta(DOWN_Meta);
