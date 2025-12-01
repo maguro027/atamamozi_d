@@ -323,12 +323,12 @@ public class Event implements Listener {
                     // Drawing particles for every checkpoint on every small movement is expensive.
                     // Draw only checkpoints that are near the player (or at most a small number) to
                     // keep things lightweight.
-                    if (Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() != 0) {
+                    Race raceEdit = Race_Core.getRace(run.getRaceID());
+                    if (raceEdit != null && raceEdit.getCheckPointLoc() != null && raceEdit.getCheckPointLoc().size() != 0) {
                          int drawn = 0;
-                         for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size(); i++) {
-                              Location cpLoc = Race_Core.getRace(run.getRaceID()).getCheckPointLoc().get(i)
-                                        .getLocation();
-                              double r = Race_Core.getRace(run.getRaceID()).getCheckPointLoc().get(i).getr();
+                         for (int i = 0; i < raceEdit.getCheckPointLoc().size(); i++) {
+                              Location cpLoc = raceEdit.getCheckPointLoc().get(i).getLocation();
+                              double r = raceEdit.getCheckPointLoc().get(i).getr();
                               // draw if within reasonable range (r + 10) or until we draw up to 8 checkpoints
                               double distSq = cpLoc.distanceSquared(run.getPlayer().getLocation());
                               if (distSq <= (r + 10) * (r + 10) || drawn < 8) {
@@ -405,8 +405,11 @@ public class Event implements Listener {
                return;
           if (!Race_Core.isJoin((Player) event.getExited()))
                return;
-          if (Race_Core.getRunner((Player) event.getExited()).getEnter()) {
-               Race_Core.getRunner((Player) event.getExited()).setEnter(false);
+          Race_Runner runner = Race_Core.getRunner((Player) event.getExited());
+          if (runner == null)
+               return;
+          if (runner.getEnter()) {
+               runner.setEnter(false);
                event.setCancelled(false);
                return;
           }
