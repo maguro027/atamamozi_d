@@ -8,6 +8,7 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -48,6 +49,11 @@ public class Race_Runner {
           this.Race_mode = Race_Runner_Mode.NO_ENTRY;
           this.scoreboard = new Race_Scoreboard();
           this.locationViewer = new LocationViewer(this);
+          // Register this runner after construction is complete
+          register();
+     }
+
+     private void register() {
           Race_Core.Race_Runner_List.add(this);
           // also add to the fast lookup map
           if (this.Player != null)
@@ -267,6 +273,7 @@ public class Race_Runner {
           return this.Enter;
      }
 
+     @SuppressWarnings("null")
      public void Start() {
           this.Race_mode = Race_Runner_Mode.RUN;
           Race RACE = Race_Core.getRace(Race_ID);
@@ -320,6 +327,7 @@ public class Race_Runner {
           UpdateScoreboard();
      }
 
+     @SuppressWarnings("null")
      public void ReSpawn() {
           Race RACE = Race_Core.getRace(Race_ID);
           if (RACE == null)
@@ -353,9 +361,11 @@ public class Race_Runner {
                     }
                     break;
                case BOAT:
+                    @SuppressWarnings("null")
+                    Entity vehicle = getPlayer().getVehicle();
                     Enter = true;
-                    if (!(getPlayer().getVehicle() == null))
-                         getPlayer().getVehicle().remove();
+                    if (vehicle != null)
+                         vehicle.remove();
                     if (getCheckPoint() == 0) {
                          int idx = getJoin_Count() - 1;
                          if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {

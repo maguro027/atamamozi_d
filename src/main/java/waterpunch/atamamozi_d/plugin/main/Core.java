@@ -3,8 +3,9 @@ package waterpunch.atamamozi_d.plugin.main;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.Bukkit;
 import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -13,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+
 import waterpunch.atamamozi_d.plugin.event.Event;
 import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
@@ -82,7 +85,8 @@ public class Core extends JavaPlugin {
           Data = this;
 
           // Register event listeners
-          new Event(this);
+          @SuppressWarnings("unused")
+          Event eventListener = new Event(this);
 
           // Load saved race and score data from JSON files
           Main.loadData();
@@ -94,13 +98,14 @@ public class Core extends JavaPlugin {
                     p.closeInventory();
 
                // Create runner instance for player tracking
-               new Race_Runner(p);
+               @SuppressWarnings("unused")
+               Race_Runner runner = new Race_Runner(p);
 
                // Clear any existing plugin scoreboards from previous session
-               if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null)
-                    if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName()
-                              .equals("Atamamozi_" + ChatColor.RED + "D"))
-                         p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               Objective sidebar = p.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
+               if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) {
+                    p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               }
           }
      }
 
@@ -163,7 +168,7 @@ public class Core extends JavaPlugin {
                return false;
           }
 
-          Race_Runner run = null;
+          Race_Runner run;
           switch (args[0]) {
                case "help":
                     onhelp((Player) sender);
@@ -260,7 +265,7 @@ public class Core extends JavaPlugin {
      @Override
      public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
           Race_Runner r = Race_Core.getRunner((Player) sender);
-          ArrayList<String> subcmd = new ArrayList<String>();
+          ArrayList<String> subcmd = new ArrayList<>();
 
           if (args.length == 1) {
                subcmd.add("leave");
@@ -386,7 +391,7 @@ public class Core extends JavaPlugin {
           if (race == null)
                return;
 
-          if (race.getCheckPointLoc().size() == 0) {
+          if (race.getCheckPointLoc().isEmpty()) {
                race.addCheckPointLoc(player.getLocation(), r);
           } else {
                race.getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
@@ -407,7 +412,6 @@ public class Core extends JavaPlugin {
                return;
           }
           run.ReSpawn();
-          return;
      }
 
      /**

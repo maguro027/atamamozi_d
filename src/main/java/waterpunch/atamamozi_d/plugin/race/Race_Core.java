@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import org.bukkit.ChatColor;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.DisplaySlot;
+
 import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
@@ -109,7 +111,7 @@ public class Race_Core {
           // }
 
           if (!Race_Run.containsKey(Race.getUUID()))
-               Race_Run.put(Race.getUUID(), new ArrayList<Race_Runner>());
+               Race_Run.put(Race.getUUID(), new ArrayList<>());
 
           switch (Race.getMode()) {
                case WAIT:
@@ -159,10 +161,9 @@ public class Race_Core {
           // If the player is not in a race or runner doesn't exist, clear scoreboard if
           // present and return.
           if (!isJoin(player)) {
-               if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null)
-                    if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName()
-                              .equals("Atamamozi_" + ChatColor.RED + "D"))
-                         player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               org.bukkit.scoreboard.Objective sidebar = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
+               if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D"))
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                return;
           }
 
@@ -227,6 +228,7 @@ public class Race_Core {
           Race RACE = Race_Core.getRace(Race_ID);
           if (RACE == null)
                return;
+          @SuppressWarnings("unused")
           ArrayList<Player> Players = new ArrayList<>();
 
           Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
@@ -293,9 +295,12 @@ public class Race_Core {
           Race race = getRace(run.getRaceID());
           if (race == null)
                return;
-          if (race.getRace_Type() == Race_Type.BOAT && player.getVehicle() != null) {
-               run.setEnter(false);
-               player.getVehicle().remove();
+          if (race.getRace_Type() == Race_Type.BOAT) {
+               org.bukkit.entity.Entity vehicle = player.getVehicle();
+               if (vehicle != null) {
+                    run.setEnter(false);
+                    vehicle.remove();
+               }
           }
      }
 
@@ -437,6 +442,7 @@ public class Race_Core {
                          RemoveCar(val.getPlayer());
                     }
 
-          Bukkit.getLogger().info(CollarMessage.setInfo() + "Atamamozi_D Memory clear");
+          String clearMessage = CollarMessage.setInfo() + "Atamamozi_D Memory clear";
+          Bukkit.getLogger().info(clearMessage);
      }
 }

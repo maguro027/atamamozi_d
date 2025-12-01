@@ -1,8 +1,5 @@
 package waterpunch.atamamozi_d.plugin.main;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,9 +9,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.Bukkit;
 import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Package;
@@ -26,16 +29,16 @@ import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
 
-     public static final File file_Race = new File(
-               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
-     public static final File file_SCORE = new File(
-               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
-     public static final File file_Rase_Menu = new File(
-               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
+     public static final File FILE_RACE = new File(
+               new File("").getAbsolutePath() + "/plugins/Atamamozi_D/Races/");
+     public static final File FILE_SCORE = new File(
+               new File("").getAbsolutePath() + "/plugins/Atamamozi_D/Player_Scores/");
+     public static final File FILE_RACE_MENU = new File(
+               new File("").getAbsolutePath() + "/plugins/Atamamozi_D/");
 
      public static void loadData() {
-          file_Race.mkdirs();
-          File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
+          FILE_RACE.mkdirs();
+          File[] targetFile_dir_list = new File(FILE_RACE.toString()).listFiles();
           if (targetFile_dir_list == null)
                return;
           getRaces();
@@ -45,9 +48,9 @@ public class Main {
 
      @SuppressWarnings("unchecked")
      private static void getTop_Menu() {
+          createfile(FILE_RACE_MENU + "/race_list.json");
           try {
-               createfile(file_Rase_Menu + "/race_list.json");
-               Reader reader = Files.newBufferedReader(Paths.get(file_Rase_Menu + "/race_list.json"));
+               Reader reader = Files.newBufferedReader(Paths.get(FILE_RACE_MENU + "/race_list.json"));
                Race_Core.TOP_MENU = new Gson().fromJson(reader,
                          new LinkedHashMap<Integer, ArrayList<Inventory>>().getClass());
           } catch (IOException e) {
@@ -56,7 +59,7 @@ public class Main {
      }
 
      public static void getRaces() {
-          File[] files = file_Race.listFiles();
+          File[] files = FILE_RACE.listFiles();
           if (files == null)
                return;
           for (File tmpFile : files)
@@ -78,8 +81,8 @@ public class Main {
                          }
                          Race_Core.addRace(r);
                     } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         Bukkit.getLogger().warning(CollarMessage.setWarning() + "Race Data Broken...");
-                         Bukkit.getLogger().warning(tmpFile.getName());
+                         String message = CollarMessage.setWarning() + "Race Data Broken..." + tmpFile.getName();
+                         Bukkit.getLogger().warning(message);
                          Bukkit.getLogger().log(Level.WARNING, "Failed to parse race JSON: " + tmpFile.getName(), e);
                          break;
                     }
@@ -87,7 +90,7 @@ public class Main {
      }
 
      public static void getScores() {
-          File[] files = file_SCORE.listFiles();
+          File[] files = FILE_SCORE.listFiles();
           if (files == null)
                return;
           for (File tmpFile : files)

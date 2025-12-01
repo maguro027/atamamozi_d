@@ -2,6 +2,7 @@ package waterpunch.atamamozi_d.plugin.menus;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -17,14 +19,17 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 
+@SuppressWarnings("null")
 public class Menus {
 
      static Inventory setBorder(Inventory inv) {
-          ItemStack cash = null;
+          ItemStack cash;
           for (int i = 0; i < 54; ++i) {
-               if (i > 8 && i < 45) continue;
+               if (i > 8 && i < 45)
+                    continue;
                cash = Items.getBlack();
-               if (i == 45) cash = Items.getBack();
+               if (i == 45)
+                    cash = Items.getBack();
                inv.setItem(i, new ItemStack(cash));
           }
           return inv;
@@ -37,27 +42,29 @@ public class Menus {
           return RACE_TOP_MENU;
      }
 
-     @SuppressWarnings("deprecation")
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
           RACE_LIST.setItem(46, new ItemStack(Items.getThisClick()));
           RACE_LIST.setItem(47, new ItemStack(Items.getRanking()));
           RACE_LIST.setItem(48, new ItemStack(Items.getCreater(player.getName())));
-          if (Race_Core.Race_list.size() == 0) return RACE_LIST;
-          for (int i = 0; i < Race_Core.Race_list.size(); i++) RACE_LIST.setItem(i + 9, new ItemStack(Items.getRace(Race_Core.Race_list.get(i), player)));
+          if (Race_Core.Race_list.isEmpty())
+               return RACE_LIST;
+          for (int i = 0; i < Race_Core.Race_list.size(); i++)
+               RACE_LIST.setItem(i + 9, new ItemStack(Items.getRace(Race_Core.Race_list.get(i), player)));
           return RACE_LIST;
      }
 
-     @SuppressWarnings("deprecation")
      public static Inventory getRaceRanking(Player player) {
           Inventory RACE_RANKING = Bukkit.createInventory(player, 9 * 6, "RACE_RANKING");
           setBorder(RACE_RANKING);
           RACE_RANKING.setItem(46, new ItemStack(Items.getRace_LIST()));
           RACE_RANKING.setItem(47, new ItemStack(Items.getThisClick()));
           RACE_RANKING.setItem(48, new ItemStack(Items.getCreater(player.getName())));
-          if (Race_Core.Race_list.size() == 0) return RACE_RANKING;
-          for (int i = 0; i < Race_Core.Race_list.size(); i++) RACE_RANKING.setItem(i + 9, new ItemStack(Items.getRaceRank(Race_Core.Race_list.get(i), player)));
+          if (Race_Core.Race_list.isEmpty())
+               return RACE_RANKING;
+          for (int i = 0; i < Race_Core.Race_list.size(); i++)
+               RACE_RANKING.setItem(i + 9, new ItemStack(Items.getRaceRank(Race_Core.Race_list.get(i), player)));
           return RACE_RANKING;
      }
 
@@ -75,7 +82,6 @@ public class Menus {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) {
                player.sendMessage(CollarMessage.setInfo() + "Race Creating Start");
-               run = null;
                Race_Core.removeRunner(player);
                Race RACE = new Race(player);
                Race_Core.addRace(RACE);
@@ -93,9 +99,10 @@ public class Menus {
           if (Race_Core.getRace(run.getRaceID()).getRace_name().equals("DEFAULT")) {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "EDIT NAME");
           } else {
-               SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED + Race_Core.getRace(run.getRaceID()).getRace_name());
+               SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED
+                         + Race_Core.getRace(run.getRaceID()).getRace_name());
           }
-          List<String> SET_NAME_lores = new ArrayList<String>();
+          List<String> SET_NAME_lores = new ArrayList<>();
 
           SET_NAME_lores.add(ChatColor.GREEN + "/atamamozi_d setName");
 
@@ -114,17 +121,20 @@ public class Menus {
                     RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "BOAT");
                     break;
                default:
-                    player.sendMessage(CollarMessage.setWarning() + "[" + Race_Core.getRace(run.getRaceID()).getRace_Type() + "] is ERR");
+                    player.sendMessage(CollarMessage.setWarning() + "["
+                              + Race_Core.getRace(run.getRaceID()).getRace_Type() + "] is ERR");
                     break;
           }
           ItemStack RAP = new ItemStack(Material.COMPARATOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
-          RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED
+                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
 
-          AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+          AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED
+                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
 
           ItemStack ICON = new ItemStack(Race_Core.getRace(run.getRaceID()).getIcon());
           ItemMeta ICON_Meta = ICON.getItemMeta();
@@ -133,19 +143,19 @@ public class Menus {
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
           ItemMeta CHECKPOINT_Meta = CHECKPOINT.getItemMeta();
           CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Check Point");
-          List<String> CHECKPOINT_lores = new ArrayList<String>();
+          List<String> CHECKPOINT_lores = new ArrayList<>();
           CHECKPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addCheckPoint");
 
           ItemStack STARTPOINT = new ItemStack(Material.TARGET);
           ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
           STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Start Point");
-          List<String> STARTPOINT_lores = new ArrayList<String>();
+          List<String> STARTPOINT_lores = new ArrayList<>();
           STARTPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addStartPoint");
 
           ItemStack CREATE = new ItemStack(Material.WRITABLE_BOOK);
           ItemMeta CREATE_Meta = CREATE.getItemMeta();
           CREATE_Meta.setDisplayName(ChatColor.GOLD + "EDIT COMPLETE");
-          List<String> lores = new ArrayList<String>();
+          List<String> lores = new ArrayList<>();
 
           Race_Core.getRace(run.getRaceID()).setErrorCount(0);
 
@@ -154,12 +164,16 @@ public class Menus {
                Race_Core.getRace(run.getRaceID()).addErrorCount();
           } else {
                int i = 0;
-               for (Race R : Race_Core.Race_list) if (R.getRace_name().equals(Race_Core.getRace(run.getRaceID()).getRace_name())) i++;
+               for (Race R : Race_Core.Race_list)
+                    if (R.getRace_name().equals(Race_Core.getRace(run.getRaceID()).getRace_name()))
+                         i++;
                if (i != 1) {
-                    lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED + "Already NAME");
+                    lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED
+                              + "Already NAME");
                     Race_Core.getRace(run.getRaceID()).addErrorCount();
                } else {
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + ChatColor.GREEN + Race_Core.getRace(run.getRaceID()).getRace_name());
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + ChatColor.GREEN
+                              + Race_Core.getRace(run.getRaceID()).getRace_name());
                }
           }
 
@@ -179,33 +193,43 @@ public class Menus {
           if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : No Limit");
           } else {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.GREEN + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.GREEN
+                         + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
           }
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + ChatColor.GREEN + Race_Core.getRace(run.getRaceID()).getRap());
-          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + ChatColor.GREEN + Race_Core.getRace(run.getRaceID()).getIcon().toString());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + ChatColor.GREEN
+                    + Race_Core.getRace(run.getRaceID()).getRap());
+          lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + ChatColor.GREEN
+                    + Race_Core.getRace(run.getRaceID()).getIcon().toString());
 
-          if (Race_Core.getRace(run.getRaceID()).getStartPointLoc().size() == Race_Core.getRace(run.getRaceID()).getJoin_Amount()) {
+          if (Race_Core.getRace(run.getRaceID()).getStartPointLoc().size() == Race_Core.getRace(run.getRaceID())
+                    .getJoin_Amount()) {
                if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
-                    lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need  over 1");
+                    lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED
+                              + "Need  over 1");
                     Race_Core.getRace(run.getRaceID()).addErrorCount();
                } else {
-                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint :" + ChatColor.GREEN + Race_Core.getRace(run.getRaceID()).getStartPointLoc().size());
+                    lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint :" + ChatColor.GREEN
+                              + Race_Core.getRace(run.getRaceID()).getStartPointLoc().size());
                }
           } else {
-               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need " + Race_Core.getRace(run.getRaceID()).getJoin_Amount());
+               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need "
+                         + Race_Core.getRace(run.getRaceID()).getJoin_Amount());
                Race_Core.getRace(run.getRaceID()).addErrorCount();
           }
 
           if (Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() >= 2) {
-               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.GREEN + Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size());
+               lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.GREEN
+                         + Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size());
           } else {
-               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED + "Need over 2");
+               lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED
+                         + "Need over 2");
                Race_Core.getRace(run.getRaceID()).addErrorCount();
           }
 
           if (!(Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
                lores.add("");
-               lores.add(CollarMessage.setWarning() + ChatColor.RED + Race_Core.getRace(run.getRaceID()).getErrorCount() + "Error");
+               lores.add(CollarMessage.setWarning() + ChatColor.RED + Race_Core.getRace(run.getRaceID()).getErrorCount()
+                         + "Error");
           }
 
           STARTPOINT_Meta.setLore(STARTPOINT_lores);
@@ -262,8 +286,10 @@ public class Menus {
           RACE_CREATE_TYPE.setItem(29, new ItemStack(O));
           RACE_CREATE_TYPE.setItem(33, new ItemStack(O));
           Race_Runner run = Race_Core.getRunner(player);
-          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.WALK) RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
-          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT) RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
+          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.WALK)
+               RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
+          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT)
+               RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
 
           return RACE_CREATE_TYPE;
      }
@@ -276,7 +302,8 @@ public class Menus {
           ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
 
-          RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
+          RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED
+                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
           RAP.setItemMeta(RAP_Meta);
 
           RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));
@@ -296,7 +323,8 @@ public class Menus {
           if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
                AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + "No Limit");
           } else {
-               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+               AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED
+                         + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
           }
           AMOUNT.setItemMeta(AMOUNT_Meta);
 
@@ -329,7 +357,7 @@ public class Menus {
           ItemStack STARTPOINT = new ItemStack(Material.TARGET);
           ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
           STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Start Point Editor");
-          List<String> lores = new ArrayList<String>();
+          List<String> lores = new ArrayList<>();
           lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
           lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
           lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
@@ -338,7 +366,9 @@ public class Menus {
           STARTPOINT.setItemMeta(STARTPOINT_Meta);
           RACE_CREATE_STARTPOINT.setItem(4, new ItemStack(STARTPOINT));
 
-          for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getStartPointLoc().size(); i++) RACE_CREATE_STARTPOINT.setItem(i + 9, new ItemStack(Items.getRace_StartPint_Item(Race_Core.getRace(run.getRaceID()), i)));
+          for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getStartPointLoc().size(); i++)
+               RACE_CREATE_STARTPOINT.setItem(i + 9,
+                         new ItemStack(Items.getRace_StartPint_Item(Race_Core.getRace(run.getRaceID()), i)));
 
           return RACE_CREATE_STARTPOINT;
      }
@@ -351,7 +381,7 @@ public class Menus {
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
           ItemMeta CHECKPOINT_Meta = CHECKPOINT.getItemMeta();
           CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Check Point Editor");
-          List<String> lores = new ArrayList<String>();
+          List<String> lores = new ArrayList<>();
           lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
           lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
           lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
@@ -362,7 +392,8 @@ public class Menus {
           RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
 
           for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size(); i++) {
-               RACE_CREATE_CHECKPOINT.setItem(i + 9, new ItemStack(Items.getRace_CheckPint_Item(Race_Core.getRace(run.getRaceID()), i)));
+               RACE_CREATE_CHECKPOINT.setItem(i + 9,
+                         new ItemStack(Items.getRace_CheckPint_Item(Race_Core.getRace(run.getRaceID()), i)));
           }
           return RACE_CREATE_CHECKPOINT;
      }

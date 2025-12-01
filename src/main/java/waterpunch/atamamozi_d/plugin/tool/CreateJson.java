@@ -1,9 +1,5 @@
 package waterpunch.atamamozi_d.plugin.tool;
 
-import org.bukkit.Bukkit;
-import java.util.logging.Level;
-
-import com.google.gson.Gson;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -11,9 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
+import com.google.gson.Gson;
+
 import waterpunch.atamamozi_d.plugin.main.Main;
 import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
@@ -43,9 +45,9 @@ public class CreateJson {
                return;
           }
           race.setMode(Race_Mode.WAIT);
-          if (!(Main.file_Race.exists()))
-               Main.file_Race.mkdir();
-          String URL = Main.file_Race + "/" + race.getRace_name() + ".json";
+          if (!(Main.FILE_RACE.exists()))
+               Main.FILE_RACE.mkdir();
+          String URL = Main.FILE_RACE + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
           Race_Core.addRace(race);
           try (Writer writer = new FileWriter(URL)) {
@@ -56,8 +58,10 @@ public class CreateJson {
 
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
-               Bukkit.getLogger().info(CollarMessage.setInfo() + player.getName() + " is Race Create");
-               Bukkit.getLogger().info(CollarMessage.setInfo() + "NAME :" + race.getRace_name());
+               String createMessage = CollarMessage.setInfo() + player.getName() + " is Race Create";
+               Bukkit.getLogger().info(createMessage);
+               String nameMessage = CollarMessage.setInfo() + "NAME :" + race.getRace_name();
+               Bukkit.getLogger().info(nameMessage);
                Race_Core.removeRunner(player);
                player.closeInventory();
           } catch (IOException e) {
@@ -66,9 +70,9 @@ public class CreateJson {
      }
 
      public static void save(Race race) {
-          if (!(Main.file_Race.exists()))
-               Main.file_Race.mkdir();
-          String URL = Main.file_Race + "/" + race.getRace_name() + ".json";
+          if (!(Main.FILE_RACE.exists()))
+               Main.FILE_RACE.mkdir();
+          String URL = Main.FILE_RACE + "/" + race.getRace_name() + ".json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
@@ -80,9 +84,9 @@ public class CreateJson {
      }
 
      public static void Scoresave(Player_Score Score) {
-          if (!(Main.file_SCORE.exists()))
-               Main.file_SCORE.mkdir();
-          String URL = Main.file_SCORE + "/" + Score.getUUID() + ".json";
+          if (!(Main.FILE_SCORE.exists()))
+               Main.FILE_SCORE.mkdir();
+          String URL = Main.FILE_SCORE + "/" + Score.getUUID() + ".json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();
@@ -93,9 +97,9 @@ public class CreateJson {
      }
 
      public static void saveTop_Menu(LinkedHashMap<Integer, ArrayList<Inventory>> Data) {
-          if (!(Main.file_SCORE.exists()))
-               Main.file_SCORE.mkdir();
-          String URL = Main.file_Rase_Menu + "/race_list.json";
+          if (!(Main.FILE_SCORE.exists()))
+               Main.FILE_SCORE.mkdir();
+          String URL = Main.FILE_RACE_MENU + "/race_list.json";
           Main.createfile(URL);
           try (Writer writer = new FileWriter(URL)) {
                Gson gson = new Gson();

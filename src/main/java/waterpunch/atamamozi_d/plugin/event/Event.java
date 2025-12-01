@@ -53,7 +53,9 @@ public class Event implements Listener {
       * 
       * @param plugin Plugin instance
       */
+     @SuppressWarnings("constructor-leak")
      public Event(Plugin plugin) {
+          plugin.getServer().getPluginManager().registerEvents(this, plugin);
      }
 
      /**
@@ -73,6 +75,7 @@ public class Event implements Listener {
       * @param event Inventory click event
       */
      @EventHandler
+     @SuppressWarnings("null")
      public void onInventoryClickEvent(InventoryClickEvent event) {
           // try {
           // switch (getStatus()) {
@@ -88,12 +91,12 @@ public class Event implements Listener {
           // }
           // quick validations and use locals to avoid repeated casts and expensive string
           // matching
-          if (event.getInventory() == null || event.getInventory().getType() != InventoryType.CHEST)
+          if (event.getInventory().getType() != InventoryType.CHEST)
                return;
           if (!(event.getWhoClicked() instanceof Player))
                return;
           Player p = (Player) event.getWhoClicked();
-          String title = p.getOpenInventory() == null ? "" : p.getOpenInventory().getTitle();
+          String title = p.getOpenInventory().getTitle();
           if (!title.startsWith("RACE"))
                return;
 
@@ -318,6 +321,7 @@ public class Event implements Listener {
 
      @Deprecated
      @EventHandler(ignoreCancelled = true)
+     @SuppressWarnings("null")
      public void onEnSignClick(PlayerInteractEvent e) {
           if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign)
                     || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock())
@@ -335,6 +339,7 @@ public class Event implements Listener {
      }
 
      @EventHandler
+     @SuppressWarnings("null")
      public void onPlayerMove(final PlayerMoveEvent event) {
           // Avoid handling movement every tiny delta — only run logic when player changes
           // block
@@ -412,22 +417,26 @@ public class Event implements Listener {
 
      @EventHandler
      public void join(PlayerJoinEvent event) {
-          new Race_Runner(event.getPlayer());
+          @SuppressWarnings("unused")
+          Race_Runner runner = new Race_Runner(event.getPlayer());
      }
 
      @Deprecated
      @EventHandler
+     @SuppressWarnings("null")
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
           if (!(event.getVehicle().getPassenger() instanceof Player)
                     || !(event.getVehicle().getType() == EntityType.BOAT))
                return;
-          if (Race_Core.isJoin((Player) event.getVehicle().getPassenger()))
+          if (Race_Core.isJoin((Player) event.getVehicle().getPassenger())) {
+               Player passenger = (Player) event.getVehicle().getPassenger();
                for (Race_Runner val : Race_Core.Race_Runner_List)
-                    if (val.getPlayer().getUniqueId().equals(event.getVehicle().getPassenger().getUniqueId())
+                    if (val.getPlayer().getUniqueId().equals(passenger.getUniqueId())
                               && val.getMode() == Race_Runner_Mode.RUN) {
                          event.setCancelled(true);
                          return;
                     }
+          }
      }
 
      @Deprecated
