@@ -342,8 +342,13 @@ public class Event implements Listener {
                     }
                     break;
                case RUN:
-                    Location chackpoint = Race_Core.getRace(run.getRaceID()).getCheckPointLoc().get(run.getCheckPoint())
-                              .getLocation();
+                    Race raceRun = Race_Core.getRace(run.getRaceID());
+                    if (raceRun == null || raceRun.getCheckPointLoc() == null || raceRun.getCheckPointLoc().isEmpty())
+                         return;
+                    int cpIndex = run.getCheckPoint();
+                    if (cpIndex < 0 || cpIndex >= raceRun.getCheckPointLoc().size())
+                         return;
+                    Location chackpoint = raceRun.getCheckPointLoc().get(cpIndex).getLocation();
                     run.setnewLoc(event.getTo());
                     run.setoldLoc(event.getFrom());
                     run.getLocationViewer().DrawCircle(run.getCheckPoint());
@@ -387,7 +392,7 @@ public class Event implements Listener {
                return;
           if (Race_Core.isJoin((Player) event.getVehicle().getPassenger()))
                for (Race_Runner val : Race_Core.Race_Runner_List)
-                    if (val.getPlayer().getUniqueId() == event.getVehicle().getPassenger().getUniqueId()
+                    if (val.getPlayer().getUniqueId().equals(event.getVehicle().getPassenger().getUniqueId())
                               && val.getMode() == Race_Runner_Mode.RUN) {
                          event.setCancelled(true);
                          return;

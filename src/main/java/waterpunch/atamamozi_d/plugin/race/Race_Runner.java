@@ -66,6 +66,10 @@ public class Race_Runner {
           this.start_time = System.currentTimeMillis();
           this.st_Location = Player.getLocation();
 
+          // Ensure there's a list for this race id to avoid NPEs
+          if (!Race_Core.Race_Run.containsKey(Race_ID) || Race_Core.Race_Run.get(Race_ID) == null) {
+               Race_Core.Race_Run.put(Race_ID, new java.util.ArrayList<Race_Runner>());
+          }
           this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
           if (getJoin_Count() == 1)
                new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
@@ -269,6 +273,12 @@ public class Race_Runner {
                this.Race_mode = Race_Runner_Mode.NO_ENTRY;
                return;
           }
+          // ensure start point exists for this join index
+          if (RACE.getStartPointLoc() == null || RACE.getStartPointLoc().size() < Join_Count) {
+               Player.sendMessage(CollarMessage.setWarning() + "Start point not configured for your join slot");
+               this.Race_mode = Race_Runner_Mode.NO_ENTRY;
+               return;
+          }
           Player.teleport(RACE.getStartPointLoc().get(Join_Count - 1).getLocation());
 
           Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -280,7 +290,13 @@ public class Race_Runner {
                     Player.getLocation().getWorld()
                               .spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT)
                               .addPassenger(Player);
-                    Car = Player.getVehicle().getUniqueId();
+                    if (Player.getVehicle() != null) {
+                         Car = Player.getVehicle().getUniqueId();
+                    } else {
+                         // safeguard: vehicle may not be immediately attached; leave Car null and set
+                         // Enter flag
+                         Car = null;
+                    }
                     break;
                case WALK:
                     break;
@@ -317,9 +333,21 @@ public class Race_Runner {
           switch (RACE.getRace_Type()) {
                case WALK:
                     if (getCheckPoint() == 0) {
-                         Player.teleport(RACE.getStartPointLoc().get(getJoin_Count()).getLocation());
+                         int idx = getJoin_Count();
+                         if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
+                              Player.sendMessage(CollarMessage.setWarning() + "Respawn start point not available");
+                              Player.teleport(getst_Location());
+                         } else {
+                              Player.teleport(RACE.getStartPointLoc().get(idx).getLocation());
+                         }
                     } else {
-                         Player.teleport(RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation());
+                         int cpIdx = getCheckPoint() - 1;
+                         if (RACE.getCheckPointLoc() == null || cpIdx < 0 || cpIdx >= RACE.getCheckPointLoc().size()) {
+                              Player.sendMessage(CollarMessage.setWarning() + "Checkpoint location not available");
+                              Player.teleport(getst_Location());
+                         } else {
+                              Player.teleport(RACE.getCheckPointLoc().get(cpIdx).getLocation());
+                         }
                     }
                     break;
                case BOAT:
@@ -327,14 +355,24 @@ public class Race_Runner {
                     if (!(getPlayer().getVehicle() == null))
                          getPlayer().getVehicle().remove();
                     if (getCheckPoint() == 0) {
-                         RACE.getStartPointLoc().get(getJoin_Count()).getLocation().getWorld()
-                                   .spawnEntity(RACE.getStartPointLoc().get(getJoin_Count()).getLocation(),
-                                             EntityType.BOAT)
+                         int idx = getJoin_Count();
+                         if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
+                              Player.sendMessage(
+                                        CollarMessage.setWarning() + "Respawn start point not available for boat");
+                              break;
+                         }
+                         RACE.getStartPointLoc().get(idx).getLocation().getWorld()
+                                   .spawnEntity(RACE.getStartPointLoc().get(idx).getLocation(), EntityType.BOAT)
                                    .addPassenger(Player);
                     } else {
-                         RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation().getWorld()
-                                   .spawnEntity(RACE.getCheckPointLoc().get(getCheckPoint() - 1).getLocation(),
-                                             EntityType.BOAT)
+                         int cpIdx = getCheckPoint() - 1;
+                         if (RACE.getCheckPointLoc() == null || cpIdx < 0 || cpIdx >= RACE.getCheckPointLoc().size()) {
+                              Player.sendMessage(
+                                        CollarMessage.setWarning() + "Respawn checkpoint not available for boat");
+                              break;
+                         }
+                         RACE.getCheckPointLoc().get(cpIdx).getLocation().getWorld()
+                                   .spawnEntity(RACE.getCheckPointLoc().get(cpIdx).getLocation(), EntityType.BOAT)
                                    .addPassenger(Player);
                     }
                     break;
@@ -351,10 +389,13 @@ public class Race_Runner {
 
           getPlayer().playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           getPlayer().sendMessage(CollarMessage.setInfo() + "GOAL!!");
-          for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID())) {
-               val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName()
-                         + ChatColor.WHITE + "] " + getTimest());
-               val.UpdateScoreboard();
+          java.util.List<Race_Runner> __runners_goal = Race_Core.Race_Run.get(RACE.getUUID());
+          if (__runners_goal != null) {
+               for (Race_Runner val : __runners_goal) {
+                    val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName()
+                              + ChatColor.WHITE + "] " + getTimest());
+                    val.UpdateScoreboard();
+               }
           }
 
           // ensure scoreboard updates immediately after goal
@@ -364,11 +405,14 @@ public class Race_Runner {
           setMode(Race_Runner_Mode.ALL_GOAL_WAIT);
           new Race_Timer(getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
           int i = 0;
-          for (Race_Runner val : Race_Core.Race_Run.get(RACE.getUUID()))
-               if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
-                    i++;
-          if (i == Race_Core.Race_Run.get(RACE.getUUID()).size())
-               Race_Core.AllGoal(RACE.getUUID());
+          java.util.List<Race_Runner> __runners_goal_check = Race_Core.Race_Run.get(RACE.getUUID());
+          if (__runners_goal_check != null) {
+               for (Race_Runner val : __runners_goal_check)
+                    if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
+                         i++;
+               if (i == __runners_goal_check.size())
+                    Race_Core.AllGoal(RACE.getUUID());
+          }
      }
 
      public void Complete() {

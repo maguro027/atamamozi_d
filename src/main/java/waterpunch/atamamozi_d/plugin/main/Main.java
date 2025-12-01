@@ -23,14 +23,18 @@ import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
 
-     public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
-     public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
-     public static final File file_Rase_Menu = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
+     public static final File file_Race = new File(
+               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
+     public static final File file_SCORE = new File(
+               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
+     public static final File file_Rase_Menu = new File(
+               new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/");
 
      public static void loadDeta() {
           file_Race.mkdirs();
           File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
-          if (targetFile_dir_list == null) return;
+          if (targetFile_dir_list == null)
+               return;
           getRaces();
           getScores();
           getTop_Menu();
@@ -41,7 +45,8 @@ public class Main {
           try {
                createfile(file_Rase_Menu + "/race_list.json");
                Reader reader = Files.newBufferedReader(Paths.get(file_Rase_Menu + "/race_list.json"));
-               Race_Core.TOP_MENU = new Gson().fromJson(reader, new LinkedHashMap<Integer, ArrayList<Inventory>>().getClass());
+               Race_Core.TOP_MENU = new Gson().fromJson(reader,
+                         new LinkedHashMap<Integer, ArrayList<Inventory>>().getClass());
           } catch (IOException e) {
                e.printStackTrace();
           }
@@ -49,52 +54,70 @@ public class Main {
 
      public static void getRaces() {
           File[] files = file_Race.listFiles();
-          if (files == null) return;
-          for (File tmpFile : files) if (tmpFile.isDirectory()) {
-               getRaces();
-          } else {
-               if (!tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) continue;
-               try (FileReader fileReader = new FileReader(tmpFile)) {
-                    Gson gson = new Gson();
-                    Race r = gson.fromJson(fileReader, Race.class);
-                    if (r.getUUID() == null) {
-                         r.setUUID();
-                         CreateJson.save(r);
+          if (files == null)
+               return;
+          for (File tmpFile : files)
+               if (tmpFile.isDirectory()) {
+                    getRaces();
+               } else {
+                    String name = tmpFile.getName();
+                    int idx = name.lastIndexOf('.');
+                    if (idx < 0)
+                         continue;
+                    if (!name.substring(idx).equals(".json"))
+                         continue;
+                    try (FileReader fileReader = new FileReader(tmpFile)) {
+                         Gson gson = new Gson();
+                         Race r = gson.fromJson(fileReader, Race.class);
+                         if (r.getUUID() == null) {
+                              r.setUUID();
+                              CreateJson.save(r);
+                         }
+                         Race_Core.addRace(r);
+                    } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                         System.out.println(CollarMessage.setWarning() + "Race Data Broken...");
+                         System.out.println(tmpFile.getName());
+                         e.printStackTrace();
+                         break;
                     }
-                    Race_Core.addRace(r);
-               } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                    System.out.println(CollarMessage.setWarning() + "Race Data Broken...");
-                    System.out.println(tmpFile.getName());
-                    e.printStackTrace();
-                    break;
                }
-          }
      }
 
      public static void getScores() {
           File[] files = file_SCORE.listFiles();
-          if (files == null) return;
-          for (File tmpFile : files) if (!tmpFile.isDirectory()) {
-               if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
-                    try (FileReader fileReader = new FileReader(tmpFile)) {
-                         Gson gson = new Gson();
-                         Player_Score r = gson.fromJson(fileReader, Player_Score.class);
-                         Player_Score_Core.Score.add(r);
+          if (files == null)
+               return;
+          for (File tmpFile : files)
+               if (!tmpFile.isDirectory()) {
+                    String name = tmpFile.getName();
+                    int idx = name.lastIndexOf('.');
+                    if (idx < 0)
+                         continue;
+                    if (name.substring(idx).equals(".json")) {
+                         try (FileReader fileReader = new FileReader(tmpFile)) {
+                              Gson gson = new Gson();
+                              Player_Score r = gson.fromJson(fileReader, Player_Score.class);
+                              Player_Score_Core.Score.add(r);
 
-                         for (Score_parts parts : r.getScore_parts()) for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(parts.getRace_ID())) Package.addJoinCount(parts.getCount());
+                              for (Score_parts parts : r.getScore_parts())
+                                   for (Race_Package Package : Race_Core.Race_packages)
+                                        if (Package.getRace_ID().equals(parts.getRace_ID()))
+                                             Package.addJoinCount(parts.getCount());
 
-                         r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
-                    } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         e.printStackTrace();
+                              r.getTOPScores().forEach((k, v) -> Player_Score_Core.addRanking(k, r.getName(), v));
+                         } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                              e.printStackTrace();
+                         }
                     }
                }
-          }
-          for (Race r : Race_Core.Race_list) Player_Score_Core.SortRanking(r.getUUID());
+          for (Race r : Race_Core.Race_list)
+               Player_Score_Core.SortRanking(r.getUUID());
      }
 
      public static void createfile(String string) {
           try {
                Files.createFile(Paths.get(string));
-          } catch (IOException e) {}
+          } catch (IOException e) {
+          }
      }
 }

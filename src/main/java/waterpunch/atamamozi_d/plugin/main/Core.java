@@ -41,26 +41,36 @@ public class Core extends JavaPlugin {
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
           LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
-          if (getConfig().getString("Setting.CountDown.WAIT") == null) getConfig().set("Setting.CountDown.WAIT", 30);
-          if (getConfig().getString("Setting.CountDown.START") == null) getConfig().set("Setting.CountDown.START", 5);
-          if (getConfig().getString("Setting.CountDown.YOIN") == null) getConfig().set("Setting.CountDown.YOIN", 5);
-          if (getConfig().getString("Setting.CountDown.LEAVE") == null) getConfig().set("Setting.CountDown.LEAVE", 10);
-          if (getConfig().getString("Setting.CountDown.MENU_RANK_VIEW") == null) getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
+          if (getConfig().getString("Setting.CountDown.WAIT") == null)
+               getConfig().set("Setting.CountDown.WAIT", 30);
+          if (getConfig().getString("Setting.CountDown.START") == null)
+               getConfig().set("Setting.CountDown.START", 5);
+          if (getConfig().getString("Setting.CountDown.YOIN") == null)
+               getConfig().set("Setting.CountDown.YOIN", 5);
+          if (getConfig().getString("Setting.CountDown.LEAVE") == null)
+               getConfig().set("Setting.CountDown.LEAVE", 10);
+          if (getConfig().getString("Setting.CountDown.MENU_RANK_VIEW") == null)
+               getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
           this.saveConfig();
           Data = this;
           new Event(this);
           Main.loadDeta();
           for (Player p : this.getServer().getOnlinePlayers()) {
-               if (p.getOpenInventory().getTitle().equals("RACE_CREATE")) p.closeInventory();
+               if (p.getOpenInventory().getTitle().equals("RACE_CREATE"))
+                    p.closeInventory();
                new Race_Runner(p);
-               if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null)
+                    if (p.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getDisplayName()
+                              .equals("Atamamozi_" + ChatColor.RED + "D"))
+                         p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
           }
      }
 
      @Override
      public void onDisable() {
           System.out.println("ATAMAMOZI-D ENGINE STOP");
-          for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score) CreateJson.Scoresave(ps);
+          for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score)
+               CreateJson.Scoresave(ps);
           Race_Core.clear();
      }
 
@@ -70,7 +80,8 @@ public class Core extends JavaPlugin {
 
      @Override
      public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-          if (!(sender instanceof Player)) return false;
+          if (!(sender instanceof Player))
+               return false;
           if (args.length == 0) {
                ((Player) sender).openInventory(Menus.getTop((Player) sender));
                return false;
@@ -125,10 +136,12 @@ public class Core extends JavaPlugin {
                     break;
                case "start":
                     run = Race_Core.getRunner((Player) sender);
-                    if (run == null) return false;
+                    if (run == null)
+                         return false;
                     switch (run.getMode()) {
                          case WAIT:
-                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
+                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(Core.getthis(), 0L,
+                                        20L);
                               break;
                          default:
                     }
@@ -202,9 +215,11 @@ public class Core extends JavaPlugin {
           player.sendMessage("---------------------");
      }
 
-     void onload(Player player) {}
+     void onload(Player player) {
+     }
 
-     void onstop(Player player) {}
+     void onstop(Player player) {
+     }
 
      void onleave(Player player) {
           Race_Core.removeRunner(player);
@@ -212,7 +227,8 @@ public class Core extends JavaPlugin {
 
      void onaddStartpoint(Player player) {
           Race_Runner run = Race_Core.getRunner(player);
-          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
+               return;
 
           Race_Core.getRace(run.getRaceID()).addStartPointLoc(player.getLocation());
           player.sendMessage(CollarMessage.setInfo() + "Set Start Point");
@@ -222,7 +238,8 @@ public class Core extends JavaPlugin {
 
      void onaddCheckpoint(Player player, String r) {
           Race_Runner run = Race_Core.getRunner(player);
-          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
+               return;
           try {
                if (Integer.parseInt(r) <= 0) {
                     player.sendMessage(CollarMessage.setWarning() + "Please enter Over 0");
@@ -233,18 +250,21 @@ public class Core extends JavaPlugin {
                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                player.sendMessage(CollarMessage.setInfo() + "Set Check Point");
           } catch (NumberFormatException xr) {
-               player.sendMessage(CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Not Number");
+               player.sendMessage(
+                         CollarMessage.setWarning() + "<" + ChatColor.RED + r + ChatColor.GOLD + "> is Not Number");
           }
           run.UpdateScoreboard();
      }
 
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = Race_Core.getRunner(player);
-          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
+               return;
           if (Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() == 0) {
                Race_Core.getRace(run.getRaceID()).addCheckPointLoc(player.getLocation(), r);
           } else {
-               Race_Core.getRace(run.getRaceID()).getCheckPointLoc().set(no, new CheckPointLoc(player.getLocation(), r));
+               Race_Core.getRace(run.getRaceID()).getCheckPointLoc().set(no,
+                         new CheckPointLoc(player.getLocation(), r));
           }
           run.UpdateScoreboard();
      }
@@ -261,13 +281,15 @@ public class Core extends JavaPlugin {
 
      private void onjoin(Player player, String args) {
           Race race = Race_Core.getRace(args);
-          if (race == null) return;
+          if (race == null)
+               return;
           Race_Core.joinRace(race, player);
      }
 
      void remCheckPoint(Player player, int no) {
           Race_Runner run = Race_Core.getRunner(player);
-          if (run == null || run.getMode() != Race_Runner_Mode.EDIT) return;
+          if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
+               return;
           Race_Core.getRace(run.getRaceID()).getCheckPointLoc().remove(no);
           run.UpdateScoreboard();
      }

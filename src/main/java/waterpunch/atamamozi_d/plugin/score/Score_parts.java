@@ -27,11 +27,15 @@ public class Score_parts {
      public Boolean addTime(Long time) {
           TIMEs.add(time);
           COUNT++;
-          for (Race_Package Package : Race_Core.Race_packages) if (Package.getRace_ID().equals(RACE_ID)) Package.addJoinCount();
+          for (Race_Package Package : Race_Core.Race_packages)
+               if (Package.getRace_ID().equals(RACE_ID))
+                    Package.addJoinCount();
           List<Long> onetime = TIMEs.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
           TIMEs = onetime;
-          if (TIMEs.size() == 11) TIMEs.remove(10);
-          if (TIMEs.get(0) == time) return true;
+          if (TIMEs.size() == 11)
+               TIMEs.remove(10);
+          if (TIMEs.get(0).equals(time))
+               return true;
           return false;
      }
 
@@ -44,7 +48,8 @@ public class Score_parts {
      }
 
      public Long getRAP_TIME(int i) {
-          if (BEST_RAP.isEmpty()) return (long) -1;
+          if (BEST_RAP.isEmpty())
+               return (long) -1;
           return BEST_RAP.get(i);
      }
 

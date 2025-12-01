@@ -34,7 +34,7 @@ public class Race_Timer extends BukkitRunnable {
                     break;
           }
           for (int i = 0; i < Race_Core.Timers.size(); i++)
-               if (Race_Core.Timers.get(i).getUUID() == getUUID())
+               if (Race_Core.Timers.get(i).getUUID() != null && Race_Core.Timers.get(i).getUUID().equals(getUUID()))
                     Race_Core.Timers.get(i).cancel();
           Race_Core.Timers.add(this);
      }
@@ -89,17 +89,28 @@ public class Race_Timer extends BukkitRunnable {
                return;
           }
 
-          if (Race_Core.Race_Run.isEmpty())
+          // Defensive checks: if there are no runners or no race data, stop this timer
+          if (Race_Core.Race_Run.isEmpty()) {
                cancel();
-          if (Race_Core.Race_Run.get(Race_UUID) == null)
+               return;
+          }
+
+          java.util.List<Race_Runner> __runners = Race_Core.Race_Run.get(Race_UUID);
+          if (__runners == null) {
                cancel();
-          if (Race_Core.getRace(Race_UUID).getMode() != Race_Mode.WAIT)
+               return;
+          }
+
+          waterpunch.atamamozi_d.plugin.race.Race race = Race_Core.getRace(Race_UUID);
+          if (race == null || race.getMode() != Race_Mode.WAIT) {
                cancel();
+               return;
+          }
           Race_Core.getRace(Race_UUID).setCountDown(this.time);
           try {
                switch (Type) {
                     case WAIT:
-                         for (Race_Runner val : Race_Core.Race_Run.get(Race_UUID))
+                         for (Race_Runner val : __runners)
                               val.UpdateScoreboard();
                          if (this.time == 0) {
                               new Race_Timer(Race_Timer_Type.START, Race_UUID)
@@ -114,7 +125,7 @@ public class Race_Timer extends BukkitRunnable {
                               cancel();
                               return;
                          }
-                         for (Race_Runner val : Race_Core.Race_Run.get(Race_UUID)) {
+                         for (Race_Runner val : __runners) {
                               val.getPlayer().teleport(Race_Core.getRace(Race_UUID).getStartPointLoc()
                                         .get(val.getJoin_Count() - 1).getLocation());
                               val.UpdateScoreboard();
