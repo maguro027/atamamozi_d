@@ -9,60 +9,40 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import waterpunch.atamamozi_d.plugin.race.Race;
-import waterpunch.atamamozi_d.plugin.score.Player_Score;
+import waterpunch.atamamozi_d.plugin.race.Race_Core;
+import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
+import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 
 public class Main {
 
      public static final File file_Race = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Races/");
-     public static final File file_SCORE = new File(new File("").getAbsolutePath().toString() + "/plugins/Atamamozi_D/Player_Scores/");
+
+     public static int fil_count = 0;
 
      public static void loadconfig() {
           file_Race.mkdirs();
           File[] targetFile_dir_list = new File(file_Race.toString()).listFiles();
           if (targetFile_dir_list == null) return;
           getRaces();
-          getScores();
      }
 
      public static void getRaces() {
-          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_Race.listFiles();
+          File[] files = CreateJson.file_Race.listFiles();
           if (files == null) return;
-          for (File tmpFile : files) if (tmpFile.isDirectory()) {
-               getRaces();
-          } else {
-               if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
-                    try (FileReader fileReader = new FileReader(tmpFile)) {
-                         Gson gson = new Gson();
-                         Race r = gson.fromJson(fileReader, Race.class);
-                         if (r.getUUID() == null) waterpunch.atamamozi_d.plugin.tool.CreateJson.save(r);
-                         waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list.add(r);
-                    } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         e.printStackTrace();
-                    }
+          for (File tmpFile : files) {
+               if (tmpFile.isDirectory()) continue;
+               if (!tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) continue;
+               try (FileReader fileReader = new FileReader(tmpFile)) {
+                    Gson gson = new Gson();
+                    Race_Core.getRaces().add(gson.fromJson(fileReader, Race.class));
+                    System.out.println(tmpFile.getName());
+               } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                    e.printStackTrace();
+                    continue;
                }
           }
-     }
-
-     public static void getScores() {
-          File[] files = waterpunch.atamamozi_d.plugin.tool.CreateJson.file_SCORE.listFiles();
-          if (files == null) return;
-          for (File tmpFile : files) if (!tmpFile.isDirectory()) {
-               if (tmpFile.getName().substring(tmpFile.getName().lastIndexOf(".")).equals(".json")) {
-                    try (FileReader fileReader = new FileReader(tmpFile)) {
-                         Gson gson = new Gson();
-                         Player_Score r = gson.fromJson(fileReader, Player_Score.class);
-                         waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score.add(r);
-                         r.getTOPScores().forEach((k, v) -> waterpunch.atamamozi_d.plugin.score.Player_Score_Core.addRanking(k, r.getName(), v));
-                    } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                         e.printStackTrace();
-                    }
-               }
-          }
-          for (Race r : waterpunch.atamamozi_d.plugin.race.Race_Core.Race_list) waterpunch.atamamozi_d.plugin.score.Player_Score_Core.SortRanking(r.getUUID());
+          System.out.println(CollarMessage.setInfo() + "Load Complete " + Race_Core.getRaces().size() + " Races");
      }
 
      public static void createfile(String string) {

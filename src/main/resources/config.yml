@@ -1,2 +1,9 @@
 Setting:
-     CountDown: 30
+     CountDown:
+          WAIT: 35
+          START: 5
+          YOIN: 5
+          LEAVE: 10
+          MENU_RANK_VIEW: 20
+     MENU_RANK_VIEW: 20
+     RaceCreateAutoAccsept: false
