@@ -42,19 +42,31 @@ mvn clean package
 
 ### コマンド
 
-- `/race list` - 利用可能なレース一覧を表示
-- `/race create` - 新しいレースを作成
-- `/race join <レース名>` - レースに参加
-- `/race leave` - 現在のレースから退出
-- `/race help` - ヘルプメッセージを表示
+- `/atamamozi_d` または `/atd` - メインメニューを開く
+- `/atamamozi_d list` - 利用可能なレース一覧を表示
+- `/atamamozi_d create` - 新しいレースを作成
+- `/atamamozi_d join <レース名>` - レースに参加
+- `/atamamozi_d leave` - 現在のレースから退出
+- `/atamamozi_d start` - レースカウントダウンを開始（作成者のみ）
+- `/atamamozi_d respawn` - チェックポイントでリスポーン
+- `/atamamozi_d rank` - ランキングを表示
+- `/atamamozi_d help` - ヘルプメッセージを表示
+
+#### レース編集モード専用コマンド
+
+- `/atamamozi_d addStartPoint` - スタート地点を設定
+- `/atamamozi_d addCheckPoint <半径>` - チェックポイントを設定（半径は数値）
+- `/atamamozi_d setName <名前>` - レース名を設定
 
 ### レースの作成
 
-1. `/race create` でレース作成メニューを開く
+1. `/atamamozi_d create` でレース作成メニューを開く
 2. レースタイプ（徒歩/ボート）を選択
 3. ラップ数と参加人数を設定
-4. スタート地点とチェックポイントを設定
-5. レースを保存
+4. `/atamamozi_d addStartPoint` でスタート地点を設定
+5. `/atamamozi_d addCheckPoint <半径>` でチェックポイントを設定
+6. `/atamamozi_d setName <名前>` でレース名を設定
+7. レースを保存
 
 ### 看板でのレース参加
 
