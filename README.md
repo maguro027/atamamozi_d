@@ -2,9 +2,9 @@
 
 Bukkit/Spigot レースプラグイン - プレイヤー同士が競走できるレースシステム
 
-## デモ動画
+## ダウンロード
 
-[プラグインのデモ動画はこちら](https://drive.google.com/file/d/1-AKq-8x0gPaDmMF9oiVwFKusLaYxrQYu/view)
+[安定版のJarファイルはこちら](https://drive.google.com/file/d/1-AKq-8x0gPaDmMF9oiVwFKusLaYxrQYu/view)
 
 ## 概要
 
