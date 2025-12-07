@@ -2,6 +2,10 @@
 
 Bukkit/Spigot レースプラグイン - プレイヤー同士が競走できるレースシステム
 
+## デモ動画
+
+[プラグインのデモ動画はこちら](https://drive.google.com/file/d/1-AKq-8x0gPaDmMF9oiVwFKusLaYxrQYu/view)
+
 ## 概要
 
 Atamamozi_D は、Minecraft サーバー用の包括的なレースプラグインです。プレイヤーはカスタムレースコースを作成し、チェックポイントベースのレースに参加できます。
