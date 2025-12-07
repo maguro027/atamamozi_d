@@ -1,9 +1,12 @@
 package waterpunch.atamamozi_d.plugin.event;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +21,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import waterpunch.atamamozi_d.plugin.menus.Menus;
@@ -48,13 +53,22 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
  */
 public class Event implements Listener {
 
+     private final Plugin plugin;
+
      /**
-      * Register this event listener with the plugin.
+      * Create event listener instance.
       * 
       * @param plugin Plugin instance
       */
-     @SuppressWarnings("constructor-leak")
      public Event(Plugin plugin) {
+          this.plugin = plugin;
+     }
+
+     /**
+      * Register this event listener with the plugin.
+      * Call this method after construction to activate event handling.
+      */
+     public void register() {
           plugin.getServer().getPluginManager().registerEvents(this, plugin);
      }
 
@@ -75,7 +89,6 @@ public class Event implements Listener {
       * @param event Inventory click event
       */
      @EventHandler
-     @SuppressWarnings("null")
      public void onInventoryClickEvent(InventoryClickEvent event) {
           // try {
           // switch (getStatus()) {
@@ -127,12 +140,17 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 47)
                          p.openInventory(Menus.getRaceRanking(p));
                     if (event.getRawSlot() >= 9 && event.getRawSlot() < 45) {
-                         if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
-                              Race r = Race_Core.getRace(event.getCurrentItem().getItemMeta().getDisplayName());
-                              if (r == null)
-                                   break;
-                              Race_Core.joinRace(r, p);
-                              p.closeInventory();
+                         ItemStack currentItem = event.getCurrentItem();
+                         if (currentItem != null) {
+                              ItemMeta meta = currentItem.getItemMeta();
+                              if (meta != null) {
+                                   String displayName = meta.getDisplayName();
+                                   Race r = Race_Core.getRace(displayName);
+                                   if (r == null)
+                                        break;
+                                   Race_Core.joinRace(r, p);
+                                   p.closeInventory();
+                              }
                          }
                     }
                     break;
@@ -173,12 +191,20 @@ public class Event implements Listener {
                     event.setCancelled(true);
                     if (event.getRawSlot() == 45)
                          p.openInventory(Menus.getRaceCreate(p));
+                    if (run == null)
+                         break;
+                    UUID raceID1 = run.getRaceID();
+                    if (raceID1 == null)
+                         break;
+                    Race race1 = Race_Core.getRace(raceID1);
+                    if (race1 == null)
+                         break;
                     if (event.getRawSlot() == 20 || event.getRawSlot() == 29) {
-                         Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.WALK);
+                         race1.setRace_Type(Race_Type.WALK);
                          p.openInventory(Menus.getRaceType(p));
                          run.UpdateScoreboard();
                     } else if (event.getRawSlot() == 24 || event.getRawSlot() == 33) {
-                         Race_Core.getRace(run.getRaceID()).setRace_Type(Race_Type.BOAT);
+                         race1.setRace_Type(Race_Type.BOAT);
                          p.openInventory(Menus.getRaceType(p));
                          run.UpdateScoreboard();
                     }
@@ -187,15 +213,23 @@ public class Event implements Listener {
                     event.setCancelled(true);
                     if (event.getRawSlot() == 45)
                          p.openInventory(Menus.getRaceCreate(p));
+                    if (run == null)
+                         break;
+                    UUID raceID2 = run.getRaceID();
+                    if (raceID2 == null)
+                         break;
+                    Race race2 = Race_Core.getRace(raceID2);
+                    if (race2 == null)
+                         break;
                     if (event.getRawSlot() == 20) {
-                         Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() + 1);
+                         race2.setRap(race2.getRap() + 1);
                          p.openInventory(Menus.getRaceRap(p));
                          run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
-                         if (Race_Core.getRace(run.getRaceID()).getRap() == 1)
+                         if (race2.getRap() == 1)
                               return;
-                         Race_Core.getRace(run.getRaceID()).setRap(Race_Core.getRace(run.getRaceID()).getRap() - 1);
+                         race2.setRap(race2.getRap() - 1);
                          p.openInventory(Menus.getRaceRap(p));
                          run.UpdateScoreboard();
                     }
@@ -204,17 +238,23 @@ public class Event implements Listener {
                     event.setCancelled(true);
                     if (event.getRawSlot() == 45)
                          p.openInventory(Menus.getRaceCreate(p));
+                    if (run == null)
+                         break;
+                    UUID raceID3 = run.getRaceID();
+                    if (raceID3 == null)
+                         break;
+                    Race race3 = Race_Core.getRace(raceID3);
+                    if (race3 == null)
+                         break;
                     if (event.getRawSlot() == 20) {
-                         Race_Core.getRace(run.getRaceID())
-                                   .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() + 1);
+                         race3.setJoin_Amount(race3.getJoin_Amount() + 1);
                          p.openInventory(Menus.getRaceAmount(p));
                          run.UpdateScoreboard();
                     }
                     if (event.getRawSlot() == 24) {
-                         if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 1)
+                         if (race3.getJoin_Amount() == 1)
                               return;
-                         Race_Core.getRace(run.getRaceID())
-                                   .setJoin_Amount(Race_Core.getRace(run.getRaceID()).getJoin_Amount() - 1);
+                         race3.setJoin_Amount(race3.getJoin_Amount() - 1);
                          p.openInventory(Menus.getRaceAmount(p));
                          run.UpdateScoreboard();
                     }
@@ -224,9 +264,18 @@ public class Event implements Listener {
                     if (event.getRawSlot() == 45) {
                          p.openInventory(Menus.getRaceCreate(p));
                     } else {
-                         if (event.getCurrentItem() == null)
+                         ItemStack iconItem = event.getCurrentItem();
+                         if (iconItem == null)
                               return;
-                         Race_Core.getRace(run.getRaceID()).setIcon(event.getCurrentItem().getType());
+                         if (run == null)
+                              return;
+                         UUID raceID4 = run.getRaceID();
+                         if (raceID4 == null)
+                              return;
+                         Race race4 = Race_Core.getRace(raceID4);
+                         if (race4 == null)
+                              return;
+                         race4.setIcon(iconItem.getType());
                          p.openInventory(Menus.getRaceIcon(p));
                     }
                     break;
@@ -235,24 +284,38 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          p.openInventory(Menus.getRaceCreate(p));
                     } else {
-                         if (event.getCurrentItem() == null || event.getCurrentItem().getType() != Material.MAP) {
+                         ItemStack checkItem = event.getCurrentItem();
+                         if (checkItem == null || checkItem.getType() != Material.MAP) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         if (run == null) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         UUID raceID5 = run.getRaceID();
+                         if (raceID5 == null) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         Race race5 = Race_Core.getRace(raceID5);
+                         if (race5 == null) {
                               event.setCancelled(true);
                               return;
                          }
                          switch (event.getAction()) {
                               case CLONE_STACK: // remove
-                                   Race_Core.getRace(run.getRaceID()).getCheckPointLoc().remove(event.getRawSlot() - 9);
+                                   race5.getCheckPointLoc().remove(event.getRawSlot() - 9);
                                    p.openInventory(Menus.getRaceCheckPoint(p));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_HALF: // Update
-                                   Race_Core.getRace(run.getRaceID()).getCheckPointLoc().set(event.getRawSlot() - 9,
-                                             Race_Core.getRace(run.getRaceID()).getCheckPointLoc()
-                                                       .get(event.getRawSlot() - 9));
+                                   race5.getCheckPointLoc().set(event.getRawSlot() - 9,
+                                             race5.getCheckPointLoc().get(event.getRawSlot() - 9));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_ALL:
-                                   Hachitai.setCircle(run, Race_Core.getRace(run.getRaceID()).getStartPointLoc()
+                                   Hachitai.setCircle(run, race5.getStartPointLoc()
                                              .get(event.getRawSlot() - 9).getLocation(), 1);
 
                                    p.openInventory(Menus.getRaceCheckPoint(p));
@@ -268,24 +331,38 @@ public class Event implements Listener {
                          event.setCancelled(true);
                          p.openInventory(Menus.getRaceCreate(p));
                     } else {
-                         if (event.getCurrentItem() == null
-                                   || event.getCurrentItem().getType() != Material.EMERALD_BLOCK) {
+                         ItemStack startItem = event.getCurrentItem();
+                         if (startItem == null || startItem.getType() != Material.EMERALD_BLOCK) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         if (run == null) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         UUID raceID6 = run.getRaceID();
+                         if (raceID6 == null) {
+                              event.setCancelled(true);
+                              return;
+                         }
+                         Race race6 = Race_Core.getRace(raceID6);
+                         if (race6 == null) {
                               event.setCancelled(true);
                               return;
                          }
                          switch (event.getAction()) {
                               case CLONE_STACK: // remove
-                                   Race_Core.getRace(run.getRaceID()).getStartPointLoc().remove(event.getRawSlot() - 9);
+                                   race6.getStartPointLoc().remove(event.getRawSlot() - 9);
                                    p.openInventory(Menus.getRaceStartPoint(p));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_HALF: // Update
-                                   Race_Core.getRace(run.getRaceID()).getStartPointLoc().set(event.getRawSlot() - 9,
+                                   race6.getStartPointLoc().set(event.getRawSlot() - 9,
                                              new Loc_parts(p.getLocation()));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_ALL:
-                                   Hachitai.setCircle(run, Race_Core.getRace(run.getRaceID()).getStartPointLoc()
+                                   Hachitai.setCircle(run, race6.getStartPointLoc()
                                              .get(event.getRawSlot() - 9).getLocation(), 1);
                                    p.openInventory(Menus.getRaceStartPoint(p));
                                    event.setCancelled(true);
@@ -321,31 +398,40 @@ public class Event implements Listener {
 
      @Deprecated
      @EventHandler(ignoreCancelled = true)
-     @SuppressWarnings("null")
      public void onEnSignClick(PlayerInteractEvent e) {
-          if (e.getPlayer().isSneaking() || !(e.getClickedBlock().getState() instanceof Sign)
-                    || e.getAction() != Action.RIGHT_CLICK_BLOCK || !e.hasBlock())
+          if (e.getPlayer().isSneaking() || !e.hasBlock() || e.getAction() != Action.RIGHT_CLICK_BLOCK)
                return;
-          if (!(((Sign) e.getClickedBlock().getState()).getLine(0).equals(ChatColor.AQUA + "[Race]")))
+
+          org.bukkit.block.Block clickedBlock = e.getClickedBlock();
+          if (clickedBlock == null || !(clickedBlock.getState() instanceof Sign))
                return;
-          if (Race_Core.getRace(((Sign) e.getClickedBlock().getState()).getLine(1)) == null) {
+
+          Sign sign = (Sign) clickedBlock.getState();
+          if (!(sign.getLine(0).equals(ChatColor.AQUA + "[Race]")))
+               return;
+
+          String raceName = sign.getLine(1);
+          if (Race_Core.getRace(raceName) == null) {
                e.getPlayer().sendMessage(CollarMessage.setWarning() + "Unknown Race");
-               ((Sign) e.getClickedBlock().getState()).setLine(1, ChatColor.RED + "Error");
-               ((Sign) e.getClickedBlock().getState()).setLine(2, "");
-               ((Sign) e.getClickedBlock().getState()).setLine(3, "");
+               sign.setLine(1, ChatColor.RED + "Error");
+               sign.setLine(2, "");
+               sign.setLine(3, "");
+               sign.update();
                return;
           }
-          Race_Core.joinRace(Race_Core.getRace((((Sign) e.getClickedBlock().getState()).getLine(1))), e.getPlayer());
+          Race_Core.joinRace(Race_Core.getRace(raceName), e.getPlayer());
      }
 
      @EventHandler
-     @SuppressWarnings("null")
      public void onPlayerMove(final PlayerMoveEvent event) {
           // Avoid handling movement every tiny delta — only run logic when player changes
           // block
-          if (event.getFrom().getBlockX() == event.getTo().getBlockX()
-                    && event.getFrom().getBlockY() == event.getTo().getBlockY()
-                    && event.getFrom().getBlockZ() == event.getTo().getBlockZ())
+          Location toLocation = event.getTo();
+          if (toLocation == null)
+               return;
+          if (event.getFrom().getBlockX() == toLocation.getBlockX()
+                    && event.getFrom().getBlockY() == toLocation.getBlockY()
+                    && event.getFrom().getBlockZ() == toLocation.getBlockZ())
                return;
           if (Race_Core.Race_Runner_List.isEmpty())
                return;
@@ -423,13 +509,13 @@ public class Event implements Listener {
 
      @Deprecated
      @EventHandler
-     @SuppressWarnings("null")
      public void AnitBoat_Damage(VehicleDestroyEvent event) {
-          if (!(event.getVehicle().getPassenger() instanceof Player)
+          Entity vehiclePassenger = event.getVehicle().getPassenger();
+          if (!(vehiclePassenger instanceof Player)
                     || !(event.getVehicle().getType() == EntityType.BOAT))
                return;
-          if (Race_Core.isJoin((Player) event.getVehicle().getPassenger())) {
-               Player passenger = (Player) event.getVehicle().getPassenger();
+          Player passenger = (Player) vehiclePassenger;
+          if (Race_Core.isJoin(passenger)) {
                for (Race_Runner val : Race_Core.Race_Runner_List)
                     if (val.getPlayer().getUniqueId().equals(passenger.getUniqueId())
                               && val.getMode() == Race_Runner_Mode.RUN) {

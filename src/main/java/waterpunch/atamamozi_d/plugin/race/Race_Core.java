@@ -1,7 +1,6 @@
 package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -228,19 +227,15 @@ public class Race_Core {
           Race RACE = Race_Core.getRace(Race_ID);
           if (RACE == null)
                return;
-          @SuppressWarnings("unused")
-          ArrayList<Player> Players = new ArrayList<>();
 
-          Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime).reversed();
+          Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime);
           java.util.List<Race_Runner> __runners_allgoal = Race_Run.get(RACE.getUUID());
           if (__runners_allgoal != null) {
-               __runners_allgoal.stream().sorted(comparator);
-               Collections.reverse(__runners_allgoal);
+               __runners_allgoal.sort(comparator);
 
                for (Race_Runner val : __runners_allgoal) {
                     val.UpdateScoreboard();
                     sayScore(val, getRace(Race_ID).getRace_name());
-                    Players.add(val.getPlayer());
                     val.setMode(Race_Runner_Mode.NO_ENTRY);
                     new Leave_Timer(val.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
                }

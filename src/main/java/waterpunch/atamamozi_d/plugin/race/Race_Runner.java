@@ -273,7 +273,6 @@ public class Race_Runner {
           return this.Enter;
      }
 
-     @SuppressWarnings("null")
      public void Start() {
           this.Race_mode = Race_Runner_Mode.RUN;
           Race RACE = Race_Core.getRace(Race_ID);
@@ -296,15 +295,23 @@ public class Race_Runner {
           switch (Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
                     Enter = true;
-                    Player.getLocation().getWorld()
-                              .spawnEntity(RACE.getStartPointLoc().get(Join_Count - 1).getLocation(), EntityType.BOAT)
-                              .addPassenger(Player);
-                    if (Player.getVehicle() != null) {
-                         Car = Player.getVehicle().getUniqueId();
-                    } else {
-                         // safeguard: vehicle may not be immediately attached; leave Car null and set
-                         // Enter flag
-                         Car = null;
+                    if (RACE.getStartPointLoc() != null && Join_Count > 0
+                              && Join_Count <= RACE.getStartPointLoc().size()) {
+                         Location startLoc = RACE.getStartPointLoc().get(Join_Count - 1).getLocation();
+                         if (startLoc != null) {
+                              org.bukkit.World world = startLoc.getWorld();
+                              if (world != null) {
+                                   world.spawnEntity(startLoc, EntityType.BOAT).addPassenger(Player);
+                                   Entity playerVehicle = Player.getVehicle();
+                                   if (playerVehicle != null) {
+                                        Car = playerVehicle.getUniqueId();
+                                   } else {
+                                        // safeguard: vehicle may not be immediately attached; leave Car null and set
+                                        // Enter flag
+                                        Car = null;
+                                   }
+                              }
+                         }
                     }
                     break;
                case WALK:
@@ -327,7 +334,6 @@ public class Race_Runner {
           UpdateScoreboard();
      }
 
-     @SuppressWarnings("null")
      public void ReSpawn() {
           Race RACE = Race_Core.getRace(Race_ID);
           if (RACE == null)
@@ -361,7 +367,6 @@ public class Race_Runner {
                     }
                     break;
                case BOAT:
-                    @SuppressWarnings("null")
                     Entity vehicle = getPlayer().getVehicle();
                     Enter = true;
                     if (vehicle != null)
@@ -373,9 +378,15 @@ public class Race_Runner {
                                         CollarMessage.setWarning() + "Respawn start point not available for boat");
                               break;
                          }
-                         RACE.getStartPointLoc().get(idx).getLocation().getWorld()
-                                   .spawnEntity(RACE.getStartPointLoc().get(idx).getLocation(), EntityType.BOAT)
-                                   .addPassenger(Player);
+                         if (RACE.getStartPointLoc().get(idx) != null) {
+                              Location spawnLoc = RACE.getStartPointLoc().get(idx).getLocation();
+                              if (spawnLoc != null) {
+                                   org.bukkit.World world = spawnLoc.getWorld();
+                                   if (world != null) {
+                                        world.spawnEntity(spawnLoc, EntityType.BOAT).addPassenger(Player);
+                                   }
+                              }
+                         }
                     } else {
                          int cpIdx = getCheckPoint() - 1;
                          if (RACE.getCheckPointLoc() == null || cpIdx < 0 || cpIdx >= RACE.getCheckPointLoc().size()) {
@@ -383,9 +394,15 @@ public class Race_Runner {
                                         CollarMessage.setWarning() + "Respawn checkpoint not available for boat");
                               break;
                          }
-                         RACE.getCheckPointLoc().get(cpIdx).getLocation().getWorld()
-                                   .spawnEntity(RACE.getCheckPointLoc().get(cpIdx).getLocation(), EntityType.BOAT)
-                                   .addPassenger(Player);
+                         if (RACE.getCheckPointLoc().get(cpIdx) != null) {
+                              Location cpLoc = RACE.getCheckPointLoc().get(cpIdx).getLocation();
+                              if (cpLoc != null) {
+                                   org.bukkit.World world = cpLoc.getWorld();
+                                   if (world != null) {
+                                        world.spawnEntity(cpLoc, EntityType.BOAT).addPassenger(Player);
+                                   }
+                              }
+                         }
                     }
                     break;
           }

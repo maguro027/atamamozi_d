@@ -382,6 +382,7 @@ public class Core extends JavaPlugin {
       * @param r      New checkpoint radius
       * @param no     Checkpoint index to modify
       */
+     @SuppressWarnings("unused")
      void onsetCheckPoint(Player player, int r, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
@@ -433,6 +434,7 @@ public class Core extends JavaPlugin {
       * @param player Player editing the race (must be in EDIT mode)
       * @param no     Checkpoint index to remove
       */
+     @SuppressWarnings("unused")
      void remCheckPoint(Player player, int no) {
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || run.getMode() != Race_Runner_Mode.EDIT)
