@@ -309,9 +309,16 @@ public class Core extends JavaPlugin {
      void onhelp(Player player) {
           player.sendMessage("---------------------");
           player.sendMessage("[help] this message");
-          player.sendMessage("[list] /atamamozi_d list Open Race menu");
-          player.sendMessage("[respawn] /atamamozi_d respawn :)");
-          player.sendMessage("[leave] leave player");
+          player.sendMessage("[list] /atamamozi_d list - Open Race menu");
+          player.sendMessage("[create] /atamamozi_d create - Create new race");
+          player.sendMessage("[join] /atamamozi_d join <race_name> - Join race");
+          player.sendMessage("[leave] /atamamozi_d leave - Leave race");
+          player.sendMessage("[start] /atamamozi_d start - Start race countdown");
+          player.sendMessage("[respawn] /atamamozi_d respawn - Respawn at checkpoint");
+          player.sendMessage("[rank] /atamamozi_d rank - View ranking");
+          player.sendMessage("[addStartPoint] /atamamozi_d addStartPoint - Set start point (edit mode)");
+          player.sendMessage("[addCheckPoint] /atamamozi_d addCheckPoint <radius> - Set checkpoint (edit mode)");
+          player.sendMessage("[setName] /atamamozi_d setName <name> - Set race name (edit mode)");
           player.sendMessage("---------------------");
      }
 
