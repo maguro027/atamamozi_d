@@ -43,7 +43,7 @@ jobs:
       - name: Prepare artifacts dir
         run: |
           mkdir -p artifacts
-          cp "$${{ steps.findjar.outputs.jar }}" artifacts/
+          cp "${{ steps.findjar.outputs.jar }}" artifacts/
 
       - name: Commit and push JAR to repository
         env:
