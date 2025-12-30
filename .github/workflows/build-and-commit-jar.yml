@@ -1,0 +1,61 @@
+name: Build and commit JAR
+
+on:
+  push:
+    branches: [ "Ver.1" ]
+    # avoid retriggering when committing artifacts
+    paths-ignore: [ 'artifacts/**' ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B -f pom.xml clean package -DskipTests
+
+      - name: Find produced JAR
+        id: findjar
+        run: |
+          set -e
+          JARPATH=$(find target -maxdepth 2 -type f -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
+          if [ -z "$JARPATH" ]; then
+            echo "::error::No JAR produced"
+            exit 1
+          fi
+          echo "jar=$JARPATH" >> $GITHUB_OUTPUT
+
+      - name: Prepare artifacts dir
+        run: |
+          mkdir -p artifacts
+          cp "$${{ steps.findjar.outputs.jar }}" artifacts/
+
+      - name: Commit and push JAR to repository
+        env:
+          GIT_AUTHOR_NAME: github-actions
+          GIT_AUTHOR_EMAIL: github-actions@github.com
+        run: |
+          git config user.name "$GIT_AUTHOR_NAME"
+          git config user.email "$GIT_AUTHOR_EMAIL"
+          git add artifacts/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(build): add built jar [skip ci]"
+          git push origin HEAD:Ver.1
