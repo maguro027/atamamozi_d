@@ -45,6 +45,8 @@ public class Core extends JavaPlugin {
 
      /** Plugin instance reference for static access */
      static Plugin Data;
+     /** Hold reference to Event to avoid unused-new warning */
+     private Event event;
 
      /** Global timing configuration values (in seconds) */
      public static int WAIT_TIME, START_TIME, YOIN_TIME, LEAVE_TIME, MENU_RANK_VIEW;
@@ -84,10 +86,8 @@ public class Core extends JavaPlugin {
           // Store plugin instance for static access
           Data = this;
 
-          // Register event listeners
-          @SuppressWarnings("unused")
-          Event eventListener = new Event(this);
-
+          // Register event listeners (constructor now auto-registers)
+          this.event = new Event(this);
           // Load saved race and score data from JSON files
           Main.loadData();
 

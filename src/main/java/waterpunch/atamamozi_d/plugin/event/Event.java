@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -56,12 +57,16 @@ public class Event implements Listener {
      private final Plugin plugin;
 
      /**
-      * Create event listener instance.
-      * 
+      * Create event listener instance and automatically register it with the
+      * plugin manager (restores original behavior where construction registers
+      * the listener).
+      *
       * @param plugin Plugin instance
       */
      public Event(Plugin plugin) {
           this.plugin = plugin;
+          // Auto-register listener for backward compatibility
+          plugin.getServer().getPluginManager().registerEvents(this, plugin);
      }
 
      /**
@@ -90,28 +95,21 @@ public class Event implements Listener {
       */
      @EventHandler
      public void onInventoryClickEvent(InventoryClickEvent event) {
-          // try {
-          // switch (getStatus()) {
-          // case OFFLINE:
-          // return "JOB or SLEEP";
-          // case JOIN_ME:
-          // return "BOREDOM or LONELY";
-          // case ONLINE:
-          // return "PLZ INVITE";
-          // }
-          // } catch (Exception e) {
-          // // Unknown status in handler (debug output removed)
-          // }
-          // quick validations and use locals to avoid repeated casts and expensive string
-          // matching
+
           if (event.getInventory().getType() != InventoryType.CHEST)
                return;
+
           if (!(event.getWhoClicked() instanceof Player))
                return;
+
           Player p = (Player) event.getWhoClicked();
           String title = p.getOpenInventory().getTitle();
           if (!title.startsWith("RACE"))
                return;
+
+          // Prevent players from taking items from any RACE menu by default.
+          // Individual menu actions still run below.
+          event.setCancelled(true);
 
           Race_Runner run = Race_Core.getRunner(p);
           // for create/edit menus we require a runner to exist
@@ -528,24 +526,54 @@ public class Event implements Listener {
      @Deprecated
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
-          if (!(event.getExited() instanceof Player) || !(event.getVehicle().getType() == EntityType.BOAT))
+          // Only care about players exiting boats
+          if (!(event.getExited() instanceof Player))
                return;
-          if (!Race_Core.isJoin((Player) event.getExited()))
+          if (event.getVehicle().getType() != EntityType.BOAT)
                return;
-          Race_Runner runner = Race_Core.getRunner((Player) event.getExited());
-          if (runner == null)
-               return;
-          if (runner.getEnter()) {
-               runner.setEnter(false);
-               event.setCancelled(false);
+
+          Player player = (Player) event.getExited();
+          Race_Runner runner = Race_Core.getRunner(player);
+          if (runner == null) {
+               plugin.getLogger().info("[AnitBoat_Leave] runner=null player=" + player.getName());
                return;
           }
 
-          if (Race_Core.isJoin((Player) event.getExited()))
-               for (Race_Runner val : Race_Core.Race_Runner_List)
-                    if (val.getPlayer() == (Player) event.getExited() && val.getMode() == Race_Runner_Mode.RUN) {
-                         event.setCancelled(true);
-                         return;
-                    }
+          // Debug: log runner state to help diagnose why exits occur
+          plugin.getLogger().info("[AnitBoat_Leave] player=" + player.getName() + " mode=" + runner.getMode()
+                    + " enter=" + runner.getEnter());
+
+          // Allow a single "enter" grace (used when spawning/respawning the boat)
+          if (runner.getEnter()) {
+               plugin.getLogger().info("[AnitBoat_Leave] allowing one-time exit for " + player.getName());
+               runner.setEnter(false);
+               return; // do not cancel — this exit is intentional
+          }
+
+          // During RUN mode, prevent leaving the boat
+          if (runner.getMode() == Race_Runner_Mode.RUN) {
+               plugin.getLogger().info("[AnitBoat_Leave] cancelling exit for " + player.getName());
+               event.setCancelled(true);
+               return;
+          }
+     }
+
+     @EventHandler
+     public void AnitEnter(VehicleEnterEvent event) {
+          if (!(event.getEntered() instanceof Player))
+               return;
+          if (event.getVehicle() == null || event.getVehicle().getType() != EntityType.BOAT)
+               return;
+
+          Player player = (Player) event.getEntered();
+          Race_Runner runner = Race_Core.getRunner(player);
+          if (runner == null)
+               return;
+
+          // Player actually entered the boat — clear the enter-grace and record vehicle
+          // id
+          runner.setEnter(false);
+          if (event.getVehicle() != null)
+               runner.setCar(event.getVehicle().getUniqueId());
      }
 }
