@@ -35,10 +35,28 @@ public class Race_Timer extends BukkitRunnable {
                default:
                     break;
           }
-          for (int i = 0; i < Race_Core.Timers.size(); i++)
-               if (Race_Core.Timers.get(i).getUUID() != null && Race_Core.Timers.get(i).getUUID().equals(getUUID()))
-                    Race_Core.Timers.get(i).cancel();
-          Race_Core.Timers.add(this);
+          // Constructor no longer cancels or registers itself to avoid leaking
+          // `this` during construction and to avoid calling overridable methods.
+          // Use the static helper `startTimer(...)` to schedule timers safely.
+     }
+
+     /**
+      * Safely cancel existing timers for the given race and schedule a new one.
+      */
+     public static Race_Timer startTimer(Race_Timer_Type type, UUID race, org.bukkit.plugin.Plugin plugin,
+               long delay, long period) {
+          // cancel any existing timers for this race
+          for (int i = 0; i < Race_Core.Timers.size(); i++) {
+               Race_Timer t = Race_Core.Timers.get(i);
+               UUID u = t.getUUID();
+               if (u != null && u.equals(race)) {
+                    t.cancel();
+               }
+          }
+          Race_Timer rt = new Race_Timer(type, race);
+          Race_Core.Timers.add(rt);
+          rt.runTaskTimer(plugin, delay, period);
+          return rt;
      }
 
      public Race_Timer(Player player) {
@@ -55,7 +73,7 @@ public class Race_Timer extends BukkitRunnable {
           return this.Type;
      }
 
-     public UUID getUUID() {
+     public final UUID getUUID() {
           return this.Race_UUID;
      }
 
@@ -75,8 +93,9 @@ public class Race_Timer extends BukkitRunnable {
                     switch (r.getMode()) {
                          case ALL_GOAL_WAIT:
                          case NO_ENTRY:
-                              if (Race_Core.getRace(r.getRaceID()) != null
-                                        && Race_Core.getRace(r.getRaceID()).getRace_Type() == Race_Type.BOAT
+                              waterpunch.atamamozi_d.plugin.race.Race race_temp = Race_Core.getRace(r.getRaceID());
+                              if (race_temp != null
+                                        && race_temp.getRace_Type() == Race_Type.BOAT
                                         && player.getVehicle() != null)
                                    player.getVehicle().remove();
                               player.teleport(r.getst_Location());
@@ -108,15 +127,16 @@ public class Race_Timer extends BukkitRunnable {
                cancel();
                return;
           }
-          Race_Core.getRace(Race_UUID).setCountDown(this.time);
+          race.setCountDown(this.time);
           try {
                switch (Type) {
                     case WAIT:
                          for (Race_Runner val : __runners)
                               val.UpdateScoreboard();
                          if (this.time == 0) {
-                              new Race_Timer(Race_Timer_Type.START, Race_UUID)
-                                        .runTaskTimer(waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
+                              waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(
+                                        Race_Timer_Type.START, Race_UUID,
+                                        waterpunch.atamamozi_d.plugin.main.Core.getthis(), 0L, 20L);
                               cancel();
                               return;
                          }

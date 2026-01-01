@@ -80,7 +80,8 @@ public class Race_Runner {
           }
           this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
           if (getJoin_Count() == 1)
-               new Race_Timer(Race_Timer_Type.WAIT, getRaceID()).runTaskTimer(Core.getthis(), 0L, 20L);
+               waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(Race_Timer_Type.WAIT,
+                         getRaceID(), Core.getthis(), 0L, 20L);
           this.Rap = 0;
           this.CheckPoint = 0;
           Race_Core.Race_Run.get(Race_ID).add(this);

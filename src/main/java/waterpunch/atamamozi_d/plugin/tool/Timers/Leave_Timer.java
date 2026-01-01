@@ -9,7 +9,7 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 
 public class Leave_Timer extends BukkitRunnable {
 
-     private Player player;
+     private final Player player;
      private int time;
 
      public Leave_Timer(Player player) {

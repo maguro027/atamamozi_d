@@ -93,13 +93,18 @@ public class Menus {
 
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");
           setBorder(RACE_CREATE);
+          
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race == null)
+               return RACE_CREATE;
+          
           ItemStack SET_NAME = new ItemStack(Material.NAME_TAG);
           ItemMeta SET_NAME_Meta = SET_NAME.getItemMeta();
-          if (Race_Core.getRace(run.getRaceID()).getRace_name().equals("DEFAULT")) {
+          if (race.getRace_name().equals("DEFAULT")) {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "EDIT NAME");
           } else {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "RACE NAME : " + ChatColor.RED
-                         + Race_Core.getRace(run.getRaceID()).getRace_name());
+                         + race.getRace_name());
           }
           List<String> SET_NAME_lores = new ArrayList<>();
 
@@ -108,7 +113,7 @@ public class Menus {
           ItemStack RACE_TYPE = new ItemStack(Material.DIAMOND_AXE);
           ItemMeta RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
           RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "Loading...");
-          switch (Race_Core.getRace(run.getRaceID()).getRace_Type()) {
+          switch (race.getRace_Type()) {
                case WALK:
                     RACE_TYPE = new ItemStack(Material.TOTEM_OF_UNDYING);
                     RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
@@ -121,21 +126,21 @@ public class Menus {
                     break;
                default:
                     player.sendMessage(CollarMessage.setWarning() + "["
-                              + Race_Core.getRace(run.getRaceID()).getRace_Type() + "] is ERR");
+                              + race.getRace_Type() + "] is ERR");
                     break;
           }
           ItemStack RAP = new ItemStack(Material.COMPARATOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
           RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED
-                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
+                    + String.valueOf(race.getRap()));
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
 
           AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED
-                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+                    + String.valueOf(race.getJoin_Amount()));
 
-          ItemStack ICON = new ItemStack(Race_Core.getRace(run.getRaceID()).getIcon());
+          ItemStack ICON = new ItemStack(race.getIcon());
           ItemMeta ICON_Meta = ICON.getItemMeta();
           ICON_Meta.setDisplayName(ChatColor.GOLD + "This item is Icon");
 
@@ -156,27 +161,27 @@ public class Menus {
           CREATE_Meta.setDisplayName(ChatColor.GOLD + "EDIT COMPLETE");
           List<String> lores = new ArrayList<>();
 
-          Race_Core.getRace(run.getRaceID()).setErrorCount(0);
+          race.setErrorCount(0);
 
-          if (Race_Core.getRace(run.getRaceID()).getRace_name().equals("DEFAULT")) {
+          if (race.getRace_name().equals("DEFAULT")) {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED + "<DEFAULT>");
-               Race_Core.getRace(run.getRaceID()).addErrorCount();
+               race.addErrorCount();
           } else {
                int i = 0;
                for (Race R : Race_Core.Race_list)
-                    if (R.getRace_name().equals(Race_Core.getRace(run.getRaceID()).getRace_name()))
+                    if (R.getRace_name().equals(race.getRace_name()))
                          i++;
                if (i != 1) {
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Name : " + ChatColor.RED
                               + "Already NAME");
-                    Race_Core.getRace(run.getRaceID()).addErrorCount();
+                    race.addErrorCount();
                } else {
                     lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Name : " + ChatColor.GREEN
-                              + Race_Core.getRace(run.getRaceID()).getRace_name());
+                              + race.getRace_name());
                }
           }
 
-          switch (Race_Core.getRace(run.getRaceID()).getRace_Type()) {
+          switch (race.getRace_Type()) {
                case WALK:
                     lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Type : " + ChatColor.GREEN + "RUN");
                     break;
@@ -185,49 +190,48 @@ public class Menus {
                     break;
                default:
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race Type : " + ChatColor.RED + "NULL");
-                    Race_Core.getRace(run.getRaceID()).addErrorCount();
+                    race.addErrorCount();
                     break;
           }
 
-          if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
+          if (race.getJoin_Amount() == 0) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : No Limit");
           } else {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Member : " + ChatColor.GREEN
-                         + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+                         + String.valueOf(race.getJoin_Amount()));
           }
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race Rap  : " + ChatColor.GREEN
-                    + Race_Core.getRace(run.getRaceID()).getRap());
+                    + race.getRap());
           lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race ICON  : " + ChatColor.GREEN
-                    + Race_Core.getRace(run.getRaceID()).getIcon().toString());
+                    + race.getIcon().toString());
 
-          if (Race_Core.getRace(run.getRaceID()).getStartPointLoc().size() == Race_Core.getRace(run.getRaceID())
-                    .getJoin_Amount()) {
-               if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
+          if (race.getStartPointLoc().size() == race.getJoin_Amount()) {
+               if (race.getJoin_Amount() == 0) {
                     lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED
                               + "Need  over 1");
-                    Race_Core.getRace(run.getRaceID()).addErrorCount();
+                    race.addErrorCount();
                } else {
                     lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race StartPoint :" + ChatColor.GREEN
-                              + Race_Core.getRace(run.getRaceID()).getStartPointLoc().size());
+                              + race.getStartPointLoc().size());
                }
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race StartPoint : " + ChatColor.RED + "Need "
-                         + Race_Core.getRace(run.getRaceID()).getJoin_Amount());
-               Race_Core.getRace(run.getRaceID()).addErrorCount();
+                         + race.getJoin_Amount());
+               race.addErrorCount();
           }
 
-          if (Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size() >= 2) {
+          if (race.getCheckPointLoc().size() >= 2) {
                lores.add(ChatColor.GREEN + "[OK]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.GREEN
-                         + Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size());
+                         + race.getCheckPointLoc().size());
           } else {
                lores.add(ChatColor.RED + "[ER]" + ChatColor.GOLD + "Race CheckPoint : " + ChatColor.RED
                          + "Need over 2");
-               Race_Core.getRace(run.getRaceID()).addErrorCount();
+               race.addErrorCount();
           }
 
-          if (!(Race_Core.getRace(run.getRaceID()).getErrorCount() == 0)) {
+          if (!(race.getErrorCount() == 0)) {
                lores.add("");
-               lores.add(CollarMessage.setWarning() + ChatColor.RED + Race_Core.getRace(run.getRaceID()).getErrorCount()
+               lores.add(CollarMessage.setWarning() + ChatColor.RED + race.getErrorCount()
                          + "Error");
           }
 
@@ -285,9 +289,10 @@ public class Menus {
           RACE_CREATE_TYPE.setItem(29, new ItemStack(O));
           RACE_CREATE_TYPE.setItem(33, new ItemStack(O));
           Race_Runner run = Race_Core.getRunner(player);
-          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.WALK)
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race != null && race.getRace_Type() == Race_Type.WALK)
                RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
-          if (Race_Core.getRace(run.getRaceID()).getRace_Type() == Race_Type.BOAT)
+          if (race != null && race.getRace_Type() == Race_Type.BOAT)
                RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
 
           return RACE_CREATE_TYPE;
@@ -300,9 +305,13 @@ public class Menus {
 
           ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
+          
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race == null || RAP_Meta == null)
+               return RACE_CREATE_RAP;
 
           RAP_Meta.setDisplayName(ChatColor.GOLD + "Rap : " + ChatColor.RED
-                    + String.valueOf(Race_Core.getRace(run.getRaceID()).getRap()));
+                    + String.valueOf(race.getRap()));
           RAP.setItemMeta(RAP_Meta);
 
           RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));
@@ -319,11 +328,16 @@ public class Menus {
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
-          if (Race_Core.getRace(run.getRaceID()).getJoin_Amount() == 0) {
+          
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race == null || AMOUNT_Meta == null)
+               return RACE_CREATE_AMOUNT;
+          
+          if (race.getJoin_Amount() == 0) {
                AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + "No Limit");
           } else {
                AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED
-                         + String.valueOf(Race_Core.getRace(run.getRaceID()).getJoin_Amount()));
+                         + String.valueOf(race.getJoin_Amount()));
           }
           AMOUNT.setItemMeta(AMOUNT_Meta);
 
@@ -339,7 +353,11 @@ public class Menus {
           Inventory RACE_CREATE_ICON = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_ICON");
           setBorder(RACE_CREATE_ICON);
 
-          ItemStack ICOM = new ItemStack(Race_Core.getRace(run.getRaceID()).getIcon());
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race == null)
+               return RACE_CREATE_ICON;
+          
+          ItemStack ICOM = new ItemStack(race.getIcon());
           ItemMeta ICON_Meta = ICOM.getItemMeta();
           ICON_Meta.setDisplayName(ChatColor.GREEN + "Click to New Icon item on you Inventory");
           ICOM.setItemMeta(ICON_Meta);
@@ -365,9 +383,12 @@ public class Menus {
           STARTPOINT.setItemMeta(STARTPOINT_Meta);
           RACE_CREATE_STARTPOINT.setItem(4, new ItemStack(STARTPOINT));
 
-          for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getStartPointLoc().size(); i++)
-               RACE_CREATE_STARTPOINT.setItem(i + 9,
-                         new ItemStack(Items.getRace_StartPint_Item(Race_Core.getRace(run.getRaceID()), i)));
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race != null) {
+               for (int i = 0; i < race.getStartPointLoc().size(); i++)
+                    RACE_CREATE_STARTPOINT.setItem(i + 9,
+                              new ItemStack(Items.getRace_StartPint_Item(race, i)));
+          }
 
           return RACE_CREATE_STARTPOINT;
      }
@@ -390,9 +411,12 @@ public class Menus {
 
           RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
 
-          for (int i = 0; i < Race_Core.getRace(run.getRaceID()).getCheckPointLoc().size(); i++) {
-               RACE_CREATE_CHECKPOINT.setItem(i + 9,
-                         new ItemStack(Items.getRace_CheckPint_Item(Race_Core.getRace(run.getRaceID()), i)));
+          Race race = Race_Core.getRace(run.getRaceID());
+          if (race != null) {
+               for (int i = 0; i < race.getCheckPointLoc().size(); i++) {
+                    RACE_CREATE_CHECKPOINT.setItem(i + 9,
+                              new ItemStack(Items.getRace_CheckPint_Item(race, i)));
+               }
           }
           return RACE_CREATE_CHECKPOINT;
      }

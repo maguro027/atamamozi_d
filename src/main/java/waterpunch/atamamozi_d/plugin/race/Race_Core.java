@@ -256,7 +256,8 @@ public class Race_Core {
                          .sendMessage(CollarMessage.setInfo() + " " + __join_count + "/"
                                    + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName()
                                    + ChatColor.WHITE + "] is Join");
-               new Race_Timer(Race_Timer_Type.WAIT, race.getUUID()).runTaskTimer(Core.getthis(), 0L, 20L);
+               waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(Race_Timer_Type.WAIT,
+                         race.getUUID(), Core.getthis(), 0L, 20L);
                runner.UpdateScoreboard();
           }
      }

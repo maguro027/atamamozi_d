@@ -27,7 +27,6 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
-import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 /**
@@ -235,8 +234,8 @@ public class Core extends JavaPlugin {
                          return false;
                     switch (run.getMode()) {
                          case WAIT:
-                              new Race_Timer(Race_Timer_Type.START, run.getRaceID()).runTaskTimer(Core.getthis(), 0L,
-                                        20L);
+                              waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(
+                                        Race_Timer_Type.START, run.getRaceID(), Core.getthis(), 0L, 20L);
                               break;
                          default:
                     }

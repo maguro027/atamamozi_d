@@ -10,7 +10,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 
 public class LocationViewer {
 
-     private Race_Runner runner;
+     private final Race_Runner runner;
      // パーティクル描画を制限して毎ティックの負荷を避ける（ミリ秒）
      private long lastDrawTime = 0L;
 
