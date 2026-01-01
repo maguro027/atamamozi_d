@@ -575,7 +575,8 @@ public class Event implements Listener {
           if (runner == null)
                return;
 
-          // Check if player is in a vehicle race (boat, pig, horse, etc.)
+          // Check if player is in a vehicle race
+          // Currently only BOAT races use vehicles, but this is extensible for future vehicle types
           Race race = Race_Core.getRace(runner.getRaceID());
           if (race != null && race.getRace_Type() == Race_Type.BOAT) {
                // If Enter flag is false, this is not an authorized vehicle spawn/respawn
