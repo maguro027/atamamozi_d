@@ -570,6 +570,21 @@ public class Event implements Listener {
           if (runner == null)
                return;
 
+          // Check if player is in a boat race
+          Race race = Race_Core.getRace(runner.getRaceID());
+          if (race != null && race.getRace_Type() == Race_Type.BOAT) {
+               // Check if this is the player's own boat
+               UUID vehicleId = event.getVehicle().getUniqueId();
+               UUID playerBoatId = runner.getCar();
+               
+               // If player already has a boat assigned and it's not the one they're entering, cancel
+               if (playerBoatId != null && !playerBoatId.equals(vehicleId)) {
+                    event.setCancelled(true);
+                    player.sendMessage(CollarMessage.setWarning() + "You cannot board another player's boat!");
+                    return;
+               }
+          }
+
           // Player actually entered the boat — clear the enter-grace and record vehicle
           // id
           runner.setEnter(false);
