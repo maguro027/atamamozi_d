@@ -34,11 +34,11 @@ public class Race_Runner {
      private Location st_Location, old_Location, new_Location;
      private final Race_Scoreboard scoreboard;
      private final LocationViewer locationViewer;
-     // Timestamp used to throttle scoreboard updates to avoid rebuilding every tick
+     // スコアボード更新を抑制するためのタイムスタンプ（毎ティック再構築を避ける）
      private long lastScoreUpdate = 0L;
-     // Cache previous rendered scoreboard lines to do diff updates
+     // 前回レンダリングしたスコアボード行をキャッシュして差分更新に使う
      private List<String> lastScoreLines = new ArrayList<>();
-     // Speed meter caching (update at most every 100ms)
+     // 速度メーターのキャッシュ（最大100msごとに更新）
      private long lastSpeedUpdate = 0L;
      private int cachedSpeed = 0;
      private UUID Car;
@@ -120,7 +120,7 @@ public class Race_Runner {
      }
 
      /**
-      * Cached speed readout updated at most every 100ms.
+      * キャッシュされた速度表示。最大で100msごとに更新される。
       */
      public int getCachedSpeed() {
           final long now = System.currentTimeMillis();
@@ -295,23 +295,25 @@ public class Race_Runner {
           switch (Race_Core.getRace(Race_ID).getRace_Type()) {
                case BOAT:
                     Enter = true;
-                    if (RACE.getStartPointLoc() != null && Join_Count > 0
-                              && Join_Count <= RACE.getStartPointLoc().size()) {
-                         Location startLoc = RACE.getStartPointLoc().get(Join_Count - 1).getLocation();
-                         if (startLoc != null) {
-                              org.bukkit.World world = startLoc.getWorld();
-                              if (world != null) {
-                                   world.spawnEntity(startLoc, EntityType.BOAT).addPassenger(Player);
-                                   Entity playerVehicle = Player.getVehicle();
-                                   if (playerVehicle != null) {
-                                        Car = playerVehicle.getUniqueId();
-                                   } else {
-                                        // safeguard: vehicle may not be immediately attached; leave Car null and set
-                                        // Enter flag
-                                        Car = null;
-                                   }
-                              }
-                         }
+                    if (RACE.getStartPointLoc() == null || Join_Count <= 0
+                              || Join_Count > RACE.getStartPointLoc().size()) {
+                         break;
+                    }
+                    Location startLoc = RACE.getStartPointLoc().get(Join_Count - 1).getLocation();
+                    if (startLoc == null)
+                         break;
+
+                    org.bukkit.World world = startLoc.getWorld();
+                    if (world == null)
+                         break;
+                    world.spawnEntity(startLoc, EntityType.BOAT).addPassenger(Player);
+                    Entity playerVehicle = Player.getVehicle();
+                    if (playerVehicle != null) {
+                         Car = playerVehicle.getUniqueId();
+                    } else {
+                         // safeguard: vehicle may not be immediately attached; leave Car null and set
+                         // Enter flag
+                         Car = null;
                     }
                     break;
                case WALK:

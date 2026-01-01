@@ -1,10 +1,12 @@
 package waterpunch.atamamozi_d.plugin.tool.Timers;
 
 import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
@@ -89,7 +91,7 @@ public class Race_Timer extends BukkitRunnable {
                return;
           }
 
-          // Defensive checks: if there are no runners or no race data, stop this timer
+          // 防御的なチェック: ランナーがいない、またはレースデータが無い場合はタイマーを停止する
           if (Race_Core.Race_Run.isEmpty()) {
                cancel();
                return;

@@ -21,8 +21,8 @@ import waterpunch.atamamozi_d.plugin.score.Ranking_parts;
 public class Items {
 
      /**
-      * Get black glass pane for menu borders.
-      * Tries modern material first, falls back to legacy versions for compatibility.
+      * メニューボーダー用の黒いガラス板を取得します。
+      * まず新しいマテリアルを試し、互換性のためにレガシー版にフォールバックします。
       */
      @SuppressWarnings("deprecation")
      static ItemStack getBlack() {
@@ -77,8 +77,8 @@ public class Items {
      }
 
      /**
-      * Get ranking menu item.
-      * Tries modern material first, falls back to legacy versions for compatibility.
+      * ランキングメニューのアイテムを取得します。
+      * まず新しいマテリアルを試し、互換性のためにレガシー版にフォールバックします。
       */
      static ItemStack getRanking() {
           Material material;
@@ -104,8 +104,8 @@ public class Items {
      }
 
      /**
-      * Get player head item.
-      * Tries modern material first, falls back to legacy versions for compatibility.
+      * プレイヤーヘッドのアイテムを取得します。
+      * まず新しいマテリアルを試し、互換性のためにレガシー版にフォールバックします。
       */
      @SuppressWarnings("deprecation")
      static ItemStack getCreater(String Name) {
@@ -162,8 +162,8 @@ public class Items {
      }
 
      /**
-      * Get UP button item.
-      * Tries modern material first, falls back to legacy versions for compatibility.
+      * 上向きボタン用のアイテムを取得します。
+      * まず新しいマテリアルを試し、互換性のためにレガシー版にフォールバックします。
       */
      static ItemStack getUP() {
           Material material;
@@ -186,8 +186,8 @@ public class Items {
      }
 
      /**
-      * Get DOWN button item.
-      * Tries modern material first, falls back to legacy versions for compatibility.
+      * 下向きボタン用のアイテムを取得します。
+      * まず新しいマテリアルを試し、互換性のためにレガシー版にフォールバックします。
       */
      static ItemStack getDown() {
           Material material;

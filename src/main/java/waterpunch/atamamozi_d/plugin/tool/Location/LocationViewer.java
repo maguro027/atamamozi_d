@@ -3,6 +3,7 @@ package waterpunch.atamamozi_d.plugin.tool.Location;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
@@ -10,7 +11,7 @@ import waterpunch.atamamozi_d.plugin.race.Race_Runner;
 public class LocationViewer {
 
      private Race_Runner runner;
-     // throttle particle rendering to avoid heavy per-tick overhead (ms)
+     // パーティクル描画を制限して毎ティックの負荷を避ける（ミリ秒）
      private long lastDrawTime = 0L;
 
      public LocationViewer(Race_Runner runner) {
@@ -18,11 +19,10 @@ public class LocationViewer {
      }
 
      public void DrawCircle(int checkNo) {
-          // Avoid drawing particles too often — this method can be invoked very
-          // frequently
+          // パーティクルを頻繁に描画しすぎないようにする — このメソッドは非常に頻繁に呼ばれる可能性がある
           final long now = System.currentTimeMillis();
           if (now - lastDrawTime < 250)
-               return; // draw at most ~4 times/sec
+               return; // 最大で約4回/秒 描画
           lastDrawTime = now;
           Race RACE = Race_Core.getRace(runner.getRaceID());
           Location particleLoc = RACE.getCheckPointLoc().get(checkNo).getLocation();

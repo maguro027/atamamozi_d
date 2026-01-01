@@ -19,7 +19,6 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 
-@SuppressWarnings("null")
 public class Menus {
 
      static Inventory setBorder(Inventory inv) {

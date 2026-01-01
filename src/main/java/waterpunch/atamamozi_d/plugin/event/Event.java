@@ -1,5 +1,6 @@
 package waterpunch.atamamozi_d.plugin.event;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -38,18 +40,18 @@ import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 /**
- * Event handler for all race-related gameplay events.
- * 
+ * レース関連のゲームプレイイベントを処理するイベントハンドラ。
+ *
  * <p>
- * Handles:
+ * 処理内容:
  * <ul>
- * <li>Inventory click events for race menus (create, join, configure)</li>
- * <li>Player movement for checkpoint detection</li>
- * <li>Sign interaction for race join/leave</li>
- * <li>Player join/quit for state initialization</li>
- * <li>Vehicle events for boat races</li>
+ * <li>レースメニューのインベントリクリックイベント（作成、参加、設定）</li>
+ * <li>チェックポイント検出のためのプレイヤー移動監視</li>
+ * <li>レースへの参加/退出用の看板操作</li>
+ * <li>プレイヤーの参加/退出による状態初期化</li>
+ * <li>ボートレースのための乗り物イベント</li>
  * </ul>
- * 
+ *
  * @author waterpunch
  */
 public class Event implements Listener {
@@ -57,41 +59,38 @@ public class Event implements Listener {
      private final Plugin plugin;
 
      /**
-      * Create event listener instance and automatically register it with the
-      * plugin manager (restores original behavior where construction registers
-      * the listener).
+      * イベントリスナーのインスタンスを作成し、プラグインマネージャに自動登録します。
+      * （コンストラクタでリスナー登録されていた既存の挙動を復元）
       *
-      * @param plugin Plugin instance
+      * @param plugin プラグインインスタンス
       */
      public Event(Plugin plugin) {
           this.plugin = plugin;
-          // Auto-register listener for backward compatibility
-          plugin.getServer().getPluginManager().registerEvents(this, plugin);
      }
 
      /**
-      * Register this event listener with the plugin.
-      * Call this method after construction to activate event handling.
+      * このイベントリスナーをプラグインに登録します。
+      * コンストラクタ後に呼び出すとイベント処理が有効になります。
       */
      public void register() {
           plugin.getServer().getPluginManager().registerEvents(this, plugin);
      }
 
      /**
-      * Handle inventory click events for race menus.
-      * 
+      * レースメニューのインベントリクリックイベントを処理します。
+      *
       * <p>
-      * Processes clicks in:
+      * 以下のメニューでのクリックを処理します:
       * <ul>
-      * <li>RACE_TOP_MENU - Main race menu</li>
-      * <li>RACE_LIST - Browse available races</li>
-      * <li>RACE_CREATE - Configure new race</li>
-      * <li>RACE_CREATE_TYPE/RAP/AMOUNT/ICON - Race parameter selection</li>
-      * <li>RACE_RANKING - View leaderboards</li>
-      * <li>RACE_EDIT - Modify existing race</li>
+      * <li>RACE_TOP_MENU - メインレースメニュー</li>
+      * <li>RACE_LIST - 利用可能なレース一覧</li>
+      * <li>RACE_CREATE - 新しいレースの設定</li>
+      * <li>RACE_CREATE_TYPE/RAP/AMOUNT/ICON - レースパラメータ選択</li>
+      * <li>RACE_RANKING - リーダーボード表示</li>
+      * <li>RACE_EDIT - 既存レースの編集</li>
       * </ul>
-      * 
-      * @param event Inventory click event
+      *
+      * @param event インベントリクリックイベント
       */
      @EventHandler
      public void onInventoryClickEvent(InventoryClickEvent event) {
@@ -103,16 +102,17 @@ public class Event implements Listener {
                return;
 
           Player p = (Player) event.getWhoClicked();
-          String title = p.getOpenInventory().getTitle();
+          InventoryView view = p.getOpenInventory();
+          String title = view.getTitle();
           if (!title.startsWith("RACE"))
                return;
 
-          // Prevent players from taking items from any RACE menu by default.
-          // Individual menu actions still run below.
+          // デフォルトでRACEメニューからアイテムを持ち出せないようにします。
+          // 個別のメニューアクションは下で処理します。
           event.setCancelled(true);
 
           Race_Runner run = Race_Core.getRunner(p);
-          // for create/edit menus we require a runner to exist
+          // 作成/編集メニューではランナーオブジェクトが存在する必要がある
           if (run == null
                     && (title.startsWith("RACE_CREATE") || title.equals("RACE_EDIT") || title.equals("RACE_CREATE_TYPE")
                               || title.equals("RACE_CREATE_RAP") || title.equals("RACE_CREATE_AMOUNT"))) {
@@ -301,20 +301,26 @@ public class Event implements Listener {
                               event.setCancelled(true);
                               return;
                          }
+                         int checkIndex = event.getRawSlot() - 9;
+                         if (checkIndex < 0 || checkIndex >= race5.getCheckPointLoc().size()) {
+                              event.setCancelled(true);
+                              return;
+                         }
+
                          switch (event.getAction()) {
-                              case CLONE_STACK: // remove
-                                   race5.getCheckPointLoc().remove(event.getRawSlot() - 9);
+                              case CLONE_STACK: // 削除
+                                   race5.getCheckPointLoc().remove(checkIndex);
                                    p.openInventory(Menus.getRaceCheckPoint(p));
                                    event.setCancelled(true);
                                    break;
-                              case PICKUP_HALF: // Update
-                                   race5.getCheckPointLoc().set(event.getRawSlot() - 9,
-                                             race5.getCheckPointLoc().get(event.getRawSlot() - 9));
+                              case PICKUP_HALF: // 更新
+                                   race5.getCheckPointLoc().set(checkIndex,
+                                             race5.getCheckPointLoc().get(checkIndex));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_ALL:
                                    Hachitai.setCircle(run, race5.getStartPointLoc()
-                                             .get(event.getRawSlot() - 9).getLocation(), 1);
+                                             .get(checkIndex).getLocation(), 1);
 
                                    p.openInventory(Menus.getRaceCheckPoint(p));
                                    event.setCancelled(true);
@@ -348,20 +354,26 @@ public class Event implements Listener {
                               event.setCancelled(true);
                               return;
                          }
+                         int startIndex = event.getRawSlot() - 9;
+                         if (startIndex < 0 || startIndex >= race6.getStartPointLoc().size()) {
+                              event.setCancelled(true);
+                              return;
+                         }
+
                          switch (event.getAction()) {
-                              case CLONE_STACK: // remove
-                                   race6.getStartPointLoc().remove(event.getRawSlot() - 9);
+                              case CLONE_STACK: // 削除
+                                   race6.getStartPointLoc().remove(startIndex);
                                    p.openInventory(Menus.getRaceStartPoint(p));
                                    event.setCancelled(true);
                                    break;
-                              case PICKUP_HALF: // Update
-                                   race6.getStartPointLoc().set(event.getRawSlot() - 9,
+                              case PICKUP_HALF: // 更新
+                                   race6.getStartPointLoc().set(startIndex,
                                              new Loc_parts(p.getLocation()));
                                    event.setCancelled(true);
                                    break;
                               case PICKUP_ALL:
                                    Hachitai.setCircle(run, race6.getStartPointLoc()
-                                             .get(event.getRawSlot() - 9).getLocation(), 1);
+                                             .get(startIndex).getLocation(), 1);
                                    p.openInventory(Menus.getRaceStartPoint(p));
                                    event.setCancelled(true);
                                    break;
@@ -424,12 +436,14 @@ public class Event implements Listener {
      public void onPlayerMove(final PlayerMoveEvent event) {
           // Avoid handling movement every tiny delta — only run logic when player changes
           // block
+          Location fromLocation = event.getFrom();
           Location toLocation = event.getTo();
-          if (toLocation == null)
-               return;
-          if (event.getFrom().getBlockX() == toLocation.getBlockX()
-                    && event.getFrom().getBlockY() == toLocation.getBlockY()
-                    && event.getFrom().getBlockZ() == toLocation.getBlockZ())
+          // Assert non-null to satisfy static analysis that follows
+          Objects.requireNonNull(fromLocation, "event.getFrom() returned null");
+          Objects.requireNonNull(toLocation, "event.getTo() returned null");
+          if (fromLocation.getBlockX() == toLocation.getBlockX()
+                    && fromLocation.getBlockY() == toLocation.getBlockY()
+                    && fromLocation.getBlockZ() == toLocation.getBlockZ())
                return;
           if (Race_Core.Race_Runner_List.isEmpty())
                return;
@@ -535,26 +549,23 @@ public class Event implements Listener {
           Player player = (Player) event.getExited();
           Race_Runner runner = Race_Core.getRunner(player);
           if (runner == null) {
-               plugin.getLogger().info("[AnitBoat_Leave] runner=null player=" + player.getName());
+
                return;
           }
 
           // Debug: log runner state to help diagnose why exits occur
-          plugin.getLogger().info("[AnitBoat_Leave] player=" + player.getName() + " mode=" + runner.getMode()
-                    + " enter=" + runner.getEnter());
 
           // Allow a single "enter" grace (used when spawning/respawning the boat)
           if (runner.getEnter()) {
-               plugin.getLogger().info("[AnitBoat_Leave] allowing one-time exit for " + player.getName());
+
                runner.setEnter(false);
                return; // do not cancel — this exit is intentional
           }
 
           // During RUN mode, prevent leaving the boat
           if (runner.getMode() == Race_Runner_Mode.RUN) {
-               plugin.getLogger().info("[AnitBoat_Leave] cancelling exit for " + player.getName());
+
                event.setCancelled(true);
-               return;
           }
      }
 
@@ -562,7 +573,7 @@ public class Event implements Listener {
      public void AnitEnter(VehicleEnterEvent event) {
           if (!(event.getEntered() instanceof Player))
                return;
-          if (event.getVehicle() == null || event.getVehicle().getType() != EntityType.BOAT)
+          if (event.getVehicle().getType() != EntityType.BOAT)
                return;
 
           Player player = (Player) event.getEntered();
@@ -570,10 +581,43 @@ public class Event implements Listener {
           if (runner == null)
                return;
 
-          // Player actually entered the boat — clear the enter-grace and record vehicle
-          // id
+          // If runner is in RUN mode, disallow entering boats other than the assigned
+          // one.
+          java.util.UUID currentCar = runner.getCar();
+          java.util.UUID vehicleId = event.getVehicle().getUniqueId();
+
+          // Check whether the vehicle already contains other passengers (other than
+          // this player)
+          boolean hasOtherPassengers = false;
+          for (Entity ent : event.getVehicle().getPassengers()) {
+               if (!ent.getUniqueId().equals(player.getUniqueId())) {
+                    hasOtherPassengers = true;
+                    break;
+               }
+          }
+
+          if (runner.getMode() == Race_Runner_Mode.RUN) {
+               if (currentCar == null) {
+                    // Allow first-time boarding only if there are no other existing
+                    // passengers (prevents hopping into someone else's boat)
+                    if (hasOtherPassengers) {
+                         event.setCancelled(true);
+                         player.sendMessage(CollarMessage.setWarning() + "Cannot enter other boats during race");
+                         return;
+                    }
+               } else {
+                    // If already assigned a car, prevent entering a different one
+                    if (!currentCar.equals(vehicleId)) {
+                         event.setCancelled(true);
+                         player.sendMessage(CollarMessage.setWarning() + "You cannot change boats during the race");
+                         return;
+                    }
+               }
+          }
+
+          // Player actually entered the boat — clear the enter-grace and (re)record
+          // vehicle id
           runner.setEnter(false);
-          if (event.getVehicle() != null)
-               runner.setCar(event.getVehicle().getUniqueId());
+          runner.setCar(vehicleId);
      }
 }

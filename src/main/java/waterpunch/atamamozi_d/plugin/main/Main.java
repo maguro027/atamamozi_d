@@ -122,14 +122,14 @@ public class Main {
      }
 
      /**
-      * Create a file if it doesn't already exist.
-      * 
-      * @param string Path to the file to create
+      * ファイルが存在しない場合に新規作成します。
+      *
+      * @param string 作成するファイルのパス
       */
      public static void createfile(String string) {
           try {
                Path path = Paths.get(string);
-               // Only create if file doesn't exist
+               // ファイルが存在しない場合のみ作成する
                if (!Files.exists(path)) {
                     Files.createFile(path);
                }

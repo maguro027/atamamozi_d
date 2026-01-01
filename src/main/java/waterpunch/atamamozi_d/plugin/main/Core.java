@@ -11,6 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -30,40 +31,39 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 /**
- * ATAMAMOZI-D Racing Plugin - Core Plugin Class
- * 
+ * ATAMAMOZI-D レースプラグインのコアクラス
+ *
  * <p>
- * This plugin provides a comprehensive racing system for Minecraft servers,
- * supporting both walking and boat races with checkpoint management,
- * scoreboard tracking, and player ranking features.
+ * このプラグインはMinecraftサーバ向けの包括的なレースシステムを提供します。
+ * 歩行（WALK）とボート（BOAT）両方のレースをサポートし、チェックポイント管理、
+ * スコアボード追跡、プレイヤーランキング機能を備えています。
  * </p>
- * 
+ *
  * @author waterpunch
  * @version 0.1
  */
 public class Core extends JavaPlugin {
 
-     /** Plugin instance reference for static access */
+     /** 静的アクセス用のプラグインインスタンス参照 */
      static Plugin Data;
-     /** Hold reference to Event to avoid unused-new warning */
+     /** 未使用の new 警告を避けるためEventへの参照を保持 */
      private Event event;
 
-     /** Global timing configuration values (in seconds) */
+     /** グローバルなタイミング設定値（秒） */
      public static int WAIT_TIME, START_TIME, YOIN_TIME, LEAVE_TIME, MENU_RANK_VIEW;
 
      /**
-      * Plugin initialization - loads configuration, registers events, and restores
-      * player states.
-      * Called automatically by Bukkit when the plugin is enabled.
+      * プラグイン初期化 - 設定の読み込み、イベント登録、プレイヤー状態の復元を行います。
+      * Bukkitがプラグインを有効化した際に自動的に呼ばれます。
       */
      @Override
      public void onEnable() {
           Bukkit.getLogger().info("ATAMAMOZI-D ENGINE START");
 
-          // Load or create config file
+          // 設定ファイルを読み込み、存在しない場合はデフォルトを保存
           saveDefaultConfig();
 
-          // Set default values for missing config keys BEFORE reading them
+          // 設定値を読み込む前に欠損キーのデフォルト値を設定する
           if (!getConfig().contains("Setting.CountDown.WAIT"))
                getConfig().set("Setting.CountDown.WAIT", 30);
           if (!getConfig().contains("Setting.CountDown.START"))
@@ -76,32 +76,35 @@ public class Core extends JavaPlugin {
                getConfig().set("Setting.CountDown.MENU_RANK_VIEW", 20);
           this.saveConfig();
 
-          // Now read the configuration values (with defaults applied)
+          // デフォルトが適用された状態で設定値を読み込む
           WAIT_TIME = getConfig().getInt("Setting.CountDown.WAIT");
           START_TIME = getConfig().getInt("Setting.CountDown.START");
           YOIN_TIME = getConfig().getInt("Setting.CountDown.YOIN");
           LEAVE_TIME = getConfig().getInt("Setting.CountDown.LEAVE");
           MENU_RANK_VIEW = getConfig().getInt("Setting.MENU_RANK_VIEW");
 
-          // Store plugin instance for static access
+          // 静的アクセス用にプラグインインスタンスを保持
           Data = this;
 
-          // Register event listeners (constructor now auto-registers)
+          // Create Event instance and register listeners explicitly to avoid constructor
+          // this-leak
           this.event = new Event(this);
-          // Load saved race and score data from JSON files
+          this.event.register();
+          // JSONファイルから保存済みのレースとスコアデータを読み込む
           Main.loadData();
 
-          // Initialize Race_Runner for all online players (handles plugin reload case)
+          // オンラインプレイヤー全員に対してRace_Runnerを初期化（プラグインリロード対策）
           for (Player p : this.getServer().getOnlinePlayers()) {
-               // Close any race creation menus that may be open from previous session
-               if (p.getOpenInventory().getTitle().equals("RACE_CREATE"))
+               // 前回のセッションで開きっぱなしになっているレース作成メニューを閉じる
+               InventoryView view = p.getOpenInventory();
+               if ("RACE_CREATE".equals(view.getTitle()))
                     p.closeInventory();
 
-               // Create runner instance for player tracking
+               // プレイヤートラッキング用のランナーインスタンスを作成
                @SuppressWarnings("unused")
                Race_Runner runner = new Race_Runner(p);
 
-               // Clear any existing plugin scoreboards from previous session
+               // 前セッションのプラグイン用スコアボードが残っていればクリア
                Objective sidebar = p.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
                if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) {
                     p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
@@ -110,18 +113,18 @@ public class Core extends JavaPlugin {
      }
 
      /**
-      * Plugin shutdown - saves all player scores and clears race data.
-      * Called automatically by Bukkit when the plugin is disabled.
+      * プラグイン停止時処理 - すべてのプレイヤースコアを保存し、レースデータをクリアします。
+      * Bukkitがプラグインを無効化した際に自動的に呼ばれます。
       */
      @Override
      public void onDisable() {
           Bukkit.getLogger().info("ATAMAMOZI-D ENGINE STOP");
 
-          // Save all player scores to JSON files
+          // 全プレイヤースコアをJSONファイルへ保存
           for (Player_Score ps : waterpunch.atamamozi_d.plugin.score.Player_Score_Core.Score)
                CreateJson.Scoresave(ps);
 
-          // Clear all active race data and timers
+          // アクティブなレースデータとタイマーをクリア
           Race_Core.clear();
      }
 
@@ -135,26 +138,23 @@ public class Core extends JavaPlugin {
      }
 
      /**
-      * Handle /atd (or /race) commands for race management.
-      * 
-      * <p>
-      * Supported commands:
-      * <ul>
-      * <li>/atd - Open main race menu</li>
-      * <li>/atd list - Show available races</li>
-      * <li>/atd create - Create new race</li>
-      * <li>/atd join [name] - Join a race</li>
-      * <li>/atd leave - Leave current race</li>
-      * <li>/atd start - Start countdown (race creator only)</li>
-      * <li>/atd respawn - Respawn at last checkpoint</li>
-      * <li>/atd rank - View ranking</li>
-      * </ul>
-      * 
-      * @param sender       Command sender (must be a player)
-      * @param cmd          Command object
-      * @param commandLabel Command label used
-      * @param args         Command arguments
-      * @return false (allows default command handling)
+      * /atd（または /race）コマンドを処理します。
+      *
+      * サポートされているコマンド:
+      * - /atd - メインレースメニューを開く
+      * - /atd list - 利用可能なレースを表示
+      * - /atd create - 新しいレースを作成
+      * - /atd join [name] - レースに参加
+      * - /atd leave - 現在のレースから退出
+      * - /atd start - カウントダウンを開始（レース作成者のみ）
+      * - /atd respawn - 最後に通過したチェックポイントでリスポーン
+      * - /atd rank - ランキングを表示
+      *
+      * @param sender       コマンド送信者（プレイヤーである必要があります）
+      * @param cmd          コマンドオブジェクト
+      * @param commandLabel 使用されたコマンドラベル
+      * @param args         コマンド引数
+      * @return false（デフォルトのコマンド処理を許可）
       */
      @Override
      public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {

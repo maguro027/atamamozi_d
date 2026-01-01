@@ -24,57 +24,54 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 /**
- * Central management class for all races and race runners.
- * 
+ * レースとレース参加者（ランナー）の中央管理クラス。
+ *
  * <p>
- * This class maintains global collections of active races, players
- * participating
- * in races (runners), and provides static methods for race lifecycle management
- * (creation, joining, leaving, completion).
+ * このクラスは、アクティブなレースや参加プレイヤー（ランナー）のグローバルコレクションを保持し、
+ * レースのライフサイクル管理（作成、参加、退出、完了）を行う静的メソッドを提供します。
  * </p>
- * 
+ *
  * <p>
- * <b>Key Data Structures:</b>
+ * <b>主なデータ構造:</b>
  * </p>
  * <ul>
- * <li>{@code Race_list} - All created races</li>
- * <li>{@code Race_Runner_List} - All player race states (for iteration)</li>
- * <li>{@code Race_Runner_Map} - Fast player UUID -> runner lookup</li>
- * <li>{@code Race_Run} - Map of race UUID -> list of participants</li>
- * <li>{@code Timers} - Active countdown timers</li>
+ * <li>{@code Race_list} - 作成されたすべてのレース</li>
+ * <li>{@code Race_Runner_List} - すべてのランナー状態（反復用）</li>
+ * <li>{@code Race_Runner_Map} - プレイヤーUUID -> ランナー の高速検索マップ</li>
+ * <li>{@code Race_Run} - レースUUID -> 参加者リスト のマップ</li>
+ * <li>{@code Timers} - アクティブなカウントダウン等のタイマー</li>
  * </ul>
- * 
+ *
  * @author waterpunch
  */
 public class Race_Core {
 
-     /** List of all created races */
+     /** すべての作成済みレースのリスト */
      public static ArrayList<Race> Race_list = new ArrayList<>();
 
-     /** List of all race runners (for iteration) */
-     // Keep a list for iteration compat and also a map for fast lookups by player
-     // UUID
+     /** すべてのランナーのリスト（反復用） */
+     // 反復互換のためにリストを保持し、プレイヤーUUIDによる高速検索用にマップも併用する
      public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
 
-     /** Fast lookup map: player UUID -> Race_Runner */
+     /** 高速検索マップ: プレイヤーUUID -> Race_Runner */
      public static Map<UUID, Race_Runner> Race_Runner_Map = new ConcurrentHashMap<>();
 
-     /** Race packages for data export */
+     /** データ出力用のレースパッケージ */
      public static ArrayList<Race_Package> Race_packages = new ArrayList<>();
 
-     /** Map of race UUID -> list of participants in that race */
+     /** レースUUID -> そのレースの参加者リスト のマップ */
      public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
 
-     /** Active race timers (countdown, start, goal, etc.) */
+     /** アクティブなレースタイマー（カウントダウン、開始、ゴールなど） */
      public static ArrayList<Race_Timer> Timers = new ArrayList<>();
 
-     /** Cached ranking menu inventories */
+     /** キャッシュされたランキングメニューのインベントリ */
      public static LinkedHashMap<Integer, ArrayList<Inventory>> TOP_MENU = new LinkedHashMap<>();
 
      /**
-      * Register a new race in the system.
-      * 
-      * @param Race Race to add
+      * システムに新しいレースを登録します。
+      *
+      * @param Race 追加するレース
       */
      public static void addRace(Race Race) {
           Race_list.add(Race);
@@ -82,19 +79,18 @@ public class Race_Core {
      }
 
      /**
-      * Add a player to a race.
-      * 
+      * プレイヤーをレースに参加させます。
+      *
       * <p>
-      * Validates race state (WAIT/RUN/GOAL/EDIT) and player capacity before joining.
-      * Creates a Race_Runner if one doesn't exist for the player.
+      * 参加前にレース状態（WAIT/RUN/GOAL/EDIT）と参加可能数を検証します。
+      * 必要に応じてRace_Runnerを作成します。
       * </p>
-      * 
-      * @param Race   Race to join
-      * @param player Player joining the race
+      *
+      * @param Race   参加対象のレース
+      * @param player 参加するプレイヤー
       */
      public static void joinRace(Race Race, Player player) {
-          // Ensure a Race_Runner exists for the player. PlayerJoin usually creates one
-          // but be defensive.
+          // プレイヤー用のRace_Runnerが存在することを保証する。通常PlayerJoinで作成されるが念のため。
           Race_Runner run = getRunner(player);
           if (run == null) {
                // create a runner for safety so subsequent code does not NPE
@@ -104,10 +100,7 @@ public class Race_Core {
                player.sendMessage(CollarMessage.setWarning() + "Already join race");
                return;
           }
-          // if (Race_Run.get(Race.getUUID()).size() == Race.getJoin_Amount()) {
-          // player.sendMessage(CollarMessage.setInfo() + "MAX Player");
-          // return;
-          // }
+          // (以前のチェックコードをコメントアウト済み)
 
           if (!Race_Run.containsKey(Race.getUUID()))
                Race_Run.put(Race.getUUID(), new ArrayList<>());
@@ -143,22 +136,21 @@ public class Race_Core {
      }
 
      /**
-      * Remove a player from their current race.
-      * 
+      * プレイヤーを現在のレースから除外します。
+      *
       * <p>
-      * Handles different race states:
+      * レース状態別に処理を行います:
       * <ul>
-      * <li>EDIT mode: Deletes the race being edited</li>
-      * <li>WAIT mode: Removes from waiting list</li>
-      * <li>RUN mode: Removes from active race</li>
-      * <li>GOAL mode: Completes the race for the player</li>
+      * <li>EDIT: 編集中のレースを削除</li>
+      * <li>WAIT: 待機リストから削除</li>
+      * <li>RUN: アクティブレースから削除</li>
+      * <li>GOAL: プレイヤーのレース完了処理</li>
       * </ul>
-      * 
-      * @param player Player to remove from race
+      *
+      * @param player レースから除外するプレイヤー
       */
      public static void removeRunner(Player player) {
-          // If the player is not in a race or runner doesn't exist, clear scoreboard if
-          // present and return.
+          // プレイヤーがレースに参加していないかランナーが存在しない場合、サイドバーをクリアして戻る
           if (!isJoin(player)) {
                org.bukkit.scoreboard.Objective sidebar = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
                if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D"))
@@ -168,7 +160,7 @@ public class Race_Core {
 
           Race_Runner run = getRunner(player);
           if (run == null)
-               return; // defensive: nothing else to do
+               return; // 防御的: それ以外の処理は不要
 
           Race race = getRace(run.getRaceID());
 
@@ -179,7 +171,7 @@ public class Race_Core {
                case EDIT:
                     if (race != null)
                          Race_list.remove(race);
-                    // Remove from Race_Run if present (player was added during creation)
+                    // 作成中に追加されている場合はRace_Runからも削除する
                     for (UUID a : Race_Run.keySet())
                          if (run.getRaceID() != null && run.getRaceID().equals(a) && Race_Run.get(a) != null)
                               Race_Run.get(a).remove(run);

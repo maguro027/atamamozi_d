@@ -7,7 +7,7 @@ public enum Race_Mode {
      EDIT(3);
 
      @SuppressWarnings("unused")
-     private int id;
+     private final int id;
 
      private Race_Mode(int id) {
           this.id = id;

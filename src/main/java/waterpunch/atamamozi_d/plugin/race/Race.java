@@ -14,13 +14,13 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 
 /**
- * Represents a racing course with checkpoints, start points, and configuration.
- * 
+ * チェックポイント、スタート地点、設定を持つレースコースを表します。
+ *
  * <p>
- * Each race has a unique UUID, supports multiple players, and can be configured
- * with various race types (WALK, BOAT), lap counts, and checkpoint locations.
+ * 各レースは一意のUUIDを持ち、複数プレイヤーに対応します。WALKやBOATなどの
+ * レースタイプ、周回数、チェックポイント位置などを設定できます。
  * </p>
- * 
+ *
  * @author waterpunch
  */
 public class Race {
@@ -36,9 +36,9 @@ public class Race {
      private final ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
 
      /**
-      * Create a new race with default settings.
-      * 
-      * @param creator Player creating the race
+      * デフォルト設定で新しいレースを作成します。
+      *
+      * @param creator レースを作成するプレイヤー
       */
      public Race(Player creator) {
           this.creator = creator.getName();
@@ -53,38 +53,38 @@ public class Race {
      }
 
      /**
-      * Add a start point location to this race.
-      * Players will spawn at these locations based on their join order.
-      * 
-      * @param loc Location to add as a start point
+      * このレースにスタート地点を追加します。
+      * プレイヤーは参加順にこれらの位置にスポーンします。
+      *
+      * @param loc スタート地点として追加する位置
       */
      public void addStartPointLoc(Location loc) {
           StartPoint.add(new Loc_parts(loc));
      }
 
      /**
-      * Get all start point locations for this race.
-      * 
-      * @return List of start point locations
+      * このレースの全スタート地点を取得します。
+      *
+      * @return スタート地点のリスト
       */
      public ArrayList<Loc_parts> getStartPointLoc() {
           return this.StartPoint;
      }
 
      /**
-      * Add a checkpoint to this race with specified trigger radius.
-      * 
-      * @param loc Checkpoint location
-      * @param r   Trigger radius (distance required to activate checkpoint)
+      * 指定したトリガー半径でチェックポイントを追加します。
+      *
+      * @param loc チェックポイントの位置
+      * @param r   チェックポイントが作動する半径
       */
      public void addCheckPointLoc(Location loc, int r) {
           CheckPoint_Loc.add(new CheckPointLoc(loc, r));
      }
 
      /**
-      * Get all checkpoints for this race.
-      * 
-      * @return List of checkpoint locations with radii
+      * このレースのすべてのチェックポイントを取得します。
+      *
+      * @return 半径を含むチェックポイントのリスト
       */
      public ArrayList<CheckPointLoc> getCheckPointLoc() {
           return this.CheckPoint_Loc;

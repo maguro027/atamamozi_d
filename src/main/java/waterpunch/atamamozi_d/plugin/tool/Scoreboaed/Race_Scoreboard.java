@@ -23,8 +23,8 @@ public class Race_Scoreboard {
      private Objective objective;
 
      /**
-      * Build the actual Scoreboard object from a list of lines. Use buildLines() to
-      * get the content first and avoid rebuilding when content didn't change.
+      * 行リストから実際のScoreboardオブジェクトを構築します。
+      * 事前にbuildLines()で内容を作成し、内容が変わっていない場合の再構築を避けてください。
       */
      public Scoreboard buildBoardFromLines(List<String> lines) {
           ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -33,8 +33,7 @@ public class Race_Scoreboard {
           }
           board = manager.getNewScoreboard();
 
-          // Try modern 3-arg method first (1.13+), fall back to legacy 2-arg method
-          // (1.12.2)
+          // まず新しい3引数のメソッド(1.13+)を試し、存在しない場合はレガシーの2引数(1.12.2)にフォールバックする
           try {
                // Modern API: registerNewObjective(name, criteria, displayName)
                objective = board.registerNewObjective("Stats", "dummy", "a");
@@ -49,7 +48,7 @@ public class Race_Scoreboard {
           objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
           objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-          // The original logic reversed items then set scores from 0..n-1
+          // もともとのロジックでは行を逆順にして0..n-1のスコアを割り当てている
           List<String> tmp = new ArrayList<>(lines);
           Collections.reverse(tmp);
           ArrayList<Score> scores = new ArrayList<>();
