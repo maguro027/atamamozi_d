@@ -526,10 +526,10 @@ public class Event implements Listener {
      @Deprecated
      @EventHandler
      public void AnitBoat_Leave(VehicleExitEvent event) {
-          // Only care about players exiting boats
+          // Handle players exiting any vehicle during a race
           if (!(event.getExited() instanceof Player))
                return;
-          if (event.getVehicle().getType() != EntityType.BOAT)
+          if (event.getVehicle() == null)
                return;
 
           Player player = (Player) event.getExited();
@@ -539,18 +539,23 @@ public class Event implements Listener {
                return;
           }
 
+          // Check if player is in a vehicle race
+          Race race = Race_Core.getRace(runner.getRaceID());
+          if (race == null || race.getRace_Type() != Race_Type.BOAT)
+               return;
+
           // Debug: log runner state to help diagnose why exits occur
           plugin.getLogger().info("[AnitBoat_Leave] player=" + player.getName() + " mode=" + runner.getMode()
                     + " enter=" + runner.getEnter());
 
-          // Allow a single "enter" grace (used when spawning/respawning the boat)
+          // Allow a single "enter" grace (used when spawning/respawning the vehicle)
           if (runner.getEnter()) {
                plugin.getLogger().info("[AnitBoat_Leave] allowing one-time exit for " + player.getName());
                runner.setEnter(false);
                return; // do not cancel — this exit is intentional
           }
 
-          // During RUN mode, prevent leaving the boat
+          // During RUN mode, prevent leaving the vehicle
           if (runner.getMode() == Race_Runner_Mode.RUN) {
                plugin.getLogger().info("[AnitBoat_Leave] cancelling exit for " + player.getName());
                event.setCancelled(true);
@@ -562,7 +567,7 @@ public class Event implements Listener {
      public void AnitEnter(VehicleEnterEvent event) {
           if (!(event.getEntered() instanceof Player))
                return;
-          if (event.getVehicle() == null || event.getVehicle().getType() != EntityType.BOAT)
+          if (event.getVehicle() == null)
                return;
 
           Player player = (Player) event.getEntered();
@@ -570,25 +575,24 @@ public class Event implements Listener {
           if (runner == null)
                return;
 
-          // Check if player is in a boat race
+          // Check if player is in a vehicle race (boat, pig, horse, etc.)
           Race race = Race_Core.getRace(runner.getRaceID());
           if (race != null && race.getRace_Type() == Race_Type.BOAT) {
-               // If Enter flag is false, this is not an authorized boat spawn/respawn
-               // Check if this is the player's own boat
+               // If Enter flag is false, this is not an authorized vehicle spawn/respawn
+               // Check if this is the player's own vehicle
                UUID vehicleId = event.getVehicle().getUniqueId();
-               UUID playerBoatId = runner.getCar();
+               UUID playerVehicleId = runner.getCar();
                
-               // If player already has a boat assigned and it's not the one they're entering,
+               // If player already has a vehicle assigned and it's not the one they're entering,
                // and this is not an authorized spawn (Enter flag is false), cancel
-               if (!runner.getEnter() && playerBoatId != null && !playerBoatId.equals(vehicleId)) {
+               if (!runner.getEnter() && playerVehicleId != null && !playerVehicleId.equals(vehicleId)) {
                     event.setCancelled(true);
-                    player.sendMessage(CollarMessage.setWarning() + "You cannot board another player's boat!");
+                    player.sendMessage(CollarMessage.setWarning() + "You cannot board another player's vehicle!");
                     return;
                }
           }
 
-          // Player actually entered the boat — clear the enter-grace and record vehicle
-          // id
+          // Player actually entered the vehicle — clear the enter-grace and record vehicle id
           runner.setEnter(false);
           if (event.getVehicle() != null)
                runner.setCar(event.getVehicle().getUniqueId());
