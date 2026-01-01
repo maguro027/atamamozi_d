@@ -298,11 +298,13 @@ public class Items {
                     Rank_Meta.setLore(lores);
                }
           }
-          Rank.setItemMeta(Rank_Meta);
+          if (Rank_Meta != null) {
+               Rank.setItemMeta(Rank_Meta);
+          }
           return Rank;
      }
 
-     static ItemStack getRace_StartPint_Item(Race race, int i) {
+     static ItemStack getRace_StartPoint_Item(Race race, int i) {
           ItemStack START = new ItemStack(Material.EMERALD_BLOCK);
           ItemMeta START_Meta = START.getItemMeta();
           if (START_Meta != null) {
@@ -323,7 +325,7 @@ public class Items {
           return START;
      }
 
-     static ItemStack getRace_CheckPint_Item(Race race, int i) {
+     static ItemStack getRace_CheckPoint_Item(Race race, int i) {
           int itemamount = i + 1;
           ItemStack CHECK = new ItemStack(Material.MAP, itemamount);
           ItemMeta CHECK_Meta = CHECK.getItemMeta();

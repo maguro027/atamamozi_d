@@ -29,41 +29,41 @@ public class Menus {
                cash = Items.getBlack();
                if (i == 45)
                     cash = Items.getBack();
-               inv.setItem(i, new ItemStack(cash));
+               inv.setItem(i, cash);
           }
           return inv;
      }
 
      public static Inventory getTop(Player player) {
           Inventory RACE_TOP_MENU = Bukkit.createInventory(player, 9, "RACE_TOP_MENU");
-          RACE_TOP_MENU.setItem(1, new ItemStack(Items.getRace_LIST()));
-          RACE_TOP_MENU.setItem(7, new ItemStack(Items.getRace_CREATE()));
+          RACE_TOP_MENU.setItem(1, Items.getRace_LIST());
+          RACE_TOP_MENU.setItem(7, Items.getRace_CREATE());
           return RACE_TOP_MENU;
      }
 
      public static Inventory getRaceList(Player player) {
           Inventory RACE_LIST = Bukkit.createInventory(player, 9 * 6, "RACE_LIST");
           setBorder(RACE_LIST);
-          RACE_LIST.setItem(46, new ItemStack(Items.getThisClick()));
-          RACE_LIST.setItem(47, new ItemStack(Items.getRanking()));
-          RACE_LIST.setItem(48, new ItemStack(Items.getCreater(player.getName())));
+          RACE_LIST.setItem(46, Items.getThisClick());
+          RACE_LIST.setItem(47, Items.getRanking());
+          RACE_LIST.setItem(48, Items.getCreater(player.getName()));
           if (Race_Core.Race_list.isEmpty())
                return RACE_LIST;
           for (int i = 0; i < Race_Core.Race_list.size(); i++)
-               RACE_LIST.setItem(i + 9, new ItemStack(Items.getRace(Race_Core.Race_list.get(i), player)));
+               RACE_LIST.setItem(i + 9, Items.getRace(Race_Core.Race_list.get(i), player));
           return RACE_LIST;
      }
 
      public static Inventory getRaceRanking(Player player) {
           Inventory RACE_RANKING = Bukkit.createInventory(player, 9 * 6, "RACE_RANKING");
           setBorder(RACE_RANKING);
-          RACE_RANKING.setItem(46, new ItemStack(Items.getRace_LIST()));
-          RACE_RANKING.setItem(47, new ItemStack(Items.getThisClick()));
-          RACE_RANKING.setItem(48, new ItemStack(Items.getCreater(player.getName())));
+          RACE_RANKING.setItem(46, Items.getRace_LIST());
+          RACE_RANKING.setItem(47, Items.getThisClick());
+          RACE_RANKING.setItem(48, Items.getCreater(player.getName()));
           if (Race_Core.Race_list.isEmpty())
                return RACE_RANKING;
           for (int i = 0; i < Race_Core.Race_list.size(); i++)
-               RACE_RANKING.setItem(i + 9, new ItemStack(Items.getRaceRank(Race_Core.Race_list.get(i), player)));
+               RACE_RANKING.setItem(i + 9, Items.getRaceRank(Race_Core.Race_list.get(i), player));
           return RACE_RANKING;
      }
 
@@ -74,9 +74,9 @@ public class Menus {
      }
 
      public static Inventory getRaceCreate(Player player) {
-          if (!player.hasPermission("atamamozi_d.player.create") || !player.isOp()) {
+          if (!player.hasPermission("atamamozi_d.player.create")) {
                player.sendMessage(CollarMessage.setNotPermission());
-               return waterpunch.atamamozi_d.plugin.menus.Menus.getTop(player);
+               return getTop(player);
           }
           Race_Runner run = Race_Core.getRunner(player);
           if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT)) {
@@ -93,13 +93,15 @@ public class Menus {
 
           Inventory RACE_CREATE = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE");
           setBorder(RACE_CREATE);
-          
+
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return RACE_CREATE;
-          
+
           ItemStack SET_NAME = new ItemStack(Material.NAME_TAG);
           ItemMeta SET_NAME_Meta = SET_NAME.getItemMeta();
+          if (SET_NAME_Meta == null)
+               return RACE_CREATE;
           if (race.getRace_name().equals("DEFAULT")) {
                SET_NAME_Meta.setDisplayName(ChatColor.GOLD + "EDIT NAME");
           } else {
@@ -112,17 +114,21 @@ public class Menus {
 
           ItemStack RACE_TYPE = new ItemStack(Material.DIAMOND_AXE);
           ItemMeta RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
+          if (RACE_TYPE_Meta == null)
+               return RACE_CREATE;
           RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "Loading...");
           switch (race.getRace_Type()) {
                case WALK:
                     RACE_TYPE = new ItemStack(Material.TOTEM_OF_UNDYING);
                     RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
-                    RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "RUN");
+                    if (RACE_TYPE_Meta != null)
+                         RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "RUN");
                     break;
                case BOAT:
                     RACE_TYPE = new ItemStack(Material.OAK_BOAT);
                     RACE_TYPE_Meta = RACE_TYPE.getItemMeta();
-                    RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "BOAT");
+                    if (RACE_TYPE_Meta != null)
+                         RACE_TYPE_Meta.setDisplayName(ChatColor.GOLD + "RACE TYPE : " + ChatColor.RED + "BOAT");
                     break;
                default:
                     player.sendMessage(CollarMessage.setWarning() + "["
@@ -131,33 +137,44 @@ public class Menus {
           }
           ItemStack RAP = new ItemStack(Material.COMPARATOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
+          if (RAP_Meta == null)
+               return RACE_CREATE;
           RAP_Meta.setDisplayName(ChatColor.GOLD + "RAP : " + ChatColor.RED
                     + String.valueOf(race.getRap()));
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
-
+          if (AMOUNT_Meta == null)
+               return RACE_CREATE;
           AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED
                     + String.valueOf(race.getJoin_Amount()));
 
           ItemStack ICON = new ItemStack(race.getIcon());
           ItemMeta ICON_Meta = ICON.getItemMeta();
+          if (ICON_Meta == null)
+               return RACE_CREATE;
           ICON_Meta.setDisplayName(ChatColor.GOLD + "This item is Icon");
 
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
           ItemMeta CHECKPOINT_Meta = CHECKPOINT.getItemMeta();
+          if (CHECKPOINT_Meta == null)
+               return RACE_CREATE;
           CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Check Point");
           List<String> CHECKPOINT_lores = new ArrayList<>();
           CHECKPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addCheckPoint");
 
           ItemStack STARTPOINT = new ItemStack(Material.TARGET);
           ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
+          if (STARTPOINT_Meta == null)
+               return RACE_CREATE;
           STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Edit Start Point");
           List<String> STARTPOINT_lores = new ArrayList<>();
           STARTPOINT_lores.add(ChatColor.GREEN + "/atamamozi_d addStartPoint");
 
           ItemStack CREATE = new ItemStack(Material.WRITABLE_BOOK);
           ItemMeta CREATE_Meta = CREATE.getItemMeta();
+          if (CREATE_Meta == null)
+               return RACE_CREATE;
           CREATE_Meta.setDisplayName(ChatColor.GOLD + "EDIT COMPLETE");
           List<String> lores = new ArrayList<>();
 
@@ -248,14 +265,14 @@ public class Menus {
           CHECKPOINT.setItemMeta(CHECKPOINT_Meta);
           CREATE.setItemMeta(CREATE_Meta);
 
-          RACE_CREATE.setItem(10, new ItemStack(SET_NAME));
-          RACE_CREATE.setItem(12, new ItemStack(RACE_TYPE));
-          RACE_CREATE.setItem(14, new ItemStack(AMOUNT));
-          RACE_CREATE.setItem(16, new ItemStack(RAP));
-          RACE_CREATE.setItem(28, new ItemStack(ICON));
-          RACE_CREATE.setItem(30, new ItemStack(STARTPOINT));
-          RACE_CREATE.setItem(32, new ItemStack(CHECKPOINT));
-          RACE_CREATE.setItem(49, new ItemStack(CREATE));
+          RACE_CREATE.setItem(10, SET_NAME);
+          RACE_CREATE.setItem(12, RACE_TYPE);
+          RACE_CREATE.setItem(14, AMOUNT);
+          RACE_CREATE.setItem(16, RAP);
+          RACE_CREATE.setItem(28, ICON);
+          RACE_CREATE.setItem(30, STARTPOINT);
+          RACE_CREATE.setItem(32, CHECKPOINT);
+          RACE_CREATE.setItem(49, CREATE);
 
           return RACE_CREATE;
      }
@@ -266,34 +283,44 @@ public class Menus {
 
           ItemStack RUN = new ItemStack(Material.TOTEM_OF_UNDYING);
           ItemMeta RUN_Meta = RUN.getItemMeta();
-          RUN_Meta.setDisplayName(ChatColor.GOLD + "WALK");
-          RUN.setItemMeta(RUN_Meta);
+          if (RUN_Meta != null) {
+               RUN_Meta.setDisplayName(ChatColor.GOLD + "WALK");
+               RUN.setItemMeta(RUN_Meta);
+          }
 
           ItemStack BOAT = new ItemStack(Material.OAK_BOAT);
           ItemMeta BOAT_Meta = BOAT.getItemMeta();
-          BOAT_Meta.setDisplayName(ChatColor.GOLD + "BOAT");
-          BOAT.setItemMeta(BOAT_Meta);
+          if (BOAT_Meta != null) {
+               BOAT_Meta.setDisplayName(ChatColor.GOLD + "BOAT");
+               BOAT.setItemMeta(BOAT_Meta);
+          }
 
           ItemStack I = new ItemStack(Material.LIME_DYE);
           ItemMeta I_Meta = I.getItemMeta();
-          I_Meta.setDisplayName(ChatColor.GREEN + "This Active");
-          I.setItemMeta(I_Meta);
+          if (I_Meta != null) {
+               I_Meta.setDisplayName(ChatColor.GREEN + "This Active");
+               I.setItemMeta(I_Meta);
+          }
 
           ItemStack O = new ItemStack(Material.GRAY_DYE);
           ItemMeta O_Meta = O.getItemMeta();
-          O_Meta.setDisplayName(" ");
-          O.setItemMeta(O_Meta);
+          if (O_Meta != null) {
+               O_Meta.setDisplayName(" ");
+               O.setItemMeta(O_Meta);
+          }
 
-          RACE_CREATE_TYPE.setItem(20, new ItemStack(RUN));
-          RACE_CREATE_TYPE.setItem(24, new ItemStack(BOAT));
-          RACE_CREATE_TYPE.setItem(29, new ItemStack(O));
-          RACE_CREATE_TYPE.setItem(33, new ItemStack(O));
+          RACE_CREATE_TYPE.setItem(20, RUN);
+          RACE_CREATE_TYPE.setItem(24, BOAT);
+          RACE_CREATE_TYPE.setItem(29, O);
+          RACE_CREATE_TYPE.setItem(33, O);
           Race_Runner run = Race_Core.getRunner(player);
-          Race race = Race_Core.getRace(run.getRaceID());
-          if (race != null && race.getRace_Type() == Race_Type.WALK)
-               RACE_CREATE_TYPE.setItem(29, new ItemStack(I));
-          if (race != null && race.getRace_Type() == Race_Type.BOAT)
-               RACE_CREATE_TYPE.setItem(33, new ItemStack(I));
+          if (run != null) {
+               Race race = Race_Core.getRace(run.getRaceID());
+               if (race != null && race.getRace_Type() == Race_Type.WALK)
+                    RACE_CREATE_TYPE.setItem(29, I);
+               if (race != null && race.getRace_Type() == Race_Type.BOAT)
+                    RACE_CREATE_TYPE.setItem(33, I);
+          }
 
           return RACE_CREATE_TYPE;
      }
@@ -305,7 +332,9 @@ public class Menus {
 
           ItemStack RAP = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta RAP_Meta = RAP.getItemMeta();
-          
+
+          if (run == null)
+               return RACE_CREATE_RAP;
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null || RAP_Meta == null)
                return RACE_CREATE_RAP;
@@ -314,9 +343,9 @@ public class Menus {
                     + String.valueOf(race.getRap()));
           RAP.setItemMeta(RAP_Meta);
 
-          RACE_CREATE_RAP.setItem(22, new ItemStack(RAP));
-          RACE_CREATE_RAP.setItem(20, new ItemStack(Items.getUP()));
-          RACE_CREATE_RAP.setItem(24, new ItemStack(Items.getDown()));
+          RACE_CREATE_RAP.setItem(22, RAP);
+          RACE_CREATE_RAP.setItem(20, Items.getUP());
+          RACE_CREATE_RAP.setItem(24, Items.getDown());
 
           return RACE_CREATE_RAP;
      }
@@ -328,11 +357,13 @@ public class Menus {
 
           ItemStack AMOUNT = new ItemStack(Material.DIAMOND_HORSE_ARMOR);
           ItemMeta AMOUNT_Meta = AMOUNT.getItemMeta();
-          
+
+          if (run == null)
+               return RACE_CREATE_AMOUNT;
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null || AMOUNT_Meta == null)
                return RACE_CREATE_AMOUNT;
-          
+
           if (race.getJoin_Amount() == 0) {
                AMOUNT_Meta.setDisplayName(ChatColor.GOLD + "Max Member : " + ChatColor.RED + "No Limit");
           } else {
@@ -341,9 +372,9 @@ public class Menus {
           }
           AMOUNT.setItemMeta(AMOUNT_Meta);
 
-          RACE_CREATE_AMOUNT.setItem(22, new ItemStack(AMOUNT));
-          RACE_CREATE_AMOUNT.setItem(20, new ItemStack(Items.getUP()));
-          RACE_CREATE_AMOUNT.setItem(24, new ItemStack(Items.getDown()));
+          RACE_CREATE_AMOUNT.setItem(22, AMOUNT);
+          RACE_CREATE_AMOUNT.setItem(20, Items.getUP());
+          RACE_CREATE_AMOUNT.setItem(24, Items.getDown());
 
           return RACE_CREATE_AMOUNT;
      }
@@ -353,16 +384,20 @@ public class Menus {
           Inventory RACE_CREATE_ICON = Bukkit.createInventory(player, 9 * 6, "RACE_CREATE_ICON");
           setBorder(RACE_CREATE_ICON);
 
+          if (run == null)
+               return RACE_CREATE_ICON;
           Race race = Race_Core.getRace(run.getRaceID());
           if (race == null)
                return RACE_CREATE_ICON;
-          
+
           ItemStack ICOM = new ItemStack(race.getIcon());
           ItemMeta ICON_Meta = ICOM.getItemMeta();
-          ICON_Meta.setDisplayName(ChatColor.GREEN + "Click to New Icon item on you Inventory");
-          ICOM.setItemMeta(ICON_Meta);
+          if (ICON_Meta != null) {
+               ICON_Meta.setDisplayName(ChatColor.GREEN + "Click to New Icon item on you Inventory");
+               ICOM.setItemMeta(ICON_Meta);
+          }
 
-          RACE_CREATE_ICON.setItem(22, new ItemStack(ICOM));
+          RACE_CREATE_ICON.setItem(22, ICOM);
           return RACE_CREATE_ICON;
      }
 
@@ -373,21 +408,25 @@ public class Menus {
 
           ItemStack STARTPOINT = new ItemStack(Material.TARGET);
           ItemMeta STARTPOINT_Meta = STARTPOINT.getItemMeta();
-          STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Start Point Editor");
-          List<String> lores = new ArrayList<>();
-          lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
-          lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
-          lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
+          if (STARTPOINT_Meta != null) {
+               STARTPOINT_Meta.setDisplayName(ChatColor.GOLD + "Start Point Editor");
+               List<String> lores = new ArrayList<>();
+               lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
+               lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
+               lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
 
-          STARTPOINT_Meta.setLore(lores);
-          STARTPOINT.setItemMeta(STARTPOINT_Meta);
-          RACE_CREATE_STARTPOINT.setItem(4, new ItemStack(STARTPOINT));
+               STARTPOINT_Meta.setLore(lores);
+               STARTPOINT.setItemMeta(STARTPOINT_Meta);
+          }
+          RACE_CREATE_STARTPOINT.setItem(4, STARTPOINT);
 
-          Race race = Race_Core.getRace(run.getRaceID());
-          if (race != null) {
-               for (int i = 0; i < race.getStartPointLoc().size(); i++)
-                    RACE_CREATE_STARTPOINT.setItem(i + 9,
-                              new ItemStack(Items.getRace_StartPint_Item(race, i)));
+          if (run != null) {
+               Race race = Race_Core.getRace(run.getRaceID());
+               if (race != null) {
+                    for (int i = 0; i < race.getStartPointLoc().size(); i++)
+                         RACE_CREATE_STARTPOINT.setItem(i + 9,
+                                   Items.getRace_StartPoint_Item(race, i));
+               }
           }
 
           return RACE_CREATE_STARTPOINT;
@@ -400,22 +439,26 @@ public class Menus {
 
           ItemStack CHECKPOINT = new ItemStack(Material.COMPASS);
           ItemMeta CHECKPOINT_Meta = CHECKPOINT.getItemMeta();
-          CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Check Point Editor");
-          List<String> lores = new ArrayList<>();
-          lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
-          lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
-          lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
+          if (CHECKPOINT_Meta != null) {
+               CHECKPOINT_Meta.setDisplayName(ChatColor.GOLD + "Check Point Editor");
+               List<String> lores = new ArrayList<>();
+               lores.add(ChatColor.GOLD + "RightClick  : " + ChatColor.RED + "Updeta CheckPoint");
+               lores.add(ChatColor.GOLD + "LeftClick   : " + ChatColor.RED + "View CheckPoint");
+               lores.add(ChatColor.GOLD + "WheelClick  : " + ChatColor.RED + "Delete CheckPoint");
 
-          CHECKPOINT_Meta.setLore(lores);
-          CHECKPOINT.setItemMeta(CHECKPOINT_Meta);
+               CHECKPOINT_Meta.setLore(lores);
+               CHECKPOINT.setItemMeta(CHECKPOINT_Meta);
+          }
 
-          RACE_CREATE_CHECKPOINT.setItem(4, new ItemStack(CHECKPOINT));
+          RACE_CREATE_CHECKPOINT.setItem(4, CHECKPOINT);
 
-          Race race = Race_Core.getRace(run.getRaceID());
-          if (race != null) {
-               for (int i = 0; i < race.getCheckPointLoc().size(); i++) {
-                    RACE_CREATE_CHECKPOINT.setItem(i + 9,
-                              new ItemStack(Items.getRace_CheckPint_Item(race, i)));
+          if (run != null) {
+               Race race = Race_Core.getRace(run.getRaceID());
+               if (race != null) {
+                    for (int i = 0; i < race.getCheckPointLoc().size(); i++) {
+                         RACE_CREATE_CHECKPOINT.setItem(i + 9,
+                                   Items.getRace_CheckPoint_Item(race, i));
+                    }
                }
           }
           return RACE_CREATE_CHECKPOINT;

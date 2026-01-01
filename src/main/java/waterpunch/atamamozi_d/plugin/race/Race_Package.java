@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Race_Package {
 
-     private UUID Race_ID;
+     private final UUID Race_ID;
      private int Count;
 
      public Race_Package(UUID Race_ID) {
