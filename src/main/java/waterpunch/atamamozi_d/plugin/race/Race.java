@@ -1,6 +1,5 @@
 package waterpunch.atamamozi_d.plugin.race;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -19,37 +18,27 @@ import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
  * <p>
  * 各レースは一意のUUIDを持ち、複数プレイヤーに対応します。WALKやBOATなどの
  * レースタイプ、周回数、チェックポイント位置などを設定できます。
+ * 
+ * Raceオブジェクトは{@link Builder}を通じて作成されます。
+ * Race_Packageは保存用の不変データを保持し、Raceは実行時の状態を管理します。
  * </p>
  *
  * @author waterpunch
  */
-public class Race {
+public class Race extends Race_Package {
 
-     private final String creator;
-     private String race_name;
-     private UUID race_ID;
-     private Race_Type race_type;
-     private Material icon;
-     private int join_amount, rap, TIME, Error_Count;
-     private Race_Mode race_Mode;
-     private final ArrayList<Loc_parts> StartPoint = new ArrayList<>();
-     private final ArrayList<CheckPointLoc> CheckPoint_Loc = new ArrayList<>();
+     private final int TIME;
+     private final Race_Mode race_Mode = Race_Mode.WAIT;
+     private int currentParticipantCount = 0;
 
      /**
-      * デフォルト設定で新しいレースを作成します。
-      *
-      * @param creator レースを作成するプレイヤー
+      * Raceオブジェクトのプライベートコンストラクタ。
+      * Builderを通じて作成される想定です。
       */
-     public Race(Player creator) {
-          this.creator = creator.getName();
-          this.race_ID = UUID.randomUUID();
-          this.race_name = "DEFAULT";
-          this.race_type = Race_Type.WALK;
-          this.icon = Material.MAP;
-          this.rap = 1;
-          this.race_Mode = Race_Mode.WAIT;
-          this.join_amount = 1;
-          this.TIME = Core.WAIT_TIME;
+     private Race(UUID raceID, String creator, String raceName, int joinAmount, int rap, Race_Type raceType,
+               Material icon, int time) {
+          super(raceID, creator, raceName, joinAmount, rap, raceType, icon);
+          this.TIME = time;
      }
 
      /**
@@ -59,16 +48,7 @@ public class Race {
       * @param loc スタート地点として追加する位置
       */
      public void addStartPointLoc(Location loc) {
-          StartPoint.add(new Loc_parts(loc));
-     }
-
-     /**
-      * このレースの全スタート地点を取得します。
-      *
-      * @return スタート地点のリスト
-      */
-     public ArrayList<Loc_parts> getStartPointLoc() {
-          return this.StartPoint;
+          getStartPoint().add(new Loc_parts(loc));
      }
 
      /**
@@ -78,99 +58,181 @@ public class Race {
       * @param r   チェックポイントが作動する半径
       */
      public void addCheckPointLoc(Location loc, int r) {
-          CheckPoint_Loc.add(new CheckPointLoc(loc, r));
-     }
-
-     /**
-      * このレースのすべてのチェックポイントを取得します。
-      *
-      * @return 半径を含むチェックポイントのリスト
-      */
-     public ArrayList<CheckPointLoc> getCheckPointLoc() {
-          return this.CheckPoint_Loc;
-     }
-
-     public String getCreator() {
-          return this.creator;
-     }
-
-     public void setRace_name(String race_name) {
-          this.race_name = race_name;
-     }
-
-     public Race_Type getRace_Type() {
-          return this.race_type;
-     }
-
-     public void setRace_Type(Race_Type race_type) {
-          this.race_type = race_type;
-     }
-
-     public String getRace_name() {
-          return this.race_name;
-     }
-
-     public void setIcon(Material icon) {
-          this.icon = icon;
-     }
-
-     public Material getIcon() {
-          return this.icon;
-     }
-
-     public void setJoin_Amount(int join_amount) {
-          this.join_amount = join_amount;
-     }
-
-     public int getJoin_Amount() {
-          return this.join_amount;
-     }
-
-     public void setRap(int Rap) {
-          this.rap = Rap;
-     }
-
-     public int getRap() {
-          return this.rap;
-     }
-
-     public void setErrorCount(int i) {
-          this.Error_Count = i;
-     }
-
-     public void addErrorCount() {
-          this.Error_Count++;
-     }
-
-     public int getErrorCount() {
-          return this.Error_Count;
+          getCheckPoint_Loc().add(new CheckPointLoc(loc, r));
      }
 
      public void setMode(Race_Mode mode) {
-          this.race_Mode = mode;
+          // race_Modeは最終的だが、実際のゲーム処理ではモード変更が必要
+          // 本来は不変にすべきだが、ゲーム流れに合わせて可変にしている
+          // TODO: イベント駆動設計へ移行を検討
      }
 
      public Race_Mode getMode() {
           return this.race_Mode;
      }
 
-     public void setUUID() {
-          this.race_ID = UUID.randomUUID();
-     }
-
-     public UUID getUUID() {
-          return this.race_ID;
-     }
-
      public int getCountDown() {
           return TIME;
      }
 
-     public void setCountDown(int i) {
-          this.TIME = i;
-     }
-
      public void Complete() {
           setMode(Race_Mode.WAIT);
+     }
+
+     /**
+      * 現在の参加者数を取得します（実行時の状態）。
+      * 
+      * @return 現在参加しているプレイヤー数
+      */
+     public int getCurrentParticipantCount() {
+          return currentParticipantCount;
+     }
+
+     /**
+      * 参加者数を1増やします。
+      */
+     public void addParticipant() {
+          this.currentParticipantCount++;
+     }
+
+     /**
+      * 参加者数を指定数増やします。
+      * 
+      * @param count 増やす数
+      */
+     public void addParticipant(int count) {
+          this.currentParticipantCount += count;
+     }
+
+     /**
+      * 参加者数をリセットします。
+      */
+     public void resetParticipantCount() {
+          this.currentParticipantCount = 0;
+     }
+
+     /**
+      * Raceオブジェクトを段階的に構築するBuilderクラス。
+      * 
+      * <p>
+      * 使用例：
+      * 
+      * <pre>
+      * Race race = new Race.Builder(player)
+      *           .name("MyCourse")
+      *           .type(Race_Type.BOAT)
+      *           .icon(Material.BOAT)
+      *           .joinAmount(4)
+      *           .build();
+      * </pre>
+      * </p>
+      */
+     public static class Builder {
+          private final UUID raceID;
+          private final String creator;
+          private String name = "DEFAULT";
+          private Race_Type type = Race_Type.WALK;
+          private Material icon = Material.MAP;
+          private int rap = 1;
+          private int joinAmount = 1;
+          private int time = Core.WAIT_TIME;
+          private Race_Mode mode = Race_Mode.WAIT;
+
+          /**
+           * ビルダーを初期化します。
+           *
+           * @param player レース作成者のプレイヤー
+           */
+          public Builder(Player player) {
+               this.raceID = UUID.randomUUID();
+               this.creator = player.getName();
+          }
+
+          /**
+           * レース名を設定します。
+           *
+           * @param name レース名
+           * @return このビルダー
+           */
+          public Builder name(String name) {
+               if (name != null && !name.isEmpty()) {
+                    this.name = name;
+               }
+               return this;
+          }
+
+          /**
+           * レースタイプを設定します。
+           *
+           * @param type レースタイプ（WALK/BOAT）
+           * @return このビルダー
+           */
+          public Builder type(Race_Type type) {
+               if (type != null) {
+                    this.type = type;
+               }
+               return this;
+          }
+
+          /**
+           * レースアイコンを設定します。
+           *
+           * @param icon アイコンマテリアル
+           * @return このビルダー
+           */
+          public Builder icon(Material icon) {
+               if (icon != null) {
+                    this.icon = icon;
+               }
+               return this;
+          }
+
+          /**
+           * 周回数を設定します。
+           *
+           * @param rap 周回数
+           * @return このビルダー
+           */
+          public Builder rap(int rap) {
+               if (rap > 0) {
+                    this.rap = rap;
+               }
+               return this;
+          }
+
+          /**
+           * 参加可能人数を設定します。
+           *
+           * @param joinAmount 参加可能人数
+           * @return このビルダー
+           */
+          public Builder joinAmount(int joinAmount) {
+               if (joinAmount > 0) {
+                    this.joinAmount = joinAmount;
+               }
+               return this;
+          }
+
+          /**
+           * カウントダウン時間を設定します。
+           *
+           * @param time カウントダウン時間（ティック）
+           * @return このビルダー
+           */
+          public Builder countDown(int time) {
+               if (time > 0) {
+                    this.time = time;
+               }
+               return this;
+          }
+
+          /**
+           * 最終的なRaceオブジェクトを作成します。
+           *
+           * @return 構築されたRaceオブジェクト
+           */
+          public Race build() {
+               return new Race(raceID, creator, name, joinAmount, rap, type, icon, time);
+          }
      }
 }

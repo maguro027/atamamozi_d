@@ -2,15 +2,15 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import waterpunch.atamamozi_d.plugin.main.Core;
@@ -25,412 +25,620 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 /**
  * レースとレース参加者（ランナー）の中央管理クラス。
- *
+ * 
  * <p>
- * このクラスは、アクティブなレースや参加プレイヤー（ランナー）のグローバルコレクションを保持し、
- * レースのライフサイクル管理（作成、参加、退出、完了）を行う静的メソッドを提供します。
- * </p>
- *
- * <p>
- * <b>主なデータ構造:</b>
+ * <b>責務</b>:
  * </p>
  * <ul>
- * <li>{@code Race_list} - 作成されたすべてのレース</li>
- * <li>{@code Race_Runner_List} - すべてのランナー状態（反復用）</li>
- * <li>{@code Race_Runner_Map} - プレイヤーUUID -> ランナー の高速検索マップ</li>
- * <li>{@code Race_Run} - レースUUID -> 参加者リスト のマップ</li>
- * <li>{@code Timers} - アクティブなカウントダウン等のタイマー</li>
+ * <li>アクティブレースの管理 (addRace, getRace)</li>
+ * <li>プレイヤー参加の管理 (joinRace, removeRunner)</li>
+ * <li>レースライフサイクルの制御 (Race_Start, AllGoal, Race_Goal)</li>
+ * <li>ランナー検索とマップ管理</li>
  * </ul>
- *
+ * 
+ * <p>
+ * <b>改善点 (Ver.1.5):</b>
+ * </p>
+ * <ul>
+ * <li>PascalCase → camelCase フィールド名統一</li>
+ * <li>Stream API 活用で重複ロジック削減</li>
+ * <li>Optional パターンで null 安全性向上</li>
+ * <li>RaceBuilder との統合で immutable Race_Package 実装</li>
+ * </ul>
+ * 
  * @author waterpunch
  */
-public class Race_Core {
+public class Race_Core_Refactored {
 
-     /** すべての作成済みレースのリスト */
-     public static ArrayList<Race> Race_list = new ArrayList<>();
+     // ================== コレクション管理 ==================
+     
+     /** 全アクティブレースのリスト */
+     private static final ArrayList<Race> raceList = new ArrayList<>();
+     
+     /** 全ランナー状態のリスト（反復用）*/
+     private static final ArrayList<Race_Runner> raceRunnerList = new ArrayList<>();
+     
+     /** プレイヤーUUID → ランナー高速検索マップ */
+     private static final HashMap<UUID, Race_Runner> raceRunnerMap = new HashMap<>();
+     
+     /** レースUUID → 参加ランナーリスト */
+     private static final HashMap<UUID, ArrayList<Race_Runner>> raceRunners = new HashMap<>();
+     
+     /** アクティブなタイマーのリスト */
+     private static final ArrayList<Race_Timer> timers = new ArrayList<>();
 
-     /** すべてのランナーのリスト（反復用） */
-     // 反復互換のためにリストを保持し、プレイヤーUUIDによる高速検索用にマップも併用する
-     public static ArrayList<Race_Runner> Race_Runner_List = new ArrayList<>();
-
-     /** 高速検索マップ: プレイヤーUUID -> Race_Runner */
-     public static Map<UUID, Race_Runner> Race_Runner_Map = new ConcurrentHashMap<>();
-
-     /** データ出力用のレースパッケージ */
-     public static ArrayList<Race_Package> Race_packages = new ArrayList<>();
-
-     /** レースUUID -> そのレースの参加者リスト のマップ */
-     public static LinkedHashMap<UUID, ArrayList<Race_Runner>> Race_Run = new LinkedHashMap<>();
-
-     /** アクティブなレースタイマー（カウントダウン、開始、ゴールなど） */
-     public static ArrayList<Race_Timer> Timers = new ArrayList<>();
-
-     /** キャッシュされたランキングメニューのインベントリ */
-     public static LinkedHashMap<Integer, ArrayList<Inventory>> TOP_MENU = new LinkedHashMap<>();
+     // ================== RaceBuilder との統合メソッド ==================
 
      /**
-      * システムに新しいレースを登録します。
-      *
-      * @param Race 追加するレース
-      */
-     public static void addRace(Race Race) {
-          Race_list.add(Race);
-          Race_packages.add(new Race_Package(Race.getUUID()));
-     }
-
-     /**
-      * プレイヤーをレースに参加させます。
-      *
+      * RaceBuilderで作成されたRaceオブジェクトをシステムに登録します。
+      * 
       * <p>
-      * 参加前にレース状態（WAIT/RUN/GOAL/EDIT）と参加可能数を検証します。
-      * 必要に応じてRace_Runnerを作成します。
+      * <b>フロー</b>:
       * </p>
-      *
-      * @param Race   参加対象のレース
-      * @param player 参加するプレイヤー
+      * <pre>
+      * RaceBuilder builder = RaceBuilderSession.startSession(player);
+      * builder.name("MyRace").type(Race_Type.BOAT).icon(Material.BOAT);
+      * Race race = builder.build();
+      * Race_Core.addRace(race);  // ← このメソッド
+      * </pre>
+      * 
+      * @param race RaceBuilder で構築された Race オブジェクト
       */
-     public static void joinRace(Race Race, Player player) {
-          // プレイヤー用のRace_Runnerが存在することを保証する。通常PlayerJoinで作成されるが念のため。
-          Race_Runner run = getRunner(player);
-          if (run == null) {
-               // create a runner for safety so subsequent code does not NPE
-               run = new Race_Runner(player);
-          }
-          if (isJoin(player)) {
-               player.sendMessage(CollarMessage.setWarning() + "Already join race");
+     public static void addRace(Race race) {
+          if (race == null) {
+               Bukkit.getLogger().warning("Race_Core: null race を登録しようとしました");
                return;
           }
-          // (以前のチェックコードをコメントアウト済み)
 
-          if (!Race_Run.containsKey(Race.getUUID()))
-               Race_Run.put(Race.getUUID(), new ArrayList<>());
-
-          switch (Race.getMode()) {
-               case WAIT:
-                    for (Race_Runner run_ : Race_Run.get(Race.getUUID()))
-                         if (run_.getPlayer().getUniqueId().equals(run.getPlayer().getUniqueId())) {
-                              player.sendMessage(CollarMessage.setWarning() + "Already join race");
-                              return;
-                         }
-                    if (Race_Run.get(Race.getUUID()).size() == Race.getJoin_Amount()) {
-                         player.sendMessage(CollarMessage.setInfo() + "MAX Player");
-                         return;
-                    }
-                    if (run.UPDate(Race.getUUID()))
-                         JoinMesseage(Race, player);
-                    break;
-               case RUN:
-                    player.sendMessage(CollarMessage.setInfo() + Race.getRace_name() + " is Active Race Please wait");
-                    break;
-               case GOAL:
-                    Race.setMode(Race_Mode.WAIT);
-                    joinRace(Race, player);
-                    break;
-               case EDIT:
-                    player.sendMessage(CollarMessage.setInfo() + Race.getRace_name() + " is EDIT now");
-                    player.sendMessage(CollarMessage.setInfo() + Race.getRace_name() + " Give it some time to try.");
-                    break;
-               default:
-                    break;
+          // 既に同じIDのレースが存在しないかチェック
+          if (raceList.stream().anyMatch(r -> r.getRace_ID().equals(race.getRace_ID()))) {
+               Bukkit.getLogger()
+                    .warning("Race_Core: 既に ID " + race.getRace_ID() + " のレースが存在します");
+               return;
           }
+
+          // リストに追加
+          raceList.add(race);
+
+          // 永続化: Race_Package をJSON保存
+          Race_Package pkg = new Race_Package(
+               race.getRace_ID(),
+               race.getCreator(),
+               race.getRace_name(),
+               race.getJoin_Amount(),
+               race.getRap(),
+               race.getRace_Type(),
+               race.getIcon());
+          CreateJson.saveRacePackage(pkg); // <- 要実装
+
+          Bukkit.getLogger()
+               .info("レース登録: " + race.getRace_name() + " (ID: " + race.getRace_ID() + ")");
+     }
+
+     // ================== 参加・退出の管理 ==================
+
+     /**
+      * プレイヤーがレースに参加します。
+      * 
+      * <p>
+      * <b>参加フロー</b>:
+      * </p>
+      * <ol>
+      * <li>Race_Runner オブジェクト生成</li>
+      * <li>raceRunnerList, raceRunnerMap に追加</li>
+      * <li>raceRunners に紐付け</li>
+      * <li>他の参加者に通知メッセージ送信</li>
+      * <li>スコアボード更新</li>
+      * </ol>
+      * 
+      * @param race   参加対象のレース
+      * @param player 参加プレイヤー
+      */
+     public static void joinRace(Race race, Player player) {
+          if (race == null || player == null) {
+               return;
+          }
+
+          // 既に参加していないかチェック
+          if (getRunner(player) != null && getRunner(player).getRaceID().equals(race.getRace_ID())) {
+               player.sendMessage(CollarMessage.setWarning() + "既にこのレースに参加しています");
+               return;
+          }
+
+          // 参加人数チェック
+          ArrayList<Race_Runner> currentParticipants = raceRunners.getOrDefault(race.getRace_ID(),
+               new ArrayList<>());
+          if (currentParticipants.size() >= race.getJoin_Amount()) {
+               player.sendMessage(CollarMessage.setWarning() + "参加定員に達しています");
+               return;
+          }
+
+          // Race_Runner 生成
+          Race_Runner runner = new Race_Runner(player, race.getRace_ID(), race.getRace_Type());
+
+          // 3つのコレクションに登録
+          raceRunnerList.add(runner);
+          raceRunnerMap.put(player.getUniqueId(), runner);
+          currentParticipants.add(runner);
+
+          if (!raceRunners.containsKey(race.getRace_ID())) {
+               raceRunners.put(race.getRace_ID(), currentParticipants);
+          }
+
+          // 参加メッセージ送信
+          sendJoinMessage(race, player);
+
+          Bukkit.getLogger().info(
+               "プレイヤー参加: " + player.getName() + " -> " + race.getRace_name() + " (" + race.getRace_ID()
+                    + ")");
      }
 
      /**
-      * プレイヤーを現在のレースから除外します。
-      *
+      * プレイヤーがレースから退出します。
+      * 
       * <p>
-      * レース状態別に処理を行います:
-      * <ul>
-      * <li>EDIT: 編集中のレースを削除</li>
-      * <li>WAIT: 待機リストから削除</li>
-      * <li>RUN: アクティブレースから削除</li>
-      * <li>GOAL: プレイヤーのレース完了処理</li>
-      * </ul>
-      *
-      * @param player レースから除外するプレイヤー
+      * <b>退出フロー</b>:
+      * </p>
+      * <ol>
+      * <li>Race_Runner の現在モードをチェック</li>
+      * <li>モード別に異なる処理を実行</li>
+      * <li>すべてのコレクションから削除</li>
+      * <li>タイマーのクリア</li>
+      * <li>スコアボードのクリア</li>
+      * </ol>
+      * 
+      * @param player 退出するプレイヤー
       */
      public static void removeRunner(Player player) {
-          // プレイヤーがレースに参加していないかランナーが存在しない場合、サイドバーをクリアして戻る
-          if (!isJoin(player)) {
-               org.bukkit.scoreboard.Objective sidebar = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
-               if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D"))
-                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+          if (player == null || !isJoin(player)) {
+               clearPlayerScoreboard(player);
                return;
           }
 
-          Race_Runner run = getRunner(player);
-          if (run == null)
-               return; // 防御的: それ以外の処理は不要
+          Optional<Race_Runner> runnerOpt = Optional.ofNullable(getRunner(player));
+          if (!runnerOpt.isPresent()) {
+               return;
+          }
 
-          Race race = getRace(run.getRaceID());
+          Race_Runner run = runnerOpt.get();
+          Optional<Race> raceOpt = Optional.ofNullable(getRace(run.getRaceID()));
 
           switch (run.getMode()) {
                case NO_ENTRY:
-                    run.getPlayer().sendMessage(CollarMessage.setInfo() + "Not join the race");
+                    player.sendMessage(CollarMessage.setInfo() + "レース未参加");
                     return;
+
                case EDIT:
-                    if (race != null)
-                         Race_list.remove(race);
-                    // 作成中に追加されている場合はRace_Runからも削除する
-                    for (UUID a : Race_Run.keySet())
-                         if (run.getRaceID() != null && run.getRaceID().equals(a) && Race_Run.get(a) != null)
-                              Race_Run.get(a).remove(run);
-                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-                    player.sendMessage(CollarMessage.setInfo() + "Leave the race");
+                    // 編集モード中の退出
+                    if (raceOpt.isPresent()) {
+                         raceList.remove(raceOpt.get());
+                    }
+                    removeRunnerFromCollections(run.getPlayer(), run.getRaceID());
+                    clearPlayerScoreboard(player);
+                    player.sendMessage(CollarMessage.setInfo() + "レース編集をキャンセルしました");
                     run.Complete();
                     break;
+
                case WAIT:
                case RUN:
                case ALL_GOAL_WAIT:
-                    run.getPlayer().sendMessage(CollarMessage.setInfo() + "Leave the race");
-                    RemoveCar(run.getPlayer());
-                    run.getPlayer().teleport(run.getst_Location());
-
-                    if (Race_Run.get(run.getRaceID()) != null && Race_Run.get(run.getRaceID()).size() == 1) {
-                         if (Timers.isEmpty())
-                              return;
-                         for (int i = 0; i < Timers.size(); i++)
-                              if (Timers.get(i).getUUID().equals(run.getRaceID()))
-                                   Timers.get(i).stop();
-                    }
-
-                    for (UUID a : Race_Run.keySet())
-                         if (run.getRaceID().equals(a) && Race_Run.get(a) != null)
-                              Race_Run.get(a).remove(run);
-                    LeaveMesseage(getRace(run.getRaceID()), run.getPlayer());
-                    int GOAL = 0;
-                    java.util.List<Race_Runner> __runners_after_leave = Race_Run.get(run.getRaceID());
-                    if (__runners_after_leave != null) {
-                         for (Race_Runner val : __runners_after_leave)
-                              if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
-                                   GOAL++;
-                    }
-                    if (__runners_after_leave != null && GOAL == __runners_after_leave.size())
-                         AllGoal(run.getRaceID());
-
-                    run.Complete();
+                    // 実行中の退出
+                    handleActiveRaceExit(run);
                     break;
+
                default:
                     break;
           }
      }
 
-     public static void AllGoal(UUID Race_ID) {
-          Race RACE = Race_Core.getRace(Race_ID);
-          if (RACE == null)
+     /**
+      * 実行中のレースからプレイヤーが退出する場合の処理。
+      * (内部ヘルパーメソッド)
+      */
+     private static void handleActiveRaceExit(Race_Runner run) {
+          Player player = run.getPlayer();
+          player.sendMessage(CollarMessage.setInfo() + "レースから退出しました");
+
+          // ボート削除
+          removeCar(player);
+
+          // スポーン地点にテレポート
+          player.teleport(run.getStartLocation());
+
+          // タイマーの停止
+          stopTimerIfNeeded(run.getRaceID());
+
+          // コレクションから削除
+          removeRunnerFromCollections(player, run.getRaceID());
+
+          // 他のランナーに退出を通知
+          sendLeaveMessage(getRace(run.getRaceID()), player);
+
+          // 全員ゴール判定
+          checkAllGoalCondition(run.getRaceID());
+
+          run.Complete();
+     }
+
+     /**
+      * すべてのランナーがゴールしたかを判定し、必要に応じてAllGoalを実行します。
+      * (内部ヘルパーメソッド)
+      */
+     private static void checkAllGoalCondition(UUID raceId) {
+          List<Race_Runner> runners = raceRunners.get(raceId);
+          if (runners == null || runners.isEmpty()) {
                return;
+          }
 
-          Comparator<Race_Runner> comparator = Comparator.comparing(Race_Runner::getTime);
-          java.util.List<Race_Runner> __runners_allgoal = Race_Run.get(RACE.getUUID());
-          if (__runners_allgoal != null) {
-               __runners_allgoal.sort(comparator);
+          // ゴール待機状態のランナー数をカウント
+          long goalCount = runners.stream()
+               .filter(r -> r.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
+               .count();
 
-               for (Race_Runner val : __runners_allgoal) {
-                    val.UpdateScoreboard();
-                    sayScore(val, getRace(Race_ID).getRace_name());
-                    val.setMode(Race_Runner_Mode.NO_ENTRY);
-                    new Leave_Timer(val.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
+          if (goalCount == runners.size()) {
+               allGoal(raceId);
+          }
+     }
+
+     /**
+      * タイマーが必要ならば停止します。
+      * (内部ヘルパーメソッド)
+      */
+     private static void stopTimerIfNeeded(UUID raceId) {
+          List<Race_Runner> runners = raceRunners.get(raceId);
+          if (runners == null || runners.size() > 1) {
+               return; // 他のランナーがいる場合は継続
+          }
+
+          // 最後のランナーが退出した場合のみ停止
+          timers.stream()
+               .filter(t -> t.getUUID().equals(raceId))
+               .findFirst()
+               .ifPresent(Race_Timer::stop);
+     }
+
+     /**
+      * ランナーをすべてのコレクションから削除します。
+      * (内部ヘルパーメソッド)
+      */
+     private static void removeRunnerFromCollections(Player player, UUID raceId) {
+          raceRunnerList.remove(getRunner(player));
+          raceRunnerMap.remove(player.getUniqueId());
+
+          ArrayList<Race_Runner> runners = raceRunners.get(raceId);
+          if (runners != null) {
+               runners.removeIf(r -> r.getPlayer().getUniqueId().equals(player.getUniqueId()));
+               if (runners.isEmpty()) {
+                    raceRunners.remove(raceId);
                }
           }
-          Player_Score_Core.SortRanking(Race_ID);
-
-          Race_Goal(RACE.getUUID());
-          RACE.Complete();
-          Race_Run.remove(RACE.getUUID());
      }
 
+     // ================== ゴール・タイマー処理 ==================
+
+     /**
+      * レース内のすべてのランナーがゴール状態になった場合の処理。
+      * スコアボード表示、ランキング計算、ウェイトなどを実行します。
+      * 
+      * @param raceId ゴール完了したレースのID
+      */
+     public static void allGoal(UUID raceId) {
+          Optional<Race> raceOpt = Optional.ofNullable(getRace(raceId));
+          if (!raceOpt.isPresent()) {
+               return;
+          }
+
+          Race race = raceOpt.get();
+          List<Race_Runner> runners = raceRunners.getOrDefault(raceId, new ArrayList<>());
+
+          // タイム順でソート
+          runners.sort(Comparator.comparing(Race_Runner::getTime));
+
+          // 各ランナーにスコアボード更新と完了メッセージ送信
+          runners.forEach(runner -> {
+               runner.UpdateScoreboard();
+               sayScore(runner, race.getRace_name());
+               runner.setMode(Race_Runner_Mode.NO_ENTRY);
+               new Leave_Timer(runner.getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
+          });
+
+          // ランキング計算
+          Player_Score_Core.SortRanking(raceId);
+
+          // レース状態をゴールに変更
+          raceGoal(raceId);
+          race.Complete();
+
+          // クリーンアップ
+          raceRunners.remove(raceId);
+     }
+
+     /**
+      * レース開始の処理。
+      * WAIT → RUN 状態遷移など。
+      * 
+      * @param raceId 開始するレースのID
+      */
+     public static void raceStart(UUID raceId) {
+          Optional<Race> raceOpt = Optional.ofNullable(getRace(raceId));
+          if (!raceOpt.isPresent()) {
+               return;
+          }
+
+          Race race = raceOpt.get();
+          switch (race.getMode()) {
+               case WAIT:
+                    List<Race_Runner> waitRunners = raceRunners.getOrDefault(raceId, new ArrayList<>());
+                    waitRunners.forEach(Race_Runner::Start);
+                    race.setMode(Race_Mode.RUN);
+                    break;
+
+               case EDIT:
+                    notifyEditorsRaceNotReady(raceId);
+                    break;
+
+               case GOAL:
+               case RUN:
+                    // その他の状態では処理なし
+                    notifyEditorsRaceStatus(raceId, race.getMode());
+                    break;
+
+               default:
+                    break;
+          }
+     }
+
+     /**
+      * レース状態をGOALに変更します。
+      * (内部ヘルパーメソッド)
+      */
+     private static void raceGoal(UUID raceId) {
+          Optional.ofNullable(getRace(raceId))
+               .ifPresent(race -> race.setMode(Race_Mode.GOAL));
+     }
+
+     // ================== メッセージ送信ヘルパー ==================
+
+     /**
+      * 参加メッセージを全ランナーに送信します。
+      */
+     private static void sendJoinMessage(Race race, Player newPlayer) {
+          List<Race_Runner> runners = raceRunners.getOrDefault(race.getRace_ID(), new ArrayList<>());
+          int currentCount = runners.size();
+
+          runners.forEach(runner -> {
+               runner.getPlayer()
+                    .sendMessage(CollarMessage.setInfo() + " " + currentCount + "/" + race.getJoin_Amount()
+                         + " : [" + ChatColor.AQUA + newPlayer.getName() + ChatColor.WHITE + "] が参加しました");
+               Race_Timer.startTimer(Race_Timer_Type.WAIT, race.getRace_ID(), Core.getthis(), 0L, 20L);
+               runner.UpdateScoreboard();
+          });
+     }
+
+     /**
+      * 退出メッセージを全ランナーに送信します。
+      */
+     private static void sendLeaveMessage(Race race, Player leavingPlayer) {
+          if (race == null) {
+               return;
+          }
+
+          List<Race_Runner> runners = raceRunners.getOrDefault(race.getRace_ID(), new ArrayList<>());
+          int remainingCount = runners.size();
+
+          runners.forEach(runner -> {
+               runner.getPlayer()
+                    .sendMessage(CollarMessage.setInfo() + " " + remainingCount + "/" + race.getJoin_Amount()
+                         + " : [" + ChatColor.AQUA + leavingPlayer.getName() + ChatColor.WHITE
+                         + "] が退出しました");
+               runner.UpdateScoreboard();
+          });
+     }
+
+     /**
+      * ゴール時のスコア表示メッセージ。
+      */
+     public static void sayScore(Race_Runner runner, String raceName) {
+          runner.getPlayer().sendMessage(
+               "----------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "----------");
+          runner.getPlayer().sendMessage("[" + ChatColor.GREEN + raceName + ChatColor.WHITE + "]");
+
+          List<Race_Runner> allRunners = raceRunners.values().stream()
+               .flatMap(List::stream)
+               .collect(Collectors.toList());
+
+          allRunners.forEach(other -> {
+               if (other.getPlayer().getUniqueId().equals(runner.getPlayer().getUniqueId())) {
+                    runner.getPlayer()
+                         .sendMessage("[" + ChatColor.AQUA + other.getPlayer().getName() + ChatColor.WHITE + "] : "
+                              + ChatColor.YELLOW + other.getTimest());
+               } else {
+                    runner.getPlayer()
+                         .sendMessage("[" + ChatColor.AQUA + other.getPlayer().getName() + ChatColor.WHITE + "] : "
+                              + other.getTimest());
+               }
+          });
+
+          runner.getPlayer().sendMessage(
+               "----------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "----------");
+          runner.getPlayer().sendMessage(
+               CollarMessage.setInfo() + "レース終了: " + ChatColor.LIGHT_PURPLE + "/atd leave");
+     }
+
+     /**
+      * エディタにレース準備不足を通知します。
+      */
+     private static void notifyEditorsRaceNotReady(UUID raceId) {
+          List<Race_Runner> runners = raceRunners.getOrDefault(raceId, new ArrayList<>());
+          runners.stream()
+               .filter(r -> r.getMode() == Race_Runner_Mode.EDIT)
+               .forEach(r -> r.getPlayer()
+                    .sendMessage(CollarMessage.setInfo() + getRace(raceId).getRace_name() + " はまだ準備中です"));
+     }
+
+     /**
+      * エディタにレース状態を通知します。
+      */
+     private static void notifyEditorsRaceStatus(UUID raceId, Race_Mode mode) {
+          List<Race_Runner> runners = raceRunners.getOrDefault(raceId, new ArrayList<>());
+          String statusMsg = mode == Race_Mode.RUN ? "実行中" : "終了";
+
+          runners.stream()
+               .filter(r -> r.getMode() == Race_Runner_Mode.EDIT)
+               .forEach(r -> r.getPlayer()
+                    .sendMessage(CollarMessage.setInfo() + getRace(raceId).getRace_name() + " は" + statusMsg));
+     }
+
+     // ================== 検索・ユーティリティ ==================
+
+     /**
+      * プレイヤーが参加中のレースかどうかを判定します。
+      * 
+      * @param player プレイヤー
+      * @return 参加中であれば true
+      */
      public static boolean isJoin(Player player) {
-          Race_Runner runner = getRunner(player);
-          if (runner == null)
-               return false;
-          return runner.getMode() != Race_Runner_Mode.NO_ENTRY;
+          return Optional.ofNullable(getRunner(player))
+               .map(r -> r.getMode() != Race_Runner_Mode.NO_ENTRY)
+               .orElse(false);
      }
 
-     public static void JoinMesseage(Race race, Player player) {
-          java.util.List<Race_Runner> __join_runners = Race_Run.get(race.getUUID());
-          if (__join_runners == null)
-               return;
-          final int __join_count = __join_runners.size();
-          for (Race_Runner runner : __join_runners) {
-               runner.getPlayer()
-                         .sendMessage(CollarMessage.setInfo() + " " + __join_count + "/"
-                                   + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName()
-                                   + ChatColor.WHITE + "] is Join");
-               waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(Race_Timer_Type.WAIT,
-                         race.getUUID(), Core.getthis(), 0L, 20L);
-               runner.UpdateScoreboard();
+     /**
+      * プレイヤーのRace_Runnerを取得します。
+      * マップを優先して検索、なければリストから検索。
+      * 
+      * @param player プレイヤー
+      * @return Race_Runner、見つからない場合は null
+      */
+     public static Race_Runner getRunner(Player player) {
+          if (player == null) {
+               return null;
           }
-     }
 
-     public static void LeaveMesseage(Race race, Player player) {
-          java.util.List<Race_Runner> __leave_runners = Race_Run.get(race.getUUID());
-          if (__leave_runners == null)
-               return;
-          final int __leave_count = __leave_runners.size();
-          for (Race_Runner runner : __leave_runners) {
-               runner.getPlayer()
-                         .sendMessage(CollarMessage.setInfo() + " " + __leave_count + "/"
-                                   + race.getJoin_Amount() + " : [" + ChatColor.AQUA + player.getName()
-                                   + ChatColor.WHITE + "] is Leave");
-               runner.UpdateScoreboard();
+          // マップから高速検索
+          Race_Runner mapped = raceRunnerMap.get(player.getUniqueId());
+          if (mapped != null) {
+               return mapped;
           }
+
+          // フォールバック: リストから検索してマップに追加
+          Optional<Race_Runner> found = raceRunnerList.stream()
+               .filter(r -> r.getPlayer().getUniqueId().equals(player.getUniqueId()))
+               .findFirst();
+
+          if (found.isPresent()) {
+               raceRunnerMap.put(player.getUniqueId(), found.get());
+               return found.get();
+          }
+
+          return null;
      }
 
-     public static void RemoveCar(Player player) {
-          Race_Runner run = getRunner(player);
-          if (run == null)
+     /**
+      * レース名からレースを取得します。
+      * 
+      * @param raceName レース名
+      * @return Race、見つからない場合は null
+      */
+     public static Race getRace(String raceName) {
+          return raceList.stream()
+               .filter(r -> r.getRace_name().equals(raceName))
+               .findFirst()
+               .orElse(null);
+     }
+
+     /**
+      * UUIDからレースを取得します。
+      * 
+      * @param raceId レースID
+      * @return Race、見つからない場合は null
+      */
+     public static Race getRace(UUID raceId) {
+          return raceList.stream()
+               .filter(r -> r.getRace_ID().equals(raceId))
+               .findFirst()
+               .orElse(null);
+     }
+
+     /**
+      * プレイヤーがボート（乗り物）に乗っている場合それを削除します。
+      * 
+      * @param player プレイヤー
+      */
+     private static void removeCar(Player player) {
+          Optional<Race_Runner> runnerOpt = Optional.ofNullable(getRunner(player));
+          if (!runnerOpt.isPresent()) {
                return;
-          Race race = getRace(run.getRaceID());
-          if (race == null)
-               return;
-          if (race.getRace_Type() == Race_Type.BOAT) {
+          }
+
+          Race_Runner runner = runnerOpt.get();
+          Optional<Race> raceOpt = Optional.ofNullable(getRace(runner.getRaceID()));
+
+          if (raceOpt.isPresent() && raceOpt.get().getRace_Type() == Race_Type.BOAT) {
                org.bukkit.entity.Entity vehicle = player.getVehicle();
                if (vehicle != null) {
-                    run.setEnter(false);
+                    runner.setEnter(false);
                     vehicle.remove();
                }
           }
      }
 
-     public static Race_Runner getRunner(Player player) {
-          if (player == null)
-               return null;
-          // fast map-based lookup
-          Race_Runner mapped = Race_Runner_Map.get(player.getUniqueId());
-          if (mapped != null)
-               return mapped;
-
-          // fallback to list (compat) and populate map when found
-          if (Race_Runner_List.isEmpty())
-               return null;
-          for (Race_Runner val : Race_Runner_List) {
-               if (val.getPlayer().getUniqueId().equals(player.getUniqueId())) {
-                    Race_Runner_Map.put(player.getUniqueId(), val);
-                    return val;
-               }
-          }
-          return null;
-     }
-
-     public static Race getRace(String race_st) {
-          if (Race_list.isEmpty())
-               return null;
-          for (Race val : Race_list)
-               if (val.getRace_name().equals(race_st))
-                    return val;
-          return null;
-     }
-
-     public static Race getRace(UUID race_uu) {
-          for (Race val : Race_list)
-               if (val.getUUID().equals(race_uu))
-                    return val;
-          return null;
-     }
-
-     public static void Race_Start(UUID Race_UUID) {
-          Race race = getRace(Race_UUID);
-          if (race == null)
+     /**
+      * プレイヤーのスコアボードをクリアします。
+      */
+     private static void clearPlayerScoreboard(Player player) {
+          if (player == null) {
                return;
-          switch (race.getMode()) {
-               case WAIT:
-                    for (UUID key : Race_Run.keySet()) {
-                         if (Race_UUID != null && Race_UUID.equals(key)) {
-                              java.util.List<Race_Runner> __runners_start = Race_Run.get(key);
-                              if (__runners_start == null)
-                                   continue;
-                              for (Race_Runner val : __runners_start)
-                                   val.Start();
-                         }
-                    }
-                    getRace(Race_UUID).setMode(Race_Mode.RUN);
-                    break;
-               case EDIT:
-                    for (UUID key : Race_Run.keySet())
-                         if (Race_UUID != null && Race_UUID.equals(key)) {
-                              java.util.List<Race_Runner> __runners_edit = Race_Run.get(key);
-                              if (__runners_edit == null)
-                                   continue;
-                              for (Race_Runner val : __runners_edit)
-                                   if (val.getMode() == Race_Runner_Mode.EDIT)
-                                        val.getPlayer().sendMessage(CollarMessage.setInfo()
-                                                  + getRace(Race_UUID).getRace_name() + " is EDIT now");
-                              return;
-                         }
-                    break;
-               case GOAL:
-                    for (UUID key : Race_Run.keySet())
-                         if (Race_UUID != null && Race_UUID.equals(key)) {
-                              java.util.List<Race_Runner> __runners_end = Race_Run.get(key);
-                              if (__runners_end == null)
-                                   continue;
-                              for (Race_Runner val : __runners_end)
-                                   if (val.getMode() == Race_Runner_Mode.EDIT)
-                                        val.getPlayer().sendMessage(CollarMessage.setInfo()
-                                                  + getRace(Race_UUID).getRace_name() + " is End");
-                              return;
-                         }
-                    break;
-               case RUN:
-                    for (UUID key : Race_Run.keySet())
-                         if (Race_UUID != null && Race_UUID.equals(key)) {
-                              java.util.List<Race_Runner> __runners_active = Race_Run.get(key);
-                              if (__runners_active == null)
-                                   continue;
-                              for (Race_Runner val : __runners_active)
-                                   if (val.getMode() == Race_Runner_Mode.EDIT)
-                                        val.getPlayer().sendMessage(CollarMessage.setInfo()
-                                                  + getRace(Race_UUID).getRace_name() + " is Active Race Please wait");
-                              return;
-                         }
-                    break;
-               default:
-                    break;
+          }
+
+          org.bukkit.scoreboard.Objective sidebar = player.getScoreboard()
+               .getObjective(DisplaySlot.SIDEBAR);
+          if (sidebar != null && sidebar.getDisplayName().equals("Atamamozi_" + ChatColor.RED + "D")) {
+               player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
           }
      }
 
-     public static void sayScore(Race_Runner val, String RACE_NAME) {
-          val.getPlayer().sendMessage(
-                    "------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-          val.getPlayer().sendMessage("[" + ChatColor.GREEN + RACE_NAME + ChatColor.WHITE + "]");
-          java.util.List<Race_Runner> __runners_say = Race_Run.get(val.getRaceID());
-          if (__runners_say != null) {
-               for (Race_Runner sc : __runners_say) {
-                    if (sc.getPlayer().getUniqueId().equals(val.getPlayer().getUniqueId())) {
-                         val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
-                                   + "] : " + ChatColor.YELLOW + sc.getTimest());
-                    } else {
-                         val.getPlayer().sendMessage("[" + ChatColor.AQUA + sc.getPlayer().getName() + ChatColor.WHITE
-                                   + "] : " + sc.getTimest());
-                    }
-               }
-          }
-
-          val.getPlayer().sendMessage(
-                    "------------" + "Atamamozi_" + ChatColor.RED + "D" + ChatColor.WHITE + "------------");
-          val.getPlayer()
-                    .sendMessage(CollarMessage.setInfo() + "Race leave is " + ChatColor.LIGHT_PURPLE + "/atd leave");
-     }
-
-     public static void Race_Goal(UUID Race_UUID) {
-          for (UUID key : Race_Run.keySet())
-               if (Race_UUID != null && Race_UUID.equals(key)) {
-                    getRace(Race_UUID).setMode(Race_Mode.GOAL);
-                    return;
-               }
-     }
-
+     /**
+      * すべてのランナーをクリアして初期化します。
+      * サーバーシャットダウン時などに呼び出します。
+      */
      public static void clear() {
-          Race_Run.clear();
-          Race_Runner_Map.clear();
-          if (!Race_Runner_List.isEmpty())
-               for (Race_Runner val : Race_Runner_List)
-                    if (isJoin(val.getPlayer())) {
-                         val.getPlayer().getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-                         RemoveCar(val.getPlayer());
-                    }
+          raceRunners.clear();
+          raceRunnerMap.clear();
 
-          String clearMessage = CollarMessage.setInfo() + "Atamamozi_D Memory clear";
+          // アクティブランナーをクリア
+          raceRunnerList.stream()
+               .filter(runner -> isJoin(runner.getPlayer()))
+               .forEach(runner -> {
+                    clearPlayerScoreboard(runner.getPlayer());
+                    removeCar(runner.getPlayer());
+               });
+
+          String clearMessage = CollarMessage.setInfo() + "Atamamozi_D メモリクリア";
           Bukkit.getLogger().info(clearMessage);
      }
+
+     // ================== 統計・デバッグ情報 ==================
+
+     /**
+      * 現在のアクティブレース数を取得します。
+      */
+     public static int getActiveRaceCount() {
+          return raceList.size();
+     }
+
+     /**
+      * 現在のアクティブランナー数を取得します。
+      */
+     public static int getActiveRunnerCount() {
+          return raceRunnerList.size();
+     }
+
+     /**
+      * 特定レースの参加ランナー数を取得します。
+      */
+     public static int getRunnerCountInRace(UUID raceId) {
+          return raceRunners.getOrDefault(raceId, new ArrayList<>()).size();
+     }
+
 }

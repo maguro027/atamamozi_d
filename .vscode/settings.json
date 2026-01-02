@@ -3,19 +3,26 @@
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
     "java.compile.nullAnalysis.mode": "disabled",
     "maven.view": "hierarchical",
+    // エディター基本設定
+    "editor.wordWrap": "off",
+    "editor.rulers": [
+        240
+    ],
     // Java専用のフォーマッター設定
     "[java]": {
         "editor.defaultFormatter": "redhat.java",
         "editor.formatOnSave": true,
-        "editor.formatOnPaste": false
+        "editor.formatOnPaste": false,
+        "editor.wordWrap": "off"
     },
-    // Prettierを無効化（JavaScriptやTypeScript用のフォーマッター）
-    "prettier.enable": false,
-    // Javaフォーマッター高速化設定
+    // Javaフォーマッター設定
     "java.format.enabled": true,
     "java.format.settings.url": "",
     "java.format.settings.profile": "",
     "java.format.comments.enabled": true,
+    "java.format.onSaveMode": "file",
+    // Prettierを無効化（JavaScriptやTypeScript用のフォーマッター）
+    "prettier.enable": false,
     "editor.formatOnSaveMode": "file",
     "cSpell.words": [
         "addcheckpoint",

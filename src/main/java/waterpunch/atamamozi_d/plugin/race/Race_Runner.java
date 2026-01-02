@@ -25,11 +25,11 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 public class Race_Runner {
 
-     private final Player Player;
-     private UUID Race_ID;
-     private String Race_Name;
-     private Race_Runner_Mode Race_mode;
-     private int Join_Count, CheckPoint, Rap;
+     private final Player player;
+     private UUID raceID;
+     private String raceName;
+     private Race_Runner_Mode raceMode;
+     private int joinCount, checkPoint, rap;
      private long start_time, end_time;
      private Location st_Location, old_Location, new_Location;
      private final Race_Scoreboard scoreboard;
@@ -41,12 +41,12 @@ public class Race_Runner {
      // 速度メーターのキャッシュ（最大100msごとに更新）
      private long lastSpeedUpdate = 0L;
      private int cachedSpeed = 0;
-     private UUID Car;
-     private boolean Enter;
+     private UUID car;
+     private boolean enter;
 
      public Race_Runner(Player player) {
-          this.Player = player;
-          this.Race_mode = Race_Runner_Mode.NO_ENTRY;
+          this.player = player;
+          this.raceMode = Race_Runner_Mode.NO_ENTRY;
           this.scoreboard = new Race_Scoreboard();
           this.locationViewer = new LocationViewer(this);
           // Register this runner after construction is complete
@@ -56,34 +56,34 @@ public class Race_Runner {
      private void register() {
           Race_Core.Race_Runner_List.add(this);
           // also add to the fast lookup map
-          if (this.Player != null)
-               Race_Core.Race_Runner_Map.put(this.Player.getUniqueId(), this);
+          if (this.player != null)
+               Race_Core.Race_Runner_Map.put(this.player.getUniqueId(), this);
      }
 
      public Boolean UPDate(UUID Race_ID) {
           // if (Race_Core.getRace(Race_ID).getJoin_Amount() ==
           // Race_Core.Race_Run.get(getRaceID()).size()) {
-          // Player.sendMessage(CollarMessage.setInfo() + " MAX Player");
+          // player.sendMessage(CollarMessage.setInfo() + " MAX Player");
           // // Complete();
           // return false;
           // }
-          this.new_Location = Player.getLocation();
-          this.old_Location = Player.getLocation();
-          this.Race_ID = Race_ID;
-          this.Race_mode = Race_Runner_Mode.WAIT;
+          this.new_Location = player.getLocation();
+          this.old_Location = player.getLocation();
+          this.raceID = Race_ID;
+          this.raceMode = Race_Runner_Mode.WAIT;
           this.start_time = System.currentTimeMillis();
-          this.st_Location = Player.getLocation();
+          this.st_Location = player.getLocation();
 
           // Ensure there's a list for this race id to avoid NPEs
           if (!Race_Core.Race_Run.containsKey(Race_ID) || Race_Core.Race_Run.get(Race_ID) == null) {
                Race_Core.Race_Run.put(Race_ID, new java.util.ArrayList<>());
           }
-          this.Join_Count = Race_Core.Race_Run.get(Race_ID).size() + 1;
+          this.joinCount = Race_Core.Race_Run.get(Race_ID).size() + 1;
           if (getJoin_Count() == 1)
                waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer.startTimer(Race_Timer_Type.WAIT,
                          getRaceID(), Core.getthis(), 0L, 20L);
-          this.Rap = 0;
-          this.CheckPoint = 0;
+          this.rap = 0;
+          this.checkPoint = 0;
           Race_Core.Race_Run.get(Race_ID).add(this);
           UpdateScoreboard();
           return true;
@@ -101,7 +101,7 @@ public class Race_Runner {
 
           // If the mode expects no scoreboard (e.g., NO_ENTRY), clear and return
           if (lines == null) {
-               Player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+               player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                lastScoreLines = new ArrayList<>();
                return;
           }
@@ -113,11 +113,11 @@ public class Race_Runner {
           // Build and apply new scoreboard when content changed
           Scoreboard s = scoreboard.buildBoardFromLines(lines);
           if (s != null) {
-               Player.setScoreboard(s);
+               player.setScoreboard(s);
                lastScoreLines = new ArrayList<>(lines);
                return;
           }
-          Player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+          player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
      }
 
      /**
@@ -143,15 +143,15 @@ public class Race_Runner {
      }
 
      public Player getPlayer() {
-          return Player;
+          return player;
      }
 
      public UUID getRaceID() {
-          return Race_ID;
+          return raceID;
      }
 
      public void setRaceID(UUID ID) {
-          this.Race_ID = ID;
+          this.raceID = ID;
      }
 
      public void setnewLoc(Location loc) {
@@ -171,19 +171,19 @@ public class Race_Runner {
      }
 
      public void setJoin_Count(int i) {
-          this.Join_Count = i;
+          this.joinCount = i;
      }
 
      public int getJoin_Count() {
-          return Join_Count;
+          return joinCount;
      }
 
      public void setMode(Race_Runner_Mode mode) {
-          this.Race_mode = mode;
+          this.raceMode = mode;
      }
 
      public Race_Runner_Mode getMode() {
-          return Race_mode;
+          return raceMode;
      }
 
      public Location getst_Location() {
@@ -191,7 +191,7 @@ public class Race_Runner {
      }
 
      public int getCheckPoint() {
-          return CheckPoint;
+          return checkPoint;
      }
 
      public Long getStart_time() {
@@ -215,24 +215,24 @@ public class Race_Runner {
      }
 
      public UUID getCar() {
-          return Car;
+          return car;
      }
 
      public void setCar(UUID uuid) {
-          this.Car = uuid;
+          this.car = uuid;
      }
 
      public void addCheckPoint() {
-          this.CheckPoint++;
-          Race r = Race_Core.getRace(Race_ID);
+          this.checkPoint++;
+          Race r = Race_Core.getRace(raceID);
           if (r == null)
                return;
-          if (r.getCheckPointLoc().size() == getCheckPoint()) {
+          if (r.getCheckPoint_Loc().size() == getCheckPoint()) {
                setCheckPoint(0);
                addRap();
           } else {
-               this.Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               locationViewer.DrawCircle(CheckPoint);
+               this.player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+               locationViewer.DrawCircle(checkPoint);
                // Force immediate scoreboard refresh for checkpoint events
                lastScoreUpdate = 0L;
                UpdateScoreboard();
@@ -240,26 +240,26 @@ public class Race_Runner {
      }
 
      public void setCheckPoint(int i) {
-          CheckPoint = i;
+          checkPoint = i;
      }
 
      public int getRap() {
-          return Rap;
+          return rap;
      }
 
      public void addRap() {
-          this.Rap++;
-          Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          this.rap++;
+          player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           // Force immediate update after rap increment
           lastScoreUpdate = 0L;
           UpdateScoreboard();
-          Race r = Race_Core.getRace(Race_ID);
-          if (r != null && r.getRap() == Rap)
+          Race r = Race_Core.getRace(raceID);
+          if (r != null && r.getRap() == rap)
                Goal();
      }
 
      public void setRap(int i) {
-          this.Rap = i;
+          this.rap = i;
      }
 
      public LocationViewer getLocationViewer() {
@@ -267,69 +267,69 @@ public class Race_Runner {
      }
 
      public void setEnter(boolean yn) {
-          this.Enter = yn;
+          this.enter = yn;
      }
 
      public Boolean getEnter() {
-          return this.Enter;
+          return this.enter;
      }
 
      public void Start() {
-          this.Race_mode = Race_Runner_Mode.RUN;
-          Race RACE = Race_Core.getRace(Race_ID);
+          this.raceMode = Race_Runner_Mode.RUN;
+          Race RACE = Race_Core.getRace(raceID);
           if (RACE == null) {
-               Player.sendMessage(CollarMessage.setWarning() + "Race data missing");
-               this.Race_mode = Race_Runner_Mode.NO_ENTRY;
+               player.sendMessage(CollarMessage.setWarning() + "Race data missing");
+               this.raceMode = Race_Runner_Mode.NO_ENTRY;
                return;
           }
           // ensure start point exists for this join index
-          if (RACE.getStartPointLoc() == null || RACE.getStartPointLoc().size() < Join_Count) {
-               Player.sendMessage(CollarMessage.setWarning() + "Start point not configured for your join slot");
-               this.Race_mode = Race_Runner_Mode.NO_ENTRY;
+          if (RACE.getStartPoint() == null || RACE.getStartPoint().size() < joinCount) {
+               player.sendMessage(CollarMessage.setWarning() + "Start point not configured for your join slot");
+               this.raceMode = Race_Runner_Mode.NO_ENTRY;
                return;
           }
-          Player.teleport(RACE.getStartPointLoc().get(Join_Count - 1).getLocation());
+          player.teleport(RACE.getStartPoint().get(joinCount - 1).getLocation());
 
-          Player.playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-          Player.sendTitle(ChatColor.GREEN + " - START - ", "", 10, 15, 10);
+          player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          player.sendTitle(ChatColor.GREEN + " - START - ", "", 10, 15, 10);
 
-          switch (Race_Core.getRace(Race_ID).getRace_Type()) {
+          switch (Race_Core.getRace(raceID).getRace_Type()) {
                case BOAT:
-                    Enter = true;
-                    if (RACE.getStartPointLoc() == null || Join_Count <= 0
-                              || Join_Count > RACE.getStartPointLoc().size()) {
+                    enter = true;
+                    if (RACE.getStartPoint() == null || joinCount <= 0
+                              || joinCount > RACE.getStartPoint().size()) {
                          break;
                     }
-                    Location startLoc = RACE.getStartPointLoc().get(Join_Count - 1).getLocation();
+                    Location startLoc = RACE.getStartPoint().get(joinCount - 1).getLocation();
                     if (startLoc == null)
                          break;
 
                     org.bukkit.World world = startLoc.getWorld();
                     if (world == null)
                          break;
-                    world.spawnEntity(startLoc, EntityType.BOAT).addPassenger(Player);
-                    Entity playerVehicle = Player.getVehicle();
+                    world.spawnEntity(startLoc, EntityType.BOAT).addPassenger(player);
+                    Entity playerVehicle = player.getVehicle();
                     if (playerVehicle != null) {
-                         Car = playerVehicle.getUniqueId();
+                         car = playerVehicle.getUniqueId();
                     } else {
-                         // safeguard: vehicle may not be immediately attached; leave Car null and set
-                         // Enter flag
-                         Car = null;
+                         // safeguard: vehicle may not be immediately attached; leave car null and set
+                         // enter flag
+                         car = null;
                     }
                     break;
                case WALK:
                     break;
                default:
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "A fatal error has occurred");
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + Race_Name);
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type ["
+                    player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "A fatal error has occurred");
+                    player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
+                    player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + raceName);
+                    player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "Unknown Race Type ["
                               + RACE.getRace_Type() + "]");
-                    Player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
-                    Race_Core.removeRunner(Player);
+                    player.sendMessage(CollarMessage.setWarning() + ChatColor.RED + "----------------------");
+                    Race_Core.removeRunner(player);
                     break;
           }
-          this.Player.sendMessage(CollarMessage.setInfo() + "START");
+          this.player.sendMessage(CollarMessage.setInfo() + "START");
           // Set start time for race timing
           this.start_time = System.currentTimeMillis();
           // immediate update for start
@@ -338,13 +338,13 @@ public class Race_Runner {
      }
 
      public void ReSpawn() {
-          Race RACE = Race_Core.getRace(Race_ID);
+          Race RACE = Race_Core.getRace(raceID);
           if (RACE == null)
                return;
           switch (RACE.getMode()) {
                case EDIT:
                case GOAL:
-                    Player.sendMessage(CollarMessage.setInfo() + "Race is Not Active");
+                    player.sendMessage(CollarMessage.setInfo() + "Race is Not Active");
                     return;
                default:
                     break;
@@ -353,56 +353,58 @@ public class Race_Runner {
                case WALK:
                     if (getCheckPoint() == 0) {
                          int idx = getJoin_Count() - 1;
-                         if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
-                              Player.sendMessage(CollarMessage.setWarning() + "Respawn start point not available");
-                              Player.teleport(getst_Location());
+                         if (RACE.getStartPoint() == null || idx < 0 || idx >= RACE.getStartPoint().size()) {
+                              player.sendMessage(CollarMessage.setWarning() + "Respawn start point not available");
+                              player.teleport(getst_Location());
                          } else {
-                              Player.teleport(RACE.getStartPointLoc().get(idx).getLocation());
+                              player.teleport(RACE.getStartPoint().get(idx).getLocation());
                          }
                     } else {
                          int cpIdx = getCheckPoint() - 1;
-                         if (RACE.getCheckPointLoc() == null || cpIdx < 0 || cpIdx >= RACE.getCheckPointLoc().size()) {
-                              Player.sendMessage(CollarMessage.setWarning() + "Checkpoint location not available");
-                              Player.teleport(getst_Location());
+                         if (RACE.getCheckPoint_Loc() == null || cpIdx < 0
+                                   || cpIdx >= RACE.getCheckPoint_Loc().size()) {
+                              player.sendMessage(CollarMessage.setWarning() + "Checkpoint location not available");
+                              player.teleport(getst_Location());
                          } else {
-                              Player.teleport(RACE.getCheckPointLoc().get(cpIdx).getLocation());
+                              player.teleport(RACE.getCheckPoint_Loc().get(cpIdx).getLocation());
                          }
                     }
                     break;
                case BOAT:
                     Entity vehicle = getPlayer().getVehicle();
-                    Enter = true;
+                    enter = true;
                     if (vehicle != null)
                          vehicle.remove();
                     if (getCheckPoint() == 0) {
                          int idx = getJoin_Count() - 1;
-                         if (RACE.getStartPointLoc() == null || idx < 0 || idx >= RACE.getStartPointLoc().size()) {
-                              Player.sendMessage(
+                         if (RACE.getStartPoint() == null || idx < 0 || idx >= RACE.getStartPoint().size()) {
+                              player.sendMessage(
                                         CollarMessage.setWarning() + "Respawn start point not available for boat");
                               break;
                          }
-                         if (RACE.getStartPointLoc().get(idx) != null) {
-                              Location spawnLoc = RACE.getStartPointLoc().get(idx).getLocation();
+                         if (RACE.getStartPoint().get(idx) != null) {
+                              Location spawnLoc = RACE.getStartPoint().get(idx).getLocation();
                               if (spawnLoc != null) {
                                    org.bukkit.World world = spawnLoc.getWorld();
                                    if (world != null) {
-                                        world.spawnEntity(spawnLoc, EntityType.BOAT).addPassenger(Player);
+                                        world.spawnEntity(spawnLoc, EntityType.BOAT).addPassenger(player);
                                    }
                               }
                          }
                     } else {
                          int cpIdx = getCheckPoint() - 1;
-                         if (RACE.getCheckPointLoc() == null || cpIdx < 0 || cpIdx >= RACE.getCheckPointLoc().size()) {
-                              Player.sendMessage(
+                         if (RACE.getCheckPoint_Loc() == null || cpIdx < 0
+                                   || cpIdx >= RACE.getCheckPoint_Loc().size()) {
+                              player.sendMessage(
                                         CollarMessage.setWarning() + "Respawn checkpoint not available for boat");
                               break;
                          }
-                         if (RACE.getCheckPointLoc().get(cpIdx) != null) {
-                              Location cpLoc = RACE.getCheckPointLoc().get(cpIdx).getLocation();
+                         if (RACE.getCheckPoint_Loc().get(cpIdx) != null) {
+                              Location cpLoc = RACE.getCheckPoint_Loc().get(cpIdx).getLocation();
                               if (cpLoc != null) {
                                    org.bukkit.World world = cpLoc.getWorld();
                                    if (world != null) {
-                                        world.spawnEntity(cpLoc, EntityType.BOAT).addPassenger(Player);
+                                        world.spawnEntity(cpLoc, EntityType.BOAT).addPassenger(player);
                                    }
                               }
                          }
@@ -410,21 +412,21 @@ public class Race_Runner {
                     break;
           }
 
-          Player.sendMessage(CollarMessage.setInfo() + "Respawn");
+          player.sendMessage(CollarMessage.setInfo() + "Respawn");
      }
 
      public void Goal() {
-          Race RACE = Race_Core.getRace(Race_ID);
+          Race RACE = Race_Core.getRace(raceID);
           if (RACE == null)
                return;
           this.end_time = System.currentTimeMillis();
 
-          getPlayer().playSound(Player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+          getPlayer().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
           getPlayer().sendMessage(CollarMessage.setInfo() + "GOAL!!");
-          java.util.List<Race_Runner> __runners_goal = Race_Core.Race_Run.get(RACE.getUUID());
+          java.util.List<Race_Runner> __runners_goal = Race_Core.Race_Run.get(RACE.getRace_ID());
           if (__runners_goal != null) {
                for (Race_Runner val : __runners_goal) {
-                    val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + Player.getName()
+                    val.getPlayer().sendMessage(CollarMessage.setInfo() + "[" + ChatColor.AQUA + player.getName()
                               + ChatColor.WHITE + "] " + getTimest());
                     val.UpdateScoreboard();
                }
@@ -437,23 +439,23 @@ public class Race_Runner {
           setMode(Race_Runner_Mode.ALL_GOAL_WAIT);
           new Race_Timer(getPlayer()).runTaskTimer(Core.getthis(), 0L, 20L);
           int i = 0;
-          java.util.List<Race_Runner> __runners_goal_check = Race_Core.Race_Run.get(RACE.getUUID());
+          java.util.List<Race_Runner> __runners_goal_check = Race_Core.Race_Run.get(RACE.getRace_ID());
           if (__runners_goal_check != null) {
                for (Race_Runner val : __runners_goal_check)
                     if (val.getMode() == Race_Runner_Mode.ALL_GOAL_WAIT)
                          i++;
                if (i == __runners_goal_check.size())
-                    Race_Core.AllGoal(RACE.getUUID());
+                    Race_Core.AllGoal(RACE.getRace_ID());
           }
      }
 
      public void Complete() {
           nullRace();
-          this.Race_mode = Race_Runner_Mode.NO_ENTRY;
-          Player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+          this.raceMode = Race_Runner_Mode.NO_ENTRY;
+          player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
      }
 
      public void nullRace() {
-          Race_ID = null;
+          raceID = null;
      }
 }
