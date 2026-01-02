@@ -19,8 +19,8 @@ import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.score.Player_Score_Core;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
+import waterpunch.atamamozi_d.plugin.tool.CreateJson;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Leave_Timer;
-import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
 
 /**
@@ -48,24 +48,18 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer_Type;
  * 
  * @author waterpunch
  */
-public class Race_Core_Refactored {
+public class Race_Core {
 
      // ================== コレクション管理 ==================
 
      /** 全アクティブレースのリスト */
      private static final ArrayList<Race> raceList = new ArrayList<>();
 
-     /** 全ランナー状態のリスト（反復用） */
-     private static final ArrayList<Race_Runner> raceRunnerList = new ArrayList<>();
-
      /** プレイヤーUUID → ランナー高速検索マップ */
      private static final HashMap<UUID, Race_Runner> raceRunnerMap = new HashMap<>();
 
      /** レースUUID → 参加ランナーリスト */
      private static final HashMap<UUID, ArrayList<Race_Runner>> raceRunners = new HashMap<>();
-
-     /** アクティブなタイマーのリスト */
-     private static final ArrayList<Race_Timer> timers = new ArrayList<>();
 
      // ================== RaceBuilder との統合メソッド ==================
 
@@ -126,7 +120,7 @@ public class Race_Core_Refactored {
       * </p>
       * <ol>
       * <li>Race_Runner オブジェクト生成</li>
-      * <li>raceRunnerList, raceRunnerMap に追加</li>
+      * <li>raceRunnerMap に追加</li>
       * <li>raceRunners に紐付け</li>
       * <li>他の参加者に通知メッセージ送信</li>
       * <li>スコアボード更新</li>
@@ -157,8 +151,7 @@ public class Race_Core_Refactored {
           // Race_Runner 生成
           Race_Runner runner = new Race_Runner(player, race.getRace_ID(), race.getRace_Type());
 
-          // 3つのコレクションに登録
-          raceRunnerList.add(runner);
+          // 2つのコレクションに登録
           raceRunnerMap.put(player.getUniqueId(), runner);
           currentParticipants.add(runner);
 
@@ -292,10 +285,8 @@ public class Race_Core_Refactored {
           }
 
           // 最後のランナーが退出した場合のみ停止
-          timers.stream()
-                    .filter(t -> t.getUUID().equals(raceId))
-                    .findFirst()
-                    .ifPresent(Race_Timer::stop);
+          Optional.ofNullable(getRace(raceId))
+                    .ifPresent(Race::stopTimer);
      }
 
      /**
@@ -303,7 +294,6 @@ public class Race_Core_Refactored {
       * (内部ヘルパーメソッド)
       */
      private static void removeRunnerFromCollections(Player player, UUID raceId) {
-          raceRunnerList.remove(getRunner(player));
           raceRunnerMap.remove(player.getUniqueId());
 
           ArrayList<Race_Runner> runners = raceRunners.get(raceId);
@@ -507,7 +497,6 @@ public class Race_Core_Refactored {
 
      /**
       * プレイヤーのRace_Runnerを取得します。
-      * マップを優先して検索、なければリストから検索。
       * 
       * @param player プレイヤー
       * @return Race_Runner、見つからない場合は null
@@ -517,23 +506,7 @@ public class Race_Core_Refactored {
                return null;
           }
 
-          // マップから高速検索
-          Race_Runner mapped = raceRunnerMap.get(player.getUniqueId());
-          if (mapped != null) {
-               return mapped;
-          }
-
-          // フォールバック: リストから検索してマップに追加
-          Optional<Race_Runner> found = raceRunnerList.stream()
-                    .filter(r -> r.getPlayer().getUniqueId().equals(player.getUniqueId()))
-                    .findFirst();
-
-          if (found.isPresent()) {
-               raceRunnerMap.put(player.getUniqueId(), found.get());
-               return found.get();
-          }
-
-          return null;
+          return raceRunnerMap.get(player.getUniqueId());
      }
 
      /**
@@ -605,16 +578,16 @@ public class Race_Core_Refactored {
       * サーバーシャットダウン時などに呼び出します。
       */
      public static void clear() {
-          raceRunners.clear();
-          raceRunnerMap.clear();
-
-          // アクティブランナーをクリア
-          raceRunnerList.stream()
+          // アクティブランナーをクリア（マップをクリアする前に処理）
+          raceRunnerMap.values().stream()
                     .filter(runner -> isJoin(runner.getPlayer()))
                     .forEach(runner -> {
                          clearPlayerScoreboard(runner.getPlayer());
                          removeCar(runner.getPlayer());
                     });
+
+          raceRunners.clear();
+          raceRunnerMap.clear();
 
           String clearMessage = CollarMessage.setInfo() + "Atamamozi_D メモリクリア";
           Bukkit.getLogger().info(clearMessage);
@@ -633,7 +606,7 @@ public class Race_Core_Refactored {
       * 現在のアクティブランナー数を取得します。
       */
      public static int getActiveRunnerCount() {
-          return raceRunnerList.size();
+          return raceRunnerMap.size();
      }
 
      /**

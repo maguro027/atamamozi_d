@@ -170,7 +170,7 @@ public class Race_Core_Refactored {
           sendJoinMessage(race, player);
 
           Bukkit.getLogger().info(
-                    String.format("プレイヤー参加: %s -> %s (%s)", 
+                    String.format("プレイヤー参加: %s -> %s (%s)",
                               player.getName(), race.getRace_name(), race.getRace_ID()));
      }
 

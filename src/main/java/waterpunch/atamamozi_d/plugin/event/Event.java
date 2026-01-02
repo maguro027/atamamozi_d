@@ -182,8 +182,25 @@ public class Event implements Listener {
                          p.openInventory(Menus.getRaceStartPoint(p));
                     if (event.getRawSlot() == 32)
                          p.openInventory(Menus.getRaceCheckPoint(p));
-                    if (event.getRawSlot() == 49)
-                         CreateJson.saveRace(p);
+                    if (event.getRawSlot() == 49) {
+                         Race_Runner runner = Race_Core.getRunner(p);
+                         if (runner != null && runner.getMode() == Race_Runner_Mode.EDIT) {
+                              Race race = Race_Core.getRace(runner.getRaceID());
+                              if (race != null) {
+                                   race.setMode(Race_Mode.WAIT);
+                                   Race_Core.addRace(race);
+
+                                   // プレイヤーへの通知
+                                   p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+                                   p.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
+
+                                   Race_Core.removeRunner(p);
+                                   p.closeInventory();
+                              } else {
+                                   p.openInventory(Menus.getRaceCreate(p));
+                              }
+                         }
+                    }
                     break;
                case "RACE_CREATE_TYPE":
                     event.setCancelled(true);

@@ -11,6 +11,7 @@ import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
+import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 
 /**
  * チェックポイント、スタート地点、設定を持つレースコースを表します。
@@ -30,6 +31,7 @@ public class Race extends Race_Package {
      private final int TIME;
      private final Race_Mode race_Mode = Race_Mode.WAIT;
      private int currentParticipantCount = 0;
+     private Race_Timer timer;
 
      /**
       * Raceオブジェクトのプライベートコンストラクタ。
@@ -112,6 +114,60 @@ public class Race extends Race_Package {
      }
 
      /**
+      * このレースのタイマーを設定します。
+      * 
+      * @param timer レースタイマー
+      */
+     public void setTimer(Race_Timer timer) {
+          this.timer = timer;
+     }
+
+     /**
+      * このレースのタイマーを取得します。
+      * 
+      * @return レースタイマー、設定されていない場合はnull
+      */
+     public Race_Timer getTimer() {
+          return this.timer;
+     }
+
+     /**
+      * このレースのタイマーを停止します。
+      */
+     public void stopTimer() {
+          if (this.timer != null) {
+               this.timer.stop();
+               this.timer = null;
+          }
+     }
+
+     /**
+      * このレースのタイマーをリセットします。
+      * 既存のタイマーがあれば停止し、nullに設定します。
+      */
+     public void resetTimer() {
+          stopTimer();
+     }
+
+     /**
+      * タイマーが実行中かどうかを確認します。
+      * 
+      * @return タイマーが実行中であればtrue
+      */
+     public boolean isTimerRunning() {
+          return this.timer != null;
+     }
+
+     /**
+      * カウントダウン時間（ティック）を取得します。
+      * 
+      * @return カウントダウン時間
+      */
+     public int getWaitTime() {
+          return TIME;
+     }
+
+     /**
       * Raceオブジェクトを段階的に構築するBuilderクラス。
       * 
       * <p>
@@ -136,7 +192,6 @@ public class Race extends Race_Package {
           private int rap = 1;
           private int joinAmount = 1;
           private int time = Core.WAIT_TIME;
-          private Race_Mode mode = Race_Mode.WAIT;
 
           /**
            * ビルダーを初期化します。

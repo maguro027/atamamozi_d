@@ -7,105 +7,157 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.google.gson.Gson;
 
 import waterpunch.atamamozi_d.plugin.main.Main;
-import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
-import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.Race_Package;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
-import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.score.Player_Score;
 
 public class CreateJson {
 
-     public static void createfile(String string) {
+     /**
+      * ファイルを作成します。既に存在する場合は何もしません。
+      * 
+      * @param filePath 作成するファイルのパス
+      */
+     public static void createfile(String filePath) {
           try {
-               Files.createFile(Paths.get(string));
+               Files.createFile(Paths.get(filePath));
           } catch (IOException e) {
-               Bukkit.getLogger().log(Level.SEVERE, "Failed to create file: " + string, e);
+               Bukkit.getLogger().log(Level.SEVERE, String.format("Failed to create file: %s", filePath), e);
           }
      }
 
-     public static void saveRace(Player player) {
-          Race_Runner run = Race_Core.getRunner(player);
-          if (run == null || !(run.getMode() == Race_Runner_Mode.EDIT))
-               return;
-          Race race = Race_Core.getRace(run.getRaceID());
-          if (race == null || !(race.getErrorCount() == 0)) {
-               player.openInventory(Menus.getRaceCreate(player));
+     /**
+      * Race_PackageをJSON形式で保存します。
+      * 
+      * @param raceId 保存するレースのUUID
+      */
+     public static void saveRacePackage(UUID raceId) {
+          if (raceId == null) {
+               Bukkit.getLogger().warning("Cannot save race with null UUID");
                return;
           }
-          race.setMode(Race_Mode.WAIT);
-          if (!(Main.FILE_RACE.exists()))
+
+          Race race = Race_Core.getRace(raceId);
+          if (race == null) {
+               Bukkit.getLogger().warning(String.format("Race not found for UUID: %s", raceId));
+               return;
+          }
+
+          // Race_Package作成
+          Race_Package pkg = new Race_Package(
+                    race.getRace_ID(),
+                    race.getCreator(),
+                    race.getRace_name(),
+                    race.getJoin_Amount(),
+                    race.getRap(),
+                    race.getRace_Type(),
+                    race.getIcon());
+
+          // ディレクトリ作成
+          if (!Main.FILE_RACE.exists()) {
                Main.FILE_RACE.mkdir();
-          String URL = Main.FILE_RACE + "/" + race.getRace_name() + ".json";
-          Main.createfile(URL);
-          Race_Core.addRace(race);
-          try (Writer writer = new FileWriter(URL)) {
-               Gson gson = new Gson();
-               gson.toJson(race, writer);
+          }
 
-               race.setMode(Race_Mode.WAIT);
+          String filePath = String.format("%s/%s.json", Main.FILE_RACE, race.getRace_name());
+          Main.createfile(filePath);
 
-               player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-               player.sendMessage(CollarMessage.setInfo() + "Race Create Complete!!");
-               String createMessage = CollarMessage.setInfo() + player.getName() + " is Race Create";
-               Bukkit.getLogger().info(createMessage);
-               String nameMessage = CollarMessage.setInfo() + "NAME :" + race.getRace_name();
-               Bukkit.getLogger().info(nameMessage);
-               Race_Core.removeRunner(player);
-               player.closeInventory();
+          try (Writer writer = new FileWriter(filePath)) {
+               new Gson().toJson(pkg, writer);
+               Bukkit.getLogger().info(
+                         String.format("Race package saved: %s (ID: %s)", race.getRace_name(), raceId));
           } catch (IOException e) {
-               Bukkit.getLogger().log(Level.SEVERE, "Failed to save race JSON: " + URL, e);
+               Bukkit.getLogger().log(Level.SEVERE,
+                         String.format("Failed to save race package JSON: %s", filePath), e);
           }
      }
 
+     /**
+      * レースをJSON形式で保存します。
+      * 
+      * @param race 保存するレース
+      */
      public static void save(Race race) {
-          if (!(Main.FILE_RACE.exists()))
+          if (race == null) {
+               Bukkit.getLogger().warning("Cannot save null race");
+               return;
+          }
+
+          if (!Main.FILE_RACE.exists()) {
                Main.FILE_RACE.mkdir();
-          String URL = Main.FILE_RACE + "/" + race.getRace_name() + ".json";
-          Main.createfile(URL);
-          try (Writer writer = new FileWriter(URL)) {
-               Gson gson = new Gson();
-               gson.toJson(race, writer);
+          }
+
+          String filePath = String.format("%s/%s.json", Main.FILE_RACE, race.getRace_name());
+          Main.createfile(filePath);
+
+          try (Writer writer = new FileWriter(filePath)) {
+               new Gson().toJson(race, writer);
                race.setMode(Race_Mode.WAIT);
           } catch (IOException e) {
-               Bukkit.getLogger().log(Level.SEVERE, "Failed to save race JSON: " + URL, e);
+               Bukkit.getLogger().log(Level.SEVERE,
+                         String.format("Failed to save race JSON: %s", filePath), e);
           }
      }
 
-     public static void Scoresave(Player_Score Score) {
-          if (!(Main.FILE_SCORE.exists()))
+     /**
+      * プレイヤースコアをJSON形式で保存します。
+      * 
+      * @param score 保存するスコア
+      */
+     public static void scoreSave(Player_Score score) {
+          if (score == null) {
+               Bukkit.getLogger().warning("Cannot save null score");
+               return;
+          }
+
+          if (!Main.FILE_SCORE.exists()) {
                Main.FILE_SCORE.mkdir();
-          String URL = Main.FILE_SCORE + "/" + Score.getUUID() + ".json";
-          Main.createfile(URL);
-          try (Writer writer = new FileWriter(URL)) {
-               Gson gson = new Gson();
-               gson.toJson(Score, writer);
+          }
+
+          String filePath = String.format("%s/%s.json", Main.FILE_SCORE, score.getUUID());
+          Main.createfile(filePath);
+
+          try (Writer writer = new FileWriter(filePath)) {
+               new Gson().toJson(score, writer);
           } catch (IOException e) {
-               Bukkit.getLogger().log(Level.SEVERE, "Failed to save scores JSON: " + URL, e);
+               Bukkit.getLogger().log(Level.SEVERE,
+                         String.format("Failed to save scores JSON: %s", filePath), e);
           }
      }
 
-     public static void saveTop_Menu(LinkedHashMap<Integer, ArrayList<Inventory>> Data) {
-          if (!(Main.FILE_SCORE.exists()))
-               Main.FILE_SCORE.mkdir();
-          String URL = Main.FILE_RACE_MENU + "/race_list.json";
-          Main.createfile(URL);
-          try (Writer writer = new FileWriter(URL)) {
-               Gson gson = new Gson();
-               gson.toJson(Data, writer);
+     /**
+      * レースメニューのデータをJSON形式で保存します。
+      * 
+      * @param menuData 保存するメニューデータ
+      */
+     public static void saveTopMenu(LinkedHashMap<Integer, ArrayList<Inventory>> menuData) {
+          if (menuData == null) {
+               Bukkit.getLogger().warning("Cannot save null menu data");
+               return;
+          }
+
+          if (!Main.FILE_RACE_MENU.exists()) {
+               Main.FILE_RACE_MENU.mkdir();
+          }
+
+          String filePath = String.format("%s/race_list.json", Main.FILE_RACE_MENU);
+          Main.createfile(filePath);
+
+          try (Writer writer = new FileWriter(filePath)) {
+               new Gson().toJson(menuData, writer);
           } catch (IOException e) {
-               Bukkit.getLogger().log(Level.SEVERE, "Failed to save menu JSON: " + URL, e);
+               Bukkit.getLogger().log(Level.SEVERE,
+                         String.format("Failed to save menu JSON: %s", filePath), e);
           }
      }
 }
