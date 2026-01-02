@@ -94,7 +94,7 @@ public class Race_Core_Refactored {
           // 既に同じIDのレースが存在しないかチェック
           if (raceList.stream().anyMatch(r -> r.getRace_ID().equals(race.getRace_ID()))) {
                Bukkit.getLogger()
-                         .warning("Race_Core: 既に ID " + race.getRace_ID() + " のレースが存在します");
+                         .warning(String.format("Race_Core: 既に ID %s のレースが存在します", race.getRace_ID()));
                return;
           }
 
@@ -113,7 +113,7 @@ public class Race_Core_Refactored {
           CreateJson.saveRacePackage(pkg); // <- 要実装
 
           Bukkit.getLogger()
-                    .info("レース登録: " + race.getRace_name() + " (ID: " + race.getRace_ID() + ")");
+                    .info(String.format("レース登録: %s (ID: %s)", race.getRace_name(), race.getRace_ID()));
      }
 
      // ================== 参加・退出の管理 ==================
@@ -170,8 +170,8 @@ public class Race_Core_Refactored {
           sendJoinMessage(race, player);
 
           Bukkit.getLogger().info(
-                    "プレイヤー参加: " + player.getName() + " -> " + race.getRace_name() + " (" + race.getRace_ID()
-                              + ")");
+                    String.format("プレイヤー参加: %s -> %s (%s)", 
+                              player.getName(), race.getRace_name(), race.getRace_ID()));
      }
 
      /**
