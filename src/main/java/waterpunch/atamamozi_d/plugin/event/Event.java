@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -32,8 +33,10 @@ import waterpunch.atamamozi_d.plugin.menus.Menus;
 import waterpunch.atamamozi_d.plugin.race.Race;
 import waterpunch.atamamozi_d.plugin.race.Race_Core;
 import waterpunch.atamamozi_d.plugin.race.Race_Runner;
+import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Runner_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.events.RaceModeChangeEvent;
 import waterpunch.atamamozi_d.plugin.race.export.Hachitai;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tool.CreateJson;
@@ -636,5 +639,34 @@ public class Event implements Listener {
           // vehicle id
           runner.setEnter(false);
           runner.setCar(vehicleId);
+     }
+
+     /**
+      * レースの状態変更イベントを処理します。
+      * 
+      * <p>
+      * このハンドラは、レースがWAIT→RUN、RUN→GOALなどの状態遷移を行ったときに
+      * 必要な処理（ログ記録、通知など）を実行します。
+      * </p>
+      * 
+      * @param event レース状態変更イベント
+      */
+     @EventHandler
+     public void onRaceModeChange(RaceModeChangeEvent event) {
+          Race race = event.getRace();
+          Race_Mode oldMode = event.getOldMode();
+          Race_Mode newMode = event.getNewMode();
+          
+          // 状態変更をログに記録
+          plugin.getLogger().info(
+               "Race mode changed: " + race.getRace_name() + 
+               " [" + oldMode + " -> " + newMode + "]"
+          );
+          
+          // 必要に応じて、特定の状態遷移に対する追加処理を実装できます
+          // 例: WAIT -> RUN の場合、全参加者に音を鳴らす
+          if (oldMode == Race_Mode.WAIT && newMode == Race_Mode.RUN) {
+               // レース開始時の処理（必要に応じて実装）
+          }
      }
 }

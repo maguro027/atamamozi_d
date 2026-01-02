@@ -2,6 +2,7 @@ package waterpunch.atamamozi_d.plugin.race;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import waterpunch.atamamozi_d.plugin.main.Core;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Mode;
 import waterpunch.atamamozi_d.plugin.race.enums.Race_Type;
+import waterpunch.atamamozi_d.plugin.race.events.RaceModeChangeEvent;
 import waterpunch.atamamozi_d.plugin.tool.Location.Loc_parts;
 import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 
@@ -29,7 +31,7 @@ import waterpunch.atamamozi_d.plugin.tool.Timers.Race_Timer;
 public class Race extends Race_Package {
 
      private final int TIME;
-     private final Race_Mode race_Mode = Race_Mode.WAIT;
+     private Race_Mode race_Mode = Race_Mode.WAIT;
      private int currentParticipantCount = 0;
      private Race_Timer timer;
 
@@ -63,10 +65,32 @@ public class Race extends Race_Package {
           getCheckPoint_Loc().add(new CheckPointLoc(loc, r));
      }
 
+     /**
+      * レースの状態を変更します。
+      * 
+      * <p>
+      * このメソッドは、レース状態が変更されるときにRaceModeChangeEventを発火します。
+      * イベントリスナーは、状態の変化に応じて適切な処理（タイマー開始、通知送信など）を実行できます。
+      * </p>
+      * 
+      * <p>
+      * <b>イベント駆動設計:</b> このメソッドは直接的な副作用を持ちません。
+      * 代わりに、すべての副作用はイベントハンドラによって処理されます。
+      * </p>
+      * 
+      * @param mode 新しいレース状態
+      */
      public void setMode(Race_Mode mode) {
-          // race_Modeは最終的だが、実際のゲーム処理ではモード変更が必要
-          // 本来は不変にすべきだが、ゲーム流れに合わせて可変にしている
-          // TODO: イベント駆動設計へ移行を検討
+          if (mode == null || this.race_Mode == mode) {
+               return; // 同じ状態への変更は無視
+          }
+          
+          Race_Mode oldMode = this.race_Mode;
+          this.race_Mode = mode;
+          
+          // イベントを発火してリスナーに通知
+          RaceModeChangeEvent event = new RaceModeChangeEvent(this, oldMode, mode);
+          Bukkit.getPluginManager().callEvent(event);
      }
 
      public Race_Mode getMode() {
