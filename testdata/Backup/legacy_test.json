@@ -1,0 +1,41 @@
+{
+  "creator": "maguro027",
+  "race_name": "Legacy Test Race",
+  "race_ID": "legacy-test-001",
+  "race_Type": "WALK",
+  "icon": "MAP",
+  "join_amount": 1,
+  "rap": 1,
+  "TIME": 30,
+  "Error_Count": 0,
+  "race_Mode": "WAIT",
+  "start_point": [
+    {
+      "x": -8.5,
+      "y": -60.0,
+      "z": -6.5,
+      "yaw": -82.65054,
+      "pitch": 2.3997922,
+      "world_name": "world"
+    }
+  ],
+  "CheckPoint_Loc": [
+    {
+      "loc_parts": {
+        "x": 2.78,
+        "y": -60.0,
+        "z": -5.04,
+        "yaw": -82.65054,
+        "pitch": 2.3997922,
+        "world_name": "world"
+      },
+      "r": 200,
+      "abcd": [
+        0.99,
+        -0.04,
+        0.12,
+        -4.62
+      ]
+    }
+  ]
+}
