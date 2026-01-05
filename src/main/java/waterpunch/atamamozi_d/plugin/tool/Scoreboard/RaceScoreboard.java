@@ -62,17 +62,7 @@ public class RaceScoreboard {
 
         board = manager.getNewScoreboard();
 
-        // 1.13+ と 1.12.2 の互換性を保つため、両方のメソッドをサポート
-        try {
-            // Modern API: registerNewObjective(name, criteria, displayName)
-            objective = board.registerNewObjective("Stats", "dummy", "a");
-        } catch (NoSuchMethodError e) {
-            // Legacy API: registerNewObjective(name, criteria)
-            // Display name は別途設定
-            @SuppressWarnings("deprecation")
-            Objective legacyObj = board.registerNewObjective("Stats", "dummy");
-            objective = legacyObj;
-        }
+        objective = board.registerNewObjective("Stats", "dummy", "a");
 
         objective.setDisplayName("Atamamozi_" + ChatColor.RED + "D");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
