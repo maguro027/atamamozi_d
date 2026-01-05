@@ -173,20 +173,34 @@ public class RaceScoreboard {
     }
 
     /**
-     * RacePlayer の前回位置との差分からおおよその速度を計算します。
+     * RacePlayer の速度を計算します。
      *
      * <p>
-     * このメソッドは簡易的な速度計算を行います。
-     * 詳細な速度計測は別コンポーネントで行うことをお勧めします。
+     * プレイヤーの速度ベクトルから3D速度（blocks/tick）を計算し、
+     * blocks/second に変換して表示します。
      * </p>
      *
      * @param racePlayer RacePlayer オブジェクト
-     * @return 推定速度（相対値）
+     * @return 速度（blocks/second、整数値）
      */
     private int calculateSpeed(RacePlayer racePlayer) {
-        // TODO: より正確な速度計算を実装
-        // 現在のプレイヤー位置の前回との差分を利用
-        return 0;
+        if (racePlayer == null || racePlayer.getPlayer() == null) {
+            return 0;
+        }
+
+        // プレイヤーの速度ベクトルを取得
+        org.bukkit.util.Vector velocity = racePlayer.getPlayer().getVelocity();
+        
+        // 3D速度の大きさを計算（blocks/tick）
+        // length() は √(x² + y² + z²) を返す
+        double speedPerTick = velocity.length();
+        
+        // blocks/tick から blocks/second に変換
+        // Minecraftは1秒間に20ティック実行される
+        double speedPerSecond = speedPerTick * 20.0;
+        
+        // 整数に丸める
+        return (int) Math.round(speedPerSecond);
     }
 
     /**
