@@ -190,6 +190,9 @@ public class RaceScoreboard {
 
         // プレイヤーの速度ベクトルを取得
         org.bukkit.util.Vector velocity = racePlayer.getPlayer().getVelocity();
+        if (velocity == null) {
+            return 0;
+        }
         
         // 3D速度の大きさを計算（blocks/tick）
         // length() は √(x² + y² + z²) を返す
