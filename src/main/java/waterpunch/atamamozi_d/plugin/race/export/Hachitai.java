@@ -30,7 +30,15 @@ public class Hachitai {
      }
 
      static float PCalc(RacePlayer runner, Location location, Race race) {
-          double[] abcd = race.getCheckPoint(runner.getCurrentCheckpoint()).getabcd();
+          if (runner == null || location == null || race == null) {
+               return Float.NaN;
+          }
+          waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc cp = race
+                    .getCheckPoint(runner.getCurrentCheckpoint());
+          if (cp == null) {
+               return Float.NaN;
+          }
+          double[] abcd = cp.getabcd();
           return (float) (((abcd[0] * location.getX()) + (abcd[1] * location.getY()) + (abcd[2] * location.getZ()))
                     + abcd[3]);
      }
@@ -48,11 +56,20 @@ public class Hachitai {
 
      public static double[] GetIntersection(RacePlayer runner, Location CheckPoint, Location to, Location from,
                Race race) {
+          if (runner == null || to == null || from == null || race == null) {
+               return new double[] { 0, 0, 0 };
+          }
+          waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc cp = race
+                    .getCheckPoint(runner.getCurrentCheckpoint());
+          if (cp == null) {
+               return new double[] { 0, 0, 0 };
+          }
+
           double dirVecX = to.getX() - from.getX();
           double dirVecY = to.getY() - from.getY();
           double dirVecZ = to.getZ() - from.getZ();
 
-          double[] abcd = race.getCheckPoint(runner.getCurrentCheckpoint()).getabcd();
+          double[] abcd = cp.getabcd();
 
           double length = (-abcd[3] - GetDot(abcd[0], abcd[1], abcd[2], to.getX(), to.getY(), to.getZ()));
           length /= GetDot(abcd[0], abcd[1], abcd[2], dirVecX, dirVecY, dirVecZ);

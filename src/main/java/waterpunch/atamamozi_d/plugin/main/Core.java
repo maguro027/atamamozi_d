@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -27,11 +28,14 @@ public class Core extends JavaPlugin {
     public static final File FILE_RACE_MENU = FILE_LOC;
 
     private PlayerScoreDatabase database;
+    private BukkitTask autoBackupTask;
+    private static final long AUTO_BACKUP_INTERVAL = 1200L; // 60秒ごとにチェック
 
     @Override
     public void onEnable() {
         initializeDataFolders();
         initializeDatabase();
+        startAutoBackupTask();
         getLogger().info("Loading Race...");
         getRaces();
     }
@@ -80,9 +84,28 @@ public class Core extends JavaPlugin {
                 getLogger().info("Database already exists. Skipping JSON migration.");
             }
 
+            // 初期バックアップを実行
+            try {
+                database.performBackup();
+                getLogger().info("Initial database backup completed");
+            } catch (IOException e) {
+                getLogger().log(Level.WARNING, "Failed to perform initial backup", e);
+            }
+
         } catch (SQLException e) {
             getLogger().log(Level.SEVERE, "Failed to initialize database", e);
         }
+    }
+
+    /**
+     * 定期自動バックアップタスクを開始
+     */
+    private void startAutoBackupTask() {
+        autoBackupTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
+            if (database != null) {
+                database.checkAndPerformAutoBackup();
+            }
+        }, AUTO_BACKUP_INTERVAL, AUTO_BACKUP_INTERVAL);
     }
 
     private void convertLegacyData(File file) throws Exception {
@@ -92,7 +115,20 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // 自動バックアップタスクをキャンセル
+        if (autoBackupTask != null) {
+            autoBackupTask.cancel();
+        }
+
+        // 最終バックアップを実行
         if (database != null) {
+            try {
+                database.performBackup();
+                getLogger().info("Final database backup completed");
+            } catch (IOException e) {
+                getLogger().log(Level.WARNING, "Failed to perform final backup", e);
+            }
+
             database.close();
         }
     }

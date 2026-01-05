@@ -1,6 +1,7 @@
 package waterpunch.atamamozi_d.plugin.main;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import waterpunch.atamamozi_d.plugin.race.domain.Race;
@@ -11,7 +12,7 @@ import waterpunch.atamamozi_d.plugin.race.domain.Race;
  */
 public final class Race_Core {
 
-    private static final List<Race> REGISTRY = new ArrayList<>();
+    private static final List<Race> REGISTRY = Collections.synchronizedList(new ArrayList<>());
 
     private Race_Core() {
     }
@@ -23,6 +24,6 @@ public final class Race_Core {
     }
 
     public static List<Race> getAll() {
-        return REGISTRY;
+        return Collections.unmodifiableList(new ArrayList<>(REGISTRY));
     }
 }

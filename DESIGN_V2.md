@@ -461,6 +461,79 @@ public void onRaceStart(RaceStartEvent event) {
 
 ---
 
+## データベース保護戦略（破損対策）
+
+### 実装済みの保護機構
+
+#### 1. **WAL（Write-Ahead Logging）**
+```java
+PRAGMA journal_mode = WAL;
+```
+- **効果**: クラッシュ時のデータ保護
+- **仕組み**: 書き込み前にログに記録してから実行
+- **利点**: パフォーマンスと安全性のバランス
+
+#### 2. **トランザクション管理**
+```java
+beginTransaction()   // 複数操作の開始
+commitTransaction()  // 確定
+rollbackTransaction()// ロールバック
+```
+- 複数の操作をアトミックに実行
+- エラー時は自動ロールバック
+
+#### 3. **定期自動バックアップ**
+- **実行間隔**: 1時間ごと
+- **保持数**: 最新10世代
+- **実行タイミング**:
+  - プラグイン起動時
+  - プラグイン終了時
+  - 1時間ごとのタスク実行
+- **バックアップ先**: `plugins/Atamamozi_D/db_backups/`
+
+#### 4. **整合性チェック**
+```java
+verifyDatabaseIntegrity()  // PRAGMA integrity_check
+```
+- 初期化時に自動実行
+- 破損検出時はログに記録
+
+#### 5. **最適化タスク**
+```java
+optimizeDatabase()  // VACUUM と ANALYZE
+```
+- 定期的なデータベース最適化
+- 必要に応じて手動実行可能
+
+### PRAGMA設定の詳細
+
+| 設定 | 値 | 目的 |
+|------|------|------|
+| `journal_mode` | WAL | クラッシュ時の保護 |
+| `synchronous` | NORMAL | パフォーマンス＆安全性のバランス |
+| `foreign_keys` | ON | 参照整合性の確保 |
+| `auto_vacuum` | INCREMENTAL | 断片化対策 |
+| `cache_size` | -64000 | パフォーマンス向上 |
+| `busy_timeout` | 30000 | デッドロック対策 |
+
+### リカバリー手順
+
+#### **破損が発生した場合**
+```bash
+1. プラグインを停止
+2. plugins/Atamamozi_D/db_backups/ からバックアップを選択
+3. database.restoreFromBackup(backupFile) を呼び出し
+4. プラグインを再起動
+```
+
+### モニタリング
+
+- バックアップ実行ログ: コンソールに出力
+- 整合性チェック結果: コンソールに出力
+- エラーログ: プラグインログに記録
+
+---
+
 ## 次のステップ
 
 このドキュメントを確認し、同意が得られたら Phase 1 から実装を開始します。

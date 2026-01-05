@@ -23,6 +23,15 @@ public class LocParts {
     }
 
     public Location getLocation() {
-        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+        org.bukkit.World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            world = Bukkit.getWorlds().isEmpty() ? null : Bukkit.getWorlds().get(0);
+        }
+        if (world == null) {
+            java.util.logging.Logger.getLogger(LocParts.class.getName())
+                    .log(java.util.logging.Level.WARNING, "Could not find world: {0}", worldName);
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
     }
 }

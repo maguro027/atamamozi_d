@@ -22,18 +22,30 @@ public final class JsonStore {
     }
 
     public static boolean save(RacePackage rp, File dir) {
-        if (rp == null || dir == null)
+        if (rp == null || dir == null) {
+            System.err.println("JsonStore.save failed: RacePackage or directory is null");
             return false;
-        if (!dir.exists())
-            dir.mkdirs();
+        }
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                System.err.println("JsonStore.save failed: Could not create directory " + dir.getAbsolutePath());
+                return false;
+            }
+        }
 
         String name = rp.getRaceId() != null ? rp.getRaceId().toString() : rp.getRaceName();
+        if (name == null || name.isEmpty()) {
+            System.err.println("JsonStore.save failed: Race name and ID are both null/empty");
+            return false;
+        }
+
         File out = new File(dir, name + ".json");
         try (FileWriter fw = new FileWriter(out)) {
             GSON.toJson(rp, fw);
             return true;
         } catch (Exception e) {
             System.err.println("JsonStore.save failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

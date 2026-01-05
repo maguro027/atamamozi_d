@@ -1,6 +1,9 @@
 package waterpunch.atamamozi_d.plugin.database;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,7 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,14 +21,28 @@ import java.util.logging.Logger;
 /**
  * プレイヤースコアデータベース管理クラス
  * SQLiteを使用してプレイヤーのレーススコアを管理します
+ * 
+ * 破損対策：
+ * - WAL（Write-Ahead Logging）で安全な書き込み
+ * - トランザクション管理
+ * - 定期バックアップ
+ * - 整合性チェック
  */
 public class PlayerScoreDatabase {
     private final File databaseFile;
+    private final File backupDir;
     private static final Logger logger = Logger.getLogger(PlayerScoreDatabase.class.getName());
     private Connection connection;
+    private static final int MAX_BACKUPS = 10;
+    private static final long BACKUP_INTERVAL_MS = 3600000; // 1時間
+    private long lastBackupTime = 0;
 
     public PlayerScoreDatabase(File databaseFile) {
         this.databaseFile = databaseFile;
+        this.backupDir = new File(databaseFile.getParent(), "db_backups");
+        if (!backupDir.exists()) {
+            backupDir.mkdirs();
+        }
     }
 
     /**
@@ -40,11 +59,198 @@ public class PlayerScoreDatabase {
 
             logger.log(Level.INFO, "Database connected: {0}", databaseFile.getAbsolutePath());
 
+            // 保護設定を適用
+            applyProtectionSettings();
+
             // テーブル作成
             createTables();
 
+            // 整合性チェック
+            verifyDatabaseIntegrity();
+
         } catch (ClassNotFoundException e) {
             throw new SQLException("SQLite JDBC driver not found", e);
+        }
+    }
+
+    /**
+     * データベース保護設定を適用
+     */
+    private void applyProtectionSettings() throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            // WAL（Write-Ahead Logging）を有効化 - クラッシュ時のデータ保護
+            stmt.execute("PRAGMA journal_mode = WAL");
+
+            // 同期レベル設定 - バランス型（パフォーマンスと安全性）
+            stmt.execute("PRAGMA synchronous = NORMAL");
+
+            // 外部キー制約を有効化
+            stmt.execute("PRAGMA foreign_keys = ON");
+
+            // 自動真空を有効化（断片化対策）
+            stmt.execute("PRAGMA auto_vacuum = INCREMENTAL");
+
+            // キャッシュサイズを増加（パフォーマンス向上）
+            stmt.execute("PRAGMA cache_size = -64000");
+
+            // タイムアウト設定（デッドロック対策）
+            stmt.execute("PRAGMA busy_timeout = 30000");
+
+            logger.info("Database protection settings applied successfully");
+        }
+    }
+
+    /**
+     * データベースの整合性をチェック
+     */
+    public boolean verifyDatabaseIntegrity() throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            try (ResultSet rs = stmt.executeQuery("PRAGMA integrity_check")) {
+                if (rs.next()) {
+                    String result = rs.getString(1);
+                    if ("ok".equals(result)) {
+                        logger.info("Database integrity check passed");
+                        return true;
+                    } else {
+                        logger.log(Level.SEVERE, "Database integrity check failed: {0}", result);
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * データベースを最適化
+     */
+    public void optimizeDatabase() throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("VACUUM");
+            stmt.execute("ANALYZE");
+            logger.info("Database optimized");
+        }
+    }
+
+    /**
+     * 自動バックアップを実行（定期実行チェック）
+     */
+    public void checkAndPerformAutoBackup() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastBackupTime > BACKUP_INTERVAL_MS) {
+            try {
+                performBackup();
+                lastBackupTime = currentTime;
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Auto backup failed", e);
+            }
+        }
+    }
+
+    /**
+     * バックアップを実行
+     */
+    public void performBackup() throws IOException {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File backupFile = new File(backupDir, String.format("scores_%s.db", timestamp));
+
+        // ファイルコピー（WALとSHM-WalIndexもコピー）
+        Files.copy(databaseFile.toPath(), backupFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING);
+
+        File walFile = new File(databaseFile.getAbsolutePath() + "-wal");
+        if (walFile.exists()) {
+            Files.copy(walFile.toPath(),
+                    new File(backupDir, backupFile.getName() + "-wal").toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        logger.log(Level.INFO, "Database backup created: {0}", backupFile.getName());
+
+        // 古いバックアップを削除
+        deleteOldBackups();
+    }
+
+    /**
+     * 古いバックアップを削除（MAX_BACKUPS を超えた分）
+     */
+    private void deleteOldBackups() {
+        File[] backups = backupDir.listFiles((dir, name) -> name.matches("scores_\\d{8}_\\d{6}\\.db"));
+        if (backups != null && backups.length > MAX_BACKUPS) {
+            // 名前でソート（古い順）
+            java.util.Arrays.sort(backups);
+            // MAX_BACKUPS以上のものを削除
+            for (int i = 0; i <= backups.length - MAX_BACKUPS - 1; i++) {
+                if (backups[i].delete()) {
+                    logger.log(Level.INFO, "Old backup deleted: {0}", backups[i].getName());
+                }
+            }
+        }
+    }
+
+    /**
+     * バックアップからリストア
+     */
+    public void restoreFromBackup(File backupFile) throws SQLException, IOException {
+        if (!backupFile.exists()) {
+            throw new IOException("Backup file not found: " + backupFile.getAbsolutePath());
+        }
+
+        // 接続を閉じる
+        close();
+
+        try {
+            // バックアップをコピー
+            Files.copy(backupFile.toPath(), databaseFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+
+            // WALファイルもコピー
+            File backupWal = new File(backupFile.getAbsolutePath() + "-wal");
+            if (backupWal.exists()) {
+                Files.copy(backupWal.toPath(),
+                        new File(databaseFile.getAbsolutePath() + "-wal").toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            logger.log(Level.INFO, "Database restored from backup: {0}", backupFile.getName());
+
+            // 再接続
+            initialize();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Restore failed", e);
+            throw e;
+        }
+    }
+
+    /**
+     * トランザクション開始
+     */
+    public void beginTransaction() throws SQLException {
+        connection.setAutoCommit(false);
+    }
+
+    /**
+     * トランザクション確定
+     */
+    public void commitTransaction() throws SQLException {
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
+        }
+    }
+
+    /**
+     * トランザクションロールバック
+     */
+    public void rollbackTransaction() throws SQLException {
+        try {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 

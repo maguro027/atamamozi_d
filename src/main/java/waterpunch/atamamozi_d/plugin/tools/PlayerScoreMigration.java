@@ -76,6 +76,11 @@ public class PlayerScoreMigration {
             JsonObject root = gson.fromJson(reader, JsonObject.class);
 
             // プレイヤー情報を取得
+            if (!root.has("uuid") || !root.has("Name")) {
+                logger.log(java.util.logging.Level.WARNING, "Invalid JSON structure (missing uuid or Name): {0}",
+                        jsonFile.getName());
+                return;
+            }
             String uuid = root.get("uuid").getAsString();
             String name = root.get("Name").getAsString();
 
@@ -103,6 +108,11 @@ public class PlayerScoreMigration {
      * 個別のスコアエントリーを移行
      */
     private void migrateScore(String playerUuid, JsonObject scoreData) throws SQLException {
+        if (!scoreData.has("RACE_ID") || !scoreData.has("COUNT") || !scoreData.has("TIMEs")) {
+            logger.log(java.util.logging.Level.WARNING,
+                    "Invalid score structure (missing required fields) for player {0}", playerUuid);
+            return;
+        }
         String raceId = scoreData.get("RACE_ID").getAsString();
         int count = scoreData.get("COUNT").getAsInt();
 
