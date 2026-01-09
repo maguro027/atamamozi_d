@@ -128,7 +128,7 @@ public class Core extends JavaPlugin {
                 Race r = gson.fromJson(fileReader, Race.class);
 
                 // 互換性維持のため最小スタブ経由で登録
-                Race_Core.addRace(r);
+                RaceSessionManager.addRace(r);
             } catch (JsonSyntaxException | JsonIOException | IOException e) {
                 String message = CollarMessage.setWarning() + "Race Data Broken..." + tmpFile.getName();
                 Bukkit.getLogger().warning(message);
@@ -143,7 +143,7 @@ public class Core extends JavaPlugin {
                         Gson gson2 = new Gson();
                         Race r2 = gson2.fromJson(rr, Race.class);
                         if (r2 != null) {
-                            Race_Core.addRace(r2);
+                            RaceSessionManager.addRace(r2);
                         }
                     } catch (Exception re) {
                         Bukkit.getLogger().log(Level.WARNING,

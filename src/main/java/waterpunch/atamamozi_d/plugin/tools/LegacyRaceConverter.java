@@ -330,7 +330,7 @@ public class LegacyRaceConverter {
 
             String nk = normalizeKey(key);
 
-            // Special handling for checkpoint array: normalize to "checkPointLoc"
+            // Special handling for checkpoint array: normalize to "checkPoint"
             // and convert each element's "loc_parts" -> "locParts"
             if (isCheckpointKey(key) && val.isJsonArray()) {
                 com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
@@ -356,7 +356,7 @@ public class LegacyRaceConverter {
                         outItem.add("abcd", obj.get("abcd"));
                     arr.add(outItem);
                 }
-                dst.add("checkPointLoc", arr);
+                dst.add("checkPoint", arr);
                 continue;
             }
 
@@ -392,7 +392,7 @@ public class LegacyRaceConverter {
             case "CheckPoint_Loc":
             case "CheckPointLoc":
             case "check_point_loc":
-                return "checkPointLoc";
+                return "checkPoint";
             case "race_ID":
             case "race_id":
                 return "raceId";

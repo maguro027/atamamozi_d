@@ -27,7 +27,7 @@ public final class JsonStore {
         if (!dir.exists())
             dir.mkdirs();
 
-        String name = rp.getRaceId() != null ? rp.getRaceId().toString() : rp.getRaceName();
+        String name = rp.getID() != null ? rp.getID().toString() : rp.getRaceName();
         File out = new File(dir, name + ".json");
         try (FileWriter fw = new FileWriter(out)) {
             GSON.toJson(rp, fw);

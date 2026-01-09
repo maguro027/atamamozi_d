@@ -7,15 +7,20 @@ import org.bukkit.Material;
 
 import com.google.gson.annotations.SerializedName;
 
-import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPointLoc;
+import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPoint;
+import waterpunch.atamamozi_d.plugin.race.enums.RaceType;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
 
 /**
- * JSON の入出力に使う DTO。既存 JSON が snake_case の場合にも対応できるよう
- * {@link SerializedName} を付与してある。
+ * 最小互換性スタブ: 主に JSON の入出力に使います。
  */
-public class RacePackage {
 
+public class RacePackage {
+    /**
+     * JSON の入出力に使う DTO。既存 JSON が snake_case の場合にも対応できるよう
+     * {@link SerializedName} を付与してある。
+     */
+    // 旧データ読み込み用
     @SerializedName(value = "race_id", alternate = { "race_ID", "raceId", "id" })
     private UUID raceId;
 
@@ -30,23 +35,25 @@ public class RacePackage {
     private int rap;
 
     @SerializedName("race_type")
-    private String raceType;
+    private RaceType raceType;
 
     private Material icon;
 
     @SerializedName("start_point")
-    private List<LocParts> startPoint;
+    protected List<LocParts> startPoint;
 
-    @SerializedName(value = "check_point_loc", alternate = { "CheckPoint_Loc", "CheckPointLoc", "checkPointLoc",
+    @SerializedName(value = "check_point", alternate = { "check_point_loc", "CheckPoint_Loc", "CheckPointLoc",
+            "checkPointLoc",
             "CheckPoint_Loc" })
-    private List<CheckPointLoc> checkPointLoc;
+    protected List<CheckPoint> checkPoint;
+    // 旧データ読み込み用ここまで
 
-    // no-arg constructor for Gson
+    // Gson 用コンストラクタ
     public RacePackage() {
     }
 
-    public RacePackage(UUID raceId, String raceName, String creator, int joinAmount, int rap, String raceType,
-            Material icon, List<LocParts> startPoint, List<CheckPointLoc> checkPointLoc) {
+    public RacePackage(UUID raceId, String raceName, String creator, int joinAmount, int rap, RaceType raceType,
+            Material icon, List<LocParts> startPoint, List<CheckPoint> checkPoint) {
         this.raceId = raceId;
         this.raceName = raceName;
         this.creator = creator;
@@ -55,10 +62,10 @@ public class RacePackage {
         this.raceType = raceType;
         this.icon = icon;
         this.startPoint = startPoint;
-        this.checkPointLoc = checkPointLoc;
+        this.checkPoint = checkPoint;
     }
 
-    public UUID getRaceId() {
+    public UUID getID() {
         return raceId;
     }
 
@@ -78,7 +85,7 @@ public class RacePackage {
         return rap;
     }
 
-    public String getRaceType() {
+    public RaceType getRaceType() {
         return raceType;
     }
 
@@ -90,8 +97,8 @@ public class RacePackage {
         return startPoint;
     }
 
-    public List<CheckPointLoc> getCheckPointLoc() {
-        return checkPointLoc;
+    public List<CheckPoint> getCheckPoint() {
+        return checkPoint;
     }
 
 }

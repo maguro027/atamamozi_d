@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
 
-public class CheckPointLoc {
+public class CheckPoint {
 
      @SerializedName("loc_parts")
      private LocParts locParts;
@@ -15,11 +15,11 @@ public class CheckPointLoc {
      private double[] abcd;
 
      // no-arg constructor for Gson
-     public CheckPointLoc() {
+     public CheckPoint() {
      }
 
      // convenience constructor used by code that builds from a Location
-     public CheckPointLoc(Location loc, int r) {
+     public CheckPoint(Location loc, int r) {
           this.locParts = new LocParts(loc);
           this.r = r;
 
