@@ -1,7 +1,16 @@
 Setting:
+     #チェックポイントparticleの表示間隔(seconds)
+     particle:0.5
+
      CountDown:
+
+          #最初のプレーヤーが参加してからカウントダウン開始までの時間(seconds)
           WAIT: 30
+
+          #スタートコマンドやWAIT時間経過後からレース開始までの時間(seconds)
+
           START: 5
           YOIN: 5
           LEAVE: 10
+          TIMELIMIT: 60
      MENU_RANK_VIEW: 20

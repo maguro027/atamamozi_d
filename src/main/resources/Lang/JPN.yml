@@ -1,6 +1,8 @@
 race:
 	countdown: "レース開始まで %s 秒"
-	started: "レースを開始しました！"
+  started: "レースを開始しました！"
 	joined: "%s がレースに参加しました。"
 	left: "%s がレースから離脱しました。"
+	finished: "%s がゴールしました！"
+  countlock: "%sが開始間近のため、レースへの参加ができません。"
 

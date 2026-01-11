@@ -423,15 +423,16 @@ public void onRaceStart(RaceStartEvent event) {
 
 ## 移行計画
 
-### Phase 1: 基盤整備
+### Phase 1: 基盤整備 ✅ **完了**
 - [x] Player_Scores SQLite化＆起動時自動マイグレーション（DB未存在時にJSON取込み）
-- [ ] JsonStore 実装
+- [x] JsonStore 実装
 - [x] Race リファクタリング（イミュータブル化）
-- [ ] RacePlayer 実装
+- [x] RacePlayer 実装（タイム計測特化）
 
 ### Phase 2: コア機能
 - [ ] RaceSession 実装
-- [ ] RaceManager 実装
+- [ ] RaceSessionManager 実装
+- [ ] RaceCore 実装
 - [ ] PlayerManager 実装
 
 ### Phase 3: タイマー・イベント

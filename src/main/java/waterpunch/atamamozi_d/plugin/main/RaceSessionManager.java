@@ -1,33 +1,137 @@
 package waterpunch.atamamozi_d.plugin.main;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 import waterpunch.atamamozi_d.plugin.race.domain.Race;
+import waterpunch.atamamozi_d.plugin.race.domain.RaceSession;
 
 /**
- * 最小互換性スタブ: 既存コードからの呼び出しを受け止めます。
- * 将来的には RaceManager 等に置き換えてください。
+ * レース定義とアクティブセッションの管理
+ * 
+ * 責務:
+ * - レース定義（Race）の登録・検索
+ * - アクティブセッション（RaceSession）の管理
+ * - プレイヤー→セッションのマッピング
  */
 public class RaceSessionManager {
 
-    static final HashMap<UUID, Race> Sessions = new HashMap<>();
+    // アクティブセッション（実行中のレース）
+    private static final Map<UUID, RaceSession> activeSessions = new HashMap<>();
 
-    public static void addRace(Race r) {
-        if (r == null)
+    // プレイヤー→セッションのキャッシュ（O(1)検索用）
+    private static final Map<UUID, RaceSession> playerInSession = new HashMap<>();
+
+    // ========== セッション管理 ==========
+    /**
+     * JOIN確認
+     * Session確認
+     * 参加
+     * 
+     * @param player
+     * @param session
+     */
+    public static void joinSession(Player player, UUID raceID) {
+        if (isInRace(player)) {
             return;
-        Sessions.put(r.getID(), r);
-    }
-
-    public static Race getSession(UUID id) {
-        if (id == null)
-            return null;
-
-        return Sessions.get(id);
+        }
+        RaceSession session = getSession(raceID);
+        if (session == null) {
+            return;
+        }
+        session.addPlayer(player);
 
     }
 
-    public static HashMap<UUID, Race> getAll() {
-        return Sessions;
+    /**
+     * 新しいセッションを作成
+     * 
+     * @param race レース定義
+     * @return 作成されたセッション
+     */
+    public static RaceSession createSession(Race race) {
+        UUID raceId = race.getID();
+
+        // 既存セッションがあれば終了
+        if (activeSessions.containsKey(raceId)) {
+            endSession(raceId);
+        }
+
+        RaceSession session = new RaceSession(race);
+        activeSessions.put(raceId, session);
+        return session;
+    }
+
+    /**
+     * セッションを取得
+     * 
+     * @param raceId レースID
+     * @return セッション（存在しなければnull）
+     */
+    public static RaceSession getSession(UUID raceId) {
+        return activeSessions.get(raceId);
+    }
+
+    /**
+     * セッションを終了
+     * 
+     * @param raceId レースID
+     */
+    public static void endSession(UUID raceId) {
+        RaceSession session = activeSessions.remove(raceId);
+        if (session != null) {
+            // プレイヤーマッピングをクリア
+            session.getPlayers().keySet().forEach(playerInSession::remove);
+        }
+    }
+
+    /**
+     * アクティブセッションが存在するか確認
+     */
+    public static boolean hasActiveSession(UUID raceId) {
+        return activeSessions.containsKey(raceId);
+    }
+
+    /**
+     * 全アクティブセッションを取得
+     */
+    public static Map<UUID, RaceSession> getAllActiveSessions() {
+        return new HashMap<>(activeSessions);
+    }
+
+    // ========== プレイヤー管理 ==========
+
+    /**
+     * プレイヤーをセッションにマッピング（O(1)検索用）
+     */
+    public static void addPlayerToSession(Player player, RaceSession session) {
+        playerInSession.put(player.getUniqueId(), session);
+    }
+
+    /**
+     * プレイヤーのマッピングを削除
+     */
+    public static void removePlayerFromSession(Player player) {
+        playerInSession.remove(player.getUniqueId());
+    }
+
+    /**
+     * プレイヤーが参加中のセッションを取得（O(1)）
+     * 
+     * @param player プレイヤー
+     * @return セッション（参加していなければnull）
+     */
+    public static RaceSession getPlayerSession(Player player) {
+        return playerInSession.get(player.getUniqueId());
+    }
+
+    /**
+     * プレイヤーがレース中か判定
+     */
+    public static boolean isInRace(Player player) {
+        return playerInSession.containsKey(player.getUniqueId());
     }
 }

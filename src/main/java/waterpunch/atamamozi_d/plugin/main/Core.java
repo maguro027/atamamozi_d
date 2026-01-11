@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.Gson;
@@ -14,7 +13,9 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import waterpunch.atamamozi_d.plugin.database.PlayerScoreDatabase;
+import waterpunch.atamamozi_d.plugin.race.RacePackage;
 import waterpunch.atamamozi_d.plugin.race.domain.Race;
+import waterpunch.atamamozi_d.plugin.race.domain.RaceNormalizer;
 import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
 import waterpunch.atamamozi_d.plugin.tools.LegacyRaceConverter;
 import waterpunch.atamamozi_d.plugin.tools.PlayerScoreMigration;
@@ -32,8 +33,21 @@ public class Core extends JavaPlugin {
     public void onEnable() {
         initializeDataFolders();
         initializeDatabase();
+        waterpunch.atamamozi_d.plugin.tool.LangManager.initialize(this);
+        loadConfig();
         getLogger().info("Loading Race...");
         getRaces();
+    }
+
+    private void loadConfig() {
+        saveDefaultConfig();
+
+        // パーティクル表示間隔を読み込み（秒→ミリ秒に変換）
+        double particleSeconds = getConfig().getDouble("Setting.particle", 0.5);
+        long particleMillis = (long) (particleSeconds * 1000);
+        waterpunch.atamamozi_d.plugin.race.export.Hachitai.setParticleInterval(particleMillis);
+
+        getLogger().info(String.format("Particle interval: %.1f seconds", particleSeconds));
     }
 
     private void initializeDataFolders() {
@@ -125,15 +139,32 @@ public class Core extends JavaPlugin {
                 continue;
             try (FileReader fileReader = new FileReader(tmpFile)) {
                 Gson gson = new Gson();
-                Race r = gson.fromJson(fileReader, Race.class);
+                RacePackage pkg = gson.fromJson(fileReader, RacePackage.class);
 
-                // 互換性維持のため最小スタブ経由で登録
-                RaceSessionManager.addRace(r);
+                // ノーマライズ & バリデーション
+                Race r = RaceNormalizer.fromPackage(pkg);
+                if (r == null) {
+                    getLogger().log(Level.WARNING, "{0}Race validation failed (null): {1}",
+                            new Object[] { CollarMessage.setWarning(), tmpFile.getName() });
+                    continue;
+                }
+
+                // 致命的エラーチェック
+                String validationError = validateRace(r, tmpFile.getName());
+                if (validationError != null) {
+                    getLogger().log(Level.WARNING, "{0}{1}",
+                            new Object[] { CollarMessage.setWarning(), validationError });
+                    continue;
+                }
+
+                // RaceCoreに登録
+                RaceCore.addRace(r);
             } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                String message = CollarMessage.setWarning() + "Race Data Broken..." + tmpFile.getName();
-                Bukkit.getLogger().warning(message);
-                Bukkit.getLogger().log(Level.WARNING,
-                        "Failed to parse race JSON: " + tmpFile.getName() + " — attempting conversion", e);
+                getLogger().log(Level.WARNING, "{0}Race Data Broken...{1}",
+                        new Object[] { CollarMessage.setWarning(), tmpFile.getName() });
+                getLogger().log(Level.WARNING,
+                        "Failed to parse race JSON: {0} — attempting conversion",
+                        new Object[] { tmpFile.getName(), e });
 
                 // 例外が発生したら該当ファイルを変換を試み、変換後に再読み込み
                 try {
@@ -141,18 +172,55 @@ public class Core extends JavaPlugin {
                     // 再試行
                     try (FileReader rr = new FileReader(tmpFile)) {
                         Gson gson2 = new Gson();
-                        Race r2 = gson2.fromJson(rr, Race.class);
+                        RacePackage pkg2 = gson2.fromJson(rr, RacePackage.class);
+                        Race r2 = RaceNormalizer.fromPackage(pkg2);
                         if (r2 != null) {
-                            RaceSessionManager.addRace(r2);
+                            String validationError2 = validateRace(r2, tmpFile.getName());
+                            if (validationError2 == null) {
+                                RaceCore.addRace(r2);
+                            } else {
+                                getLogger().log(Level.WARNING, "{0}{1}",
+                                        new Object[] { CollarMessage.setWarning(), validationError2 });
+                            }
                         }
                     } catch (Exception re) {
-                        Bukkit.getLogger().log(Level.WARNING,
-                                "Re-parse failed after conversion: " + tmpFile.getName(), re);
+                        getLogger().log(Level.WARNING,
+                                "Re-parse failed after conversion: {0}", new Object[] { tmpFile.getName(), re });
                     }
                 } catch (Exception convEx) {
-                    Bukkit.getLogger().log(Level.WARNING, "Conversion failed for: " + tmpFile.getName(), convEx);
+                    getLogger().log(Level.WARNING, "Conversion failed for: {0}",
+                            new Object[] { tmpFile.getName(), convEx });
                 }
             }
         }
+    }
+
+    /**
+     * レースの致命的エラーをチェックします。
+     * 
+     * @param race     レースオブジェクト
+     * @param fileName ファイル名（ログ用）
+     * @return エラーメッセージ（問題なければnull）
+     */
+    private String validateRace(Race race, String fileName) {
+        // チェックポイントが空
+        if (race.getCheckPoint() == null || race.getCheckPoint().isEmpty()) {
+            return "Race validation failed (no checkpoints): " + fileName;
+        }
+
+        // スタートポイントが空
+        if (race.getStartPoint() == null || race.getStartPoint().isEmpty()) {
+            return "Race validation failed (no start points): " + fileName;
+        }
+
+        // スタートポイント数とjoinAmountが不一致
+        if (race.getStartPoint().size() != race.getJoinAmount()) {
+            return String.format(
+                    "Race validation failed (start points: %d != joinAmount: %d): %s",
+                    race.getStartPoint().size(), race.getJoinAmount(), fileName);
+        }
+
+        // 問題なし
+        return null;
     }
 }

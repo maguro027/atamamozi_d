@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import com.google.gson.annotations.SerializedName;
 
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPoint;
+import waterpunch.atamamozi_d.plugin.race.domain.DamageOption;
 import waterpunch.atamamozi_d.plugin.race.enums.RaceType;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
 
@@ -22,22 +23,22 @@ public class RacePackage {
      */
     // 旧データ読み込み用
     @SerializedName(value = "race_id", alternate = { "race_ID", "raceId", "id" })
-    private UUID raceId;
+    protected UUID raceId;
 
     @SerializedName("race_name")
-    private String raceName;
+    protected String raceName;
 
-    private String creator;
+    protected String creator;
 
     @SerializedName("join_amount")
-    private int joinAmount;
+    protected int joinAmount;
 
-    private int rap;
+    protected int rap;
 
     @SerializedName("race_type")
-    private RaceType raceType;
+    protected RaceType raceType;
 
-    private Material icon;
+    protected Material icon;
 
     @SerializedName("start_point")
     protected List<LocParts> startPoint;
@@ -47,6 +48,8 @@ public class RacePackage {
             "CheckPoint_Loc" })
     protected List<CheckPoint> checkPoint;
     // 旧データ読み込み用ここまで
+
+    protected DamageOption damageOption;
 
     // Gson 用コンストラクタ
     public RacePackage() {
@@ -99,6 +102,10 @@ public class RacePackage {
 
     public List<CheckPoint> getCheckPoint() {
         return checkPoint;
+    }
+
+    public DamageOption getDamageOption() {
+        return damageOption;
     }
 
 }
