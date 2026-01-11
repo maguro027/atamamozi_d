@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import waterpunch.atamamozi_d.plugin.main.RaceCore;
 import waterpunch.atamamozi_d.plugin.tool.LangManager;
 
 /**
@@ -69,8 +70,8 @@ public class RaceSession {
         }
     }
 
-    public RaceSession(Race race) {
-        this.race = race;
+    public RaceSession(UUID raceId) {
+        this.race = RaceCore.getRace(raceId);
         this.players = new HashMap<>();
         this.playerProgress = new HashMap<>();
         this.playerJoinOrders = new HashMap<>();

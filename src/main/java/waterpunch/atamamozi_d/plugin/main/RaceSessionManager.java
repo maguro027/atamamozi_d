@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import waterpunch.atamamozi_d.plugin.race.domain.Race;
 import waterpunch.atamamozi_d.plugin.race.domain.RaceSession;
 
 /**
@@ -27,9 +26,9 @@ public class RaceSessionManager {
 
     // ========== セッション管理 ==========
     /**
-     * JOIN確認
-     * Session確認
-     * 参加
+     * プレイヤーをセッションに参加させる
+     * 参加の不可などはRaceSession側で判定する
+     * ここではセッションの作成とプレイヤーのマッピングのみを行う
      * 
      * @param player
      * @param session
@@ -38,10 +37,11 @@ public class RaceSessionManager {
         if (isInRace(player)) {
             return;
         }
-        RaceSession session = getSession(raceID);
+        RaceSession session = createSession(raceID);
         if (session == null) {
-            return;
+            session = getSession(raceID);
         }
+        addPlayerToSession(player, session);
         session.addPlayer(player);
 
     }
@@ -52,15 +52,14 @@ public class RaceSessionManager {
      * @param race レース定義
      * @return 作成されたセッション
      */
-    public static RaceSession createSession(Race race) {
-        UUID raceId = race.getID();
+    public static RaceSession createSession(UUID raceId) {
 
-        // 既存セッションがあれば終了
+        // 既存セッションがあればnullを返す
         if (activeSessions.containsKey(raceId)) {
-            endSession(raceId);
+            return null;
         }
 
-        RaceSession session = new RaceSession(race);
+        RaceSession session = new RaceSession(raceId);
         activeSessions.put(raceId, session);
         return session;
     }
