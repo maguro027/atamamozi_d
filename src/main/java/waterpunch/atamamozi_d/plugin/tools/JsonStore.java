@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import waterpunch.atamamozi_d.plugin.race.RacePackage;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 
 /**
  * Simple JSON persistence helper for RacePackage objects.
@@ -27,13 +28,13 @@ public final class JsonStore {
         if (!dir.exists())
             dir.mkdirs();
 
-        String name = rp.getID() != null ? rp.getID().toString() : rp.getRaceName();
+        String name = rp.getRaceId() != null ? rp.getRaceId().toString() : rp.getRaceName();
         File out = new File(dir, name + ".json");
         try (FileWriter fw = new FileWriter(out)) {
             GSON.toJson(rp, fw);
             return true;
         } catch (Exception e) {
-            System.err.println("JsonStore.save failed: " + e.getMessage());
+            RaceSystem.logError("JsonStore.save failed: " + e.getMessage());
             return false;
         }
     }
@@ -51,7 +52,7 @@ public final class JsonStore {
                 if (rp != null)
                     out.add(rp);
             } catch (Exception e) {
-                System.err.println("JsonStore.loadAll: failed to read " + f.getName() + ": " + e.getMessage());
+                RaceSystem.logWarn("JsonStore.loadAll: failed to read " + f.getName() + ": " + e.getMessage());
             }
         }
         return out;

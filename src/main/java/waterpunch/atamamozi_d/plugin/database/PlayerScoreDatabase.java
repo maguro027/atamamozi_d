@@ -10,10 +10,10 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.Getter;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 
 /**
  * プレイヤースコアデータベース管理クラス
@@ -40,7 +40,7 @@ public class PlayerScoreDatabase {
             String url = "jdbc:sqlite:" + databaseFile.getAbsolutePath();
             connection = DriverManager.getConnection(url);
 
-            logger.log(Level.INFO, "Database connected: {0}", databaseFile.getAbsolutePath());
+            RaceSystem.logInfo(logger, String.format("Database connected: %s", databaseFile.getAbsolutePath()));
 
             // テーブル作成
             createTables();
@@ -82,7 +82,7 @@ public class PlayerScoreDatabase {
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_race_best_time ON race_scores(race_id, best_time)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_race_score_time ON time_records(race_score_id, total_time)");
 
-            logger.info("Database tables created successfully");
+            RaceSystem.logInfo(logger, "Database tables created successfully");
         }
     }
 
@@ -123,7 +123,7 @@ public class PlayerScoreDatabase {
             pstmt.setString(1, newName);
             pstmt.setString(2, uuid);
             pstmt.executeUpdate();
-            logger.log(Level.INFO, "Player name updated: {0} -> {1}", new Object[] { uuid, newName });
+            RaceSystem.logInfo(logger, String.format("Player name updated: %s -> %s", uuid, newName));
         }
     }
 
@@ -245,9 +245,9 @@ public class PlayerScoreDatabase {
         if (connection != null) {
             try {
                 connection.close();
-                logger.info("Database connection closed");
+                RaceSystem.logInfo(logger, "Database connection closed");
             } catch (SQLException e) {
-                logger.log(Level.WARNING, "Error closing database", e);
+                RaceSystem.logWarn(logger, "Error closing database", e);
             }
         }
     }

@@ -1,16 +1,15 @@
 package waterpunch.atamamozi_d.plugin.race.domain;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import waterpunch.atamamozi_d.plugin.race.RacePackage;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPoint;
-import waterpunch.atamamozi_d.plugin.race.enums.RaceType;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
 
 /**
@@ -21,73 +20,10 @@ import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
  *
  * @author waterpunch
  */
+@Getter
+@Setter
+@SuperBuilder(toBuilder = true)
 public class Race extends RacePackage {
-     public static Builder newBuilder() {
-          return new Builder();
-     }
-
-     public static class Builder {
-          private final Race race;
-
-          private Builder() {
-               this.race = new Race();
-          }
-
-          public Builder raceId(UUID raceId) {
-               race.raceId = raceId;
-               return this;
-          }
-
-          public Builder raceName(String raceName) {
-               race.raceName = raceName;
-               return this;
-          }
-
-          public Builder creator(String creator) {
-               race.creator = creator;
-               return this;
-          }
-
-          public Builder raceType(RaceType raceType) {
-               race.raceType = raceType;
-               return this;
-          }
-
-          public Builder maxPlayers(int joinAmount) {
-               race.joinAmount = joinAmount;
-               return this;
-          }
-
-          public Builder laps(int rap) {
-               race.rap = rap;
-               return this;
-          }
-
-          public Builder icon(Material icon) {
-               race.icon = icon;
-               return this;
-          }
-
-          public Builder startPoint(List<LocParts> startPoint) {
-               race.startPoint = startPoint;
-               return this;
-          }
-
-          public Builder checkPoint(List<CheckPoint> checkPoint) {
-               race.checkPoint = checkPoint;
-               return this;
-          }
-
-          public Builder damageOption(DamageOption damageOption) {
-               race.damageOption = damageOption;
-               return this;
-          }
-
-          public Race build() {
-               return race;
-          }
-     }
-
      /** JSON 読み込み用やファクトリ用のデフォルトコンストラクタ。 */
      protected Race() {
      }
@@ -104,6 +40,7 @@ public class Race extends RacePackage {
      }
 
      public void start() {
+          // TODO:
           // レース開始ロジックをここに実装
      }
 
@@ -137,55 +74,6 @@ public class Race extends RacePackage {
      }
 
      /**
-      * レース名を設定します。
-      * 
-      * @param raceName 設定するレース名
-      * @return メソッドチェーン用に自身を返却
-      */
-     public Race setRaceName(String raceName) {
-          this.raceName = raceName;
-          return this;
-     }
-
-     /**
-      * クリエイター名を設定します。
-      * 
-      * @param creator 設定するクリエイター名
-      * @return メソッドチェーン用に自身を返却
-      */
-     public Race setCreator(String creator) {
-          this.creator = creator;
-          return this;
-     }
-
-     /**
-      * レースタイプを設定します。
-      * 
-      * @param raceType 設定するレースタイプ（WALK, BOATなど）
-      * @return メソッドチェーン用に自身を返却
-      */
-     public Race setRaceType(RaceType raceType) {
-          this.raceType = raceType;
-          return this;
-     }
-
-     public Race setRaceId(UUID raceId) {
-          this.raceId = raceId;
-          return this;
-     }
-
-     /**
-      * GUIアイコンを設定します。
-      * 
-      * @param icon 設定するマテリアル
-      * @return メソッドチェーン用に自身を返却
-      */
-     public Race setIcon(Material icon) {
-          this.icon = icon;
-          return this;
-     }
-
-     /**
       * 最大参加人数を設定します。
       * 
       * @param joinAmount 最大参加人数
@@ -204,21 +92,6 @@ public class Race extends RacePackage {
       */
      public Race setLaps(int rap) {
           this.rap = rap;
-          return this;
-     }
-
-     public Race setStartPoint(List<LocParts> startPoint) {
-          this.startPoint = startPoint;
-          return this;
-     }
-
-     public Race setCheckPoint(List<CheckPoint> checkPoint) {
-          this.checkPoint = checkPoint;
-          return this;
-     }
-
-     public Race setDamageOption(DamageOption damageOption) {
-          this.damageOption = damageOption;
           return this;
      }
 

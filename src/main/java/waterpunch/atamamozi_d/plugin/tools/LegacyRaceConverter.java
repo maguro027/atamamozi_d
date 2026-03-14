@@ -9,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.gson.Gson;
@@ -20,6 +18,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 
 /**
  * Simple converter for legacy race JSON files.
@@ -34,43 +34,23 @@ public class LegacyRaceConverter {
     private static final Logger FALLBACK = Logger.getLogger("LegacyRaceConverter");
 
     private static void logInfo(String msg) {
-        try {
-            Bukkit.getLogger().info(msg);
-        } catch (Throwable t) {
-            FALLBACK.info(msg);
-        }
+        RaceSystem.logInfo(FALLBACK, msg);
     }
 
     private static void logWarning(String msg) {
-        try {
-            Bukkit.getLogger().warning(msg);
-        } catch (Throwable t) {
-            FALLBACK.warning(msg);
-        }
+        RaceSystem.logWarn(FALLBACK, msg);
     }
 
     private static void logWarning(String msg, Throwable t) {
-        try {
-            Bukkit.getLogger().log(Level.WARNING, msg, t);
-        } catch (Throwable tt) {
-            FALLBACK.log(Level.WARNING, msg, t);
-        }
+        RaceSystem.logWarn(FALLBACK, msg, t);
     }
 
     private static void logSevere(String msg) {
-        try {
-            Bukkit.getLogger().severe(msg);
-        } catch (Throwable t) {
-            FALLBACK.severe(msg);
-        }
+        RaceSystem.logError(FALLBACK, msg);
     }
 
     private static void logSevere(String msg, Throwable t) {
-        try {
-            Bukkit.getLogger().log(Level.SEVERE, msg, t);
-        } catch (Throwable tt) {
-            FALLBACK.log(Level.SEVERE, msg, t);
-        }
+        RaceSystem.logError(FALLBACK, msg, t);
     }
 
     @SuppressWarnings("BusyWait")
@@ -127,14 +107,13 @@ public class LegacyRaceConverter {
 
         String[] parts = version.split("\\.");
         if (parts.length < 3) {
-            Bukkit.getLogger()
-                    .info(() -> "plugin version '" + version + "' has <3 segments — skipping conversion by policy");
+            logInfo("plugin version '" + version + "' has <3 segments — skipping conversion by policy");
             return;
         }
 
         File src = new File(sourceDir);
         if (!src.exists() || !src.isDirectory()) {
-            System.err.println("Source dir not found: " + sourceDir);
+            logSevere("Source dir not found: " + sourceDir);
             return;
         }
 
@@ -218,7 +197,7 @@ public class LegacyRaceConverter {
                 logInfo(" - converted -> " + outFile.getPath());
 
             } catch (IOException | com.google.gson.JsonIOException | com.google.gson.JsonSyntaxException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "Failed to convert " + f.getName() + ": " + e.getMessage(), e);
+                logSevere("Failed to convert " + f.getName() + ": " + e.getMessage(), e);
             }
         }
     }
@@ -229,11 +208,11 @@ public class LegacyRaceConverter {
      */
     public static boolean convertFile(File file, String version, boolean force, boolean removeBackupOnSuccess) {
         if (version == null) {
-            System.err.println("plugin.yml version not found; aborting");
+            logSevere("plugin.yml version not found; aborting");
             return false;
         }
         if (file == null || !file.exists() || !file.isFile()) {
-            System.err.println("File not found: " + file);
+            logSevere("File not found: " + file);
             return false;
         }
 

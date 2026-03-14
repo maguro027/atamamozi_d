@@ -9,6 +9,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
+
 public class JsonRaceLoader {
 
     public static void main(String[] args) throws Exception {
@@ -19,7 +21,7 @@ public class JsonRaceLoader {
         if (f.isDirectory()) {
             File[] files = f.listFiles((d, name) -> name.toLowerCase().endsWith(".json"));
             if (files == null || files.length == 0) {
-                System.out.println("No json files found in: " + target);
+                RaceSystem.logInfo("No json files found in: " + target);
                 return;
             }
             for (File file : files) {
@@ -28,7 +30,7 @@ public class JsonRaceLoader {
         } else if (f.isFile()) {
             process(f);
         } else {
-            System.err.println("Path not found: " + target);
+            RaceSystem.logError("Path not found: " + target);
         }
     }
 
@@ -36,7 +38,7 @@ public class JsonRaceLoader {
         try (Reader r = new FileReader(file)) {
             JsonElement el = JsonParser.parseReader(r);
             if (!el.isJsonObject()) {
-                System.out.println(file.getName() + " -> not an object");
+                RaceSystem.logInfo(file.getName() + " -> not an object");
                 return;
             }
             JsonObject obj = el.getAsJsonObject();
@@ -45,7 +47,8 @@ public class JsonRaceLoader {
             String name = findName(obj);
             int checkpoints = findCheckpoints(obj);
 
-            System.out.printf("%s -> id=%s name=%s checkpoints=%d\\n", file.getName(), id, name, checkpoints);
+            RaceSystem.logInfo(
+                    String.format("%s -> id=%s name=%s checkpoints=%d", file.getName(), id, name, checkpoints));
 
             // If there is a checkpoint array, print its contents
             JsonElement cpEl = findCheckpointElement(obj);
@@ -70,11 +73,12 @@ public class JsonRaceLoader {
                     if (ce.has("abcd") && ce.get("abcd").isJsonArray()) {
                         abcd = ce.get("abcd").getAsJsonArray().toString();
                     }
-                    System.out.printf("  checkpoint[%d]: r=%s abcd=%s loc={%s}\\n", idx, rVal, abcd, locStr);
+                    RaceSystem
+                            .logInfo(String.format("  checkpoint[%d]: r=%s abcd=%s loc={%s}", idx, rVal, abcd, locStr));
                 }
             }
         } catch (Exception e) {
-            System.err.printf("Failed to parse %s: %s\n", file.getName(), e.getMessage());
+            RaceSystem.logError(String.format("Failed to parse %s: %s", file.getName(), e.getMessage()));
         }
     }
 

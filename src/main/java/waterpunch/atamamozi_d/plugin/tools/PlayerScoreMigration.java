@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
@@ -12,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import waterpunch.atamamozi_d.plugin.database.PlayerScoreDatabase;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 
 /**
  * Player_ScoresフォルダーからJSONファイルを読み込んでSQLiteに移行するクラス
@@ -31,13 +31,14 @@ public class PlayerScoreMigration {
      */
     public void migrateFromDirectory(File directory) {
         if (!directory.exists() || !directory.isDirectory()) {
-            logger.log(Level.WARNING, "Player_Scores directory not found: {0}", directory.getAbsolutePath());
+            RaceSystem.logWarn(logger,
+                    String.format("Player_Scores directory not found: %s", directory.getAbsolutePath()));
             return;
         }
 
-        logger.log(Level.INFO, "Starting migration from: {0}", directory.getAbsolutePath());
+        RaceSystem.logInfo(logger, String.format("Starting migration from: %s", directory.getAbsolutePath()));
         int count = processDirectory(directory, 0);
-        logger.log(Level.INFO, "Migration completed. {0} player score files processed.", count);
+        RaceSystem.logInfo(logger, String.format("Migration completed. %d player score files processed.", count));
     }
 
     /**
@@ -58,9 +59,9 @@ public class PlayerScoreMigration {
                 try {
                     migrateJsonFile(file);
                     count++;
-                    logger.log(Level.INFO, "Migrated: {0}", file.getName());
+                    RaceSystem.logInfo(logger, String.format("Migrated: %s", file.getName()));
                 } catch (IOException | SQLException e) {
-                    logger.log(Level.SEVERE, "Error migrating " + file.getName(), e);
+                    RaceSystem.logError(logger, "Error migrating " + file.getName(), e);
                 }
             }
         }
@@ -83,7 +84,7 @@ public class PlayerScoreMigration {
             String storedName = database.getPlayerName(uuid);
             if (storedName == null) {
                 database.registerPlayer(uuid, name);
-                logger.log(Level.INFO, "New player registered: {0} ({1})", new Object[] { name, uuid });
+                RaceSystem.logInfo(logger, String.format("New player registered: %s (%s)", name, uuid));
             } else if (!storedName.equals(name)) {
                 database.updatePlayerName(uuid, name);
             }
@@ -109,7 +110,7 @@ public class PlayerScoreMigration {
         // タイム配列を取得
         JsonArray timesArray = scoreData.getAsJsonArray("TIMEs");
         if (timesArray == null || timesArray.isEmpty()) {
-            logger.log(Level.WARNING, "No times found for race {0} of player {1}", new Object[] { raceId, playerUuid });
+            RaceSystem.logWarn(logger, String.format("No times found for race %s of player %s", raceId, playerUuid));
             return;
         }
 
@@ -138,8 +139,8 @@ public class PlayerScoreMigration {
         // race_scoresテーブルを更新
         database.updateRaceScore(raceScoreId, count, bestTime);
 
-        logger.log(Level.FINE, "Score migrated: {0} - Race: {1} - Best: {2} - Records: {3}",
-                new Object[] { playerUuid, raceId, bestTime, recordCount });
+        RaceSystem.logInfo(logger, String.format("Score migrated: %s - Race: %s - Best: %s - Records: %d",
+                playerUuid, raceId, bestTime, recordCount));
     }
 
     /**

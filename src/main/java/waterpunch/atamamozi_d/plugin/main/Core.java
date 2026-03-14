@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,7 +17,7 @@ import waterpunch.atamamozi_d.plugin.database.PlayerScoreDatabase;
 import waterpunch.atamamozi_d.plugin.race.RacePackage;
 import waterpunch.atamamozi_d.plugin.race.domain.Race;
 import waterpunch.atamamozi_d.plugin.race.domain.RaceNormalizer;
-import waterpunch.atamamozi_d.plugin.tool.CollarMessage;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 import waterpunch.atamamozi_d.plugin.tools.LegacyRaceConverter;
 import waterpunch.atamamozi_d.plugin.tools.PlayerScoreMigration;
 
@@ -39,7 +38,7 @@ public class Core extends JavaPlugin {
         initializeDatabase();
         waterpunch.atamamozi_d.plugin.tool.LangManager.initialize(this);
         loadConfig();
-        getLogger().info("Loading Race...");
+        RaceSystem.logInfo(getLogger(), "Loading Race...");
         getRaces();
         scheduleScoreBatchImport();
     }
@@ -52,12 +51,12 @@ public class Core extends JavaPlugin {
         long particleMillis = (long) (particleSeconds * 1000);
         waterpunch.atamamozi_d.plugin.race.export.Hachitai.setParticleInterval(particleMillis);
 
-        getLogger().info(String.format("Particle interval: %.1f seconds", particleSeconds));
+        RaceSystem.logInfo(getLogger(), String.format("Particle interval: %.1f seconds", particleSeconds));
     }
 
     private void initializeDataFolders() {
         if (!getDataFolder().exists()) {
-            getLogger().info("Welcome to the Atamamozi_D plugin");
+            RaceSystem.logInfo(getLogger(), "Welcome to the Atamamozi_D plugin");
             getDataFolder().mkdirs();
         }
         if (!FILE_RACE.exists()) {
@@ -76,31 +75,32 @@ public class Core extends JavaPlugin {
             database.initialize();
             boolean dbExists = dbFile.exists();
 
+            if (dbExists) {
+                RaceSystem.logInfo(getLogger(), "Database already exists. Skipping JSON migration.");
+                return;
+            }
+
             // 初回のみJSONからマイグレーション
-            if (!dbExists) {
-                getLogger().info("Database not found. Creating new database and importing JSON scores...");
+            RaceSystem.logInfo(getLogger(), "Database not found. Creating new database and importing JSON scores...");
 
-                PlayerScoreMigration migration = new PlayerScoreMigration(database);
+            PlayerScoreMigration migration = new PlayerScoreMigration(database);
 
-                // 本番用: プラグインデータフォルダのPlayer_Scoresから移行
-                if (FILE_SCORE.exists()) {
-                    migration.migrateFromDirectory(FILE_SCORE);
-                } else {
-                    getLogger().warning("Player_Scores directory not found — skipping migration.");
-                }
-
-                // 開発用: testdataが存在すれば移行（任意）
-                File testdataDir = new File(new File("").getAbsolutePath() + "/testdata/Player_Scores");
-                if (testdataDir.exists()) {
-                    getLogger().info("Found testdata directory, starting migration (dev only)...");
-                    migration.migrateFromDirectory(testdataDir);
-                }
+            // 本番用: プラグインデータフォルダのPlayer_Scoresから移行
+            if (FILE_SCORE.exists()) {
+                migration.migrateFromDirectory(FILE_SCORE);
             } else {
-                getLogger().info("Database already exists. Skipping JSON migration.");
+                RaceSystem.logWarn(getLogger(), "Player_Scores directory not found — skipping migration.");
+            }
+
+            // 開発用: testdataが存在すれば移行（任意）
+            File testdataDir = new File(new File("").getAbsolutePath() + "/testdata/Player_Scores");
+            if (testdataDir.exists()) {
+                RaceSystem.logInfo(getLogger(), "Found testdata directory, starting migration (dev only)...");
+                migration.migrateFromDirectory(testdataDir);
             }
 
         } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "Failed to initialize database", e);
+            RaceSystem.logError(getLogger(), "Failed to initialize database", e);
         }
     }
 
@@ -123,7 +123,7 @@ public class Core extends JavaPlugin {
     private void scheduleScoreBatchImport() {
         double intervalHours = getConfig().getDouble("Setting.scoreBatchHours", 5.0);
         if (intervalHours <= 0) {
-            getLogger().info("Score batch import is disabled (Setting.scoreBatchHours <= 0).");
+            RaceSystem.logInfo(getLogger(), "Score batch import is disabled (Setting.scoreBatchHours <= 0).");
             return;
         }
 
@@ -140,16 +140,16 @@ public class Core extends JavaPlugin {
                 }
 
                 if (!FILE_SCORE.exists()) {
-                    getLogger().warning("Player_Scores directory not found — skipping batch import.");
+                    RaceSystem.logWarn(getLogger(), "Player_Scores directory not found — skipping batch import.");
                     return;
                 }
 
-                getLogger().info("Starting score batch import...");
+                RaceSystem.logInfo(getLogger(), "Starting score batch import...");
                 PlayerScoreMigration migration = new PlayerScoreMigration(database);
                 migration.migrateFromDirectory(FILE_SCORE);
-                getLogger().info("Score batch import completed.");
+                RaceSystem.logInfo(getLogger(), "Score batch import completed.");
             } catch (Exception e) {
-                getLogger().log(Level.WARNING, "Score batch import failed", e);
+                RaceSystem.logWarn(getLogger(), "Score batch import failed", e);
             } finally {
                 scoreBatchRunning.set(false);
             }
@@ -189,27 +189,23 @@ public class Core extends JavaPlugin {
                 // ノーマライズ & バリデーション
                 Race r = RaceNormalizer.fromPackage(pkg);
                 if (r == null) {
-                    getLogger().log(Level.WARNING, "{0}Race validation failed (null): {1}",
-                            new Object[] { CollarMessage.setWarning(), tmpFile.getName() });
+                    RaceSystem.logWarn(getLogger(), "Race validation failed (null): " + tmpFile.getName());
                     continue;
                 }
 
                 // 致命的エラーチェック
                 String validationError = validateRace(r, tmpFile.getName());
                 if (validationError != null) {
-                    getLogger().log(Level.WARNING, "{0}{1}",
-                            new Object[] { CollarMessage.setWarning(), validationError });
+                    RaceSystem.logWarn(getLogger(), validationError);
                     continue;
                 }
 
                 // RaceCoreに登録
                 RaceCore.addRace(r);
             } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                getLogger().log(Level.WARNING, "{0}Race Data Broken...{1}",
-                        new Object[] { CollarMessage.setWarning(), tmpFile.getName() });
-                getLogger().log(Level.WARNING,
-                        "Failed to parse race JSON: {0} — attempting conversion",
-                        new Object[] { tmpFile.getName(), e });
+                RaceSystem.logWarn(getLogger(), "Race Data Broken..." + tmpFile.getName());
+                RaceSystem.logWarn(getLogger(),
+                        "Failed to parse race JSON: " + tmpFile.getName() + " — attempting conversion", e);
 
                 // 例外が発生したら該当ファイルを変換を試み、変換後に再読み込み
                 try {
@@ -224,17 +220,14 @@ public class Core extends JavaPlugin {
                             if (validationError2 == null) {
                                 RaceCore.addRace(r2);
                             } else {
-                                getLogger().log(Level.WARNING, "{0}{1}",
-                                        new Object[] { CollarMessage.setWarning(), validationError2 });
+                                RaceSystem.logWarn(getLogger(), validationError2);
                             }
                         }
                     } catch (Exception re) {
-                        getLogger().log(Level.WARNING,
-                                "Re-parse failed after conversion: {0}", new Object[] { tmpFile.getName(), re });
+                        RaceSystem.logWarn(getLogger(), "Re-parse failed after conversion: " + tmpFile.getName(), re);
                     }
                 } catch (Exception convEx) {
-                    getLogger().log(Level.WARNING, "Conversion failed for: {0}",
-                            new Object[] { tmpFile.getName(), convEx });
+                    RaceSystem.logWarn(getLogger(), "Conversion failed for: " + tmpFile.getName(), convEx);
                 }
             }
         }

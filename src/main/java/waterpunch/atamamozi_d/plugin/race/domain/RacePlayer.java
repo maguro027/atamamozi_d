@@ -8,6 +8,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem.MessageType;
 
 /**
  * レース参加プレイヤーの情報とタイム計測を担当。
@@ -25,7 +27,16 @@ public class RacePlayer {
      public RacePlayer(Player player) {
           this.player = player;
 
-          this.originalLocation = player.getLocation().clone();
+          Location currentLocation = player.getLocation();
+          if (currentLocation == null) {
+               RaceSystem.sendMessage(MessageType.ERROR, player, "参加地点が参照できません");
+
+               Location respawnLocation = player.getWorld().getSpawnLocation();
+               player.teleport(respawnLocation);
+               currentLocation = respawnLocation;
+          }
+
+          this.originalLocation = currentLocation.clone();
           this.startTime = 0;
           this.finishTime = 0;
      }

@@ -17,6 +17,9 @@
     "java.format.settings.profile": "",
     "java.format.comments.enabled": true,
     "editor.formatOnSaveMode": "file",
+    "files.associations": {
+        "lombok.config": "properties"
+    },
     "cSpell.words": [
         "addcheckpoint",
         "addstartpoint",

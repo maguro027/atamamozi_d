@@ -18,7 +18,7 @@ public class RaceCore {
 
     public static Race getRace(UUID uuid) {
         for (Race race : races) {
-            if (race.getID().equals(uuid)) {
+            if (race.getRaceId().equals(uuid)) {
                 return race;
             }
         }

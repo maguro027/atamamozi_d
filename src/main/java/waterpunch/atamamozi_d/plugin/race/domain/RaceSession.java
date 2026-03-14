@@ -16,6 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 import lombok.Getter;
 import waterpunch.atamamozi_d.plugin.main.RaceCore;
 import waterpunch.atamamozi_d.plugin.tool.LangManager;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
+import waterpunch.atamamozi_d.plugin.tool.RaceSystem.MessageType;
 
 /**
  * 実行中のレースセッション（可変）
@@ -90,7 +92,7 @@ public class RaceSession {
         // WAITING状態以外は参加拒否
         if (state != RaceState.WAITING) {
             String message = LangManager.getMessage("race.countlock", race.getRaceName());
-            player.sendMessage(message);
+            RaceSystem.sendMessage(MessageType.WARN, player, message);
             return false;
         }
 
@@ -105,7 +107,7 @@ public class RaceSession {
         // 通知
         String joinedMessage = LangManager.getMessage("race.joined", player.getName());
         for (RacePlayer existingPlayer : players.values()) {
-            existingPlayer.getPlayer().sendMessage(joinedMessage);
+            RaceSystem.sendMessage(MessageType.INFO, existingPlayer.getPlayer(), joinedMessage);
         }
 
         return true;
@@ -120,7 +122,7 @@ public class RaceSession {
 
         String leftMessage = LangManager.getMessage("race.left", player.getName());
         for (RacePlayer existingPlayer : players.values()) {
-            existingPlayer.getPlayer().sendMessage(leftMessage);
+            RaceSystem.sendMessage(MessageType.INFO, existingPlayer.getPlayer(), leftMessage);
         }
 
         UUID playerId = player.getUniqueId();

@@ -35,7 +35,7 @@ public class LangManager {
             langConfig = YamlConfiguration.loadConfiguration(
                     new java.io.InputStreamReader(input, java.nio.charset.StandardCharsets.UTF_8));
         } catch (Exception e) {
-            plugin.getLogger().warning("Failed to load Lang/JPN.yml: " + e.getMessage());
+            RaceSystem.logWarn(plugin.getLogger(), "Failed to load Lang/JPN.yml: " + e.getMessage());
             langConfig = new YamlConfiguration();
         }
     }

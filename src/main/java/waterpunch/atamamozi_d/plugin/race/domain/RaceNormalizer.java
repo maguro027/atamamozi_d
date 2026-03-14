@@ -22,17 +22,17 @@ public final class RaceNormalizer {
 
         RaceType type = pkg.getRaceType() != null ? pkg.getRaceType() : RaceType.WALK;
 
-        UUID id = pkg.getID() != null ? pkg.getID() : UUID.randomUUID();
+        UUID id = pkg.getRaceId() != null ? pkg.getRaceId() : UUID.randomUUID();
         String name = pkg.getRaceName() != null ? pkg.getRaceName() : "DEFAULT";
         String creator = pkg.getCreator() != null ? pkg.getCreator() : "UNKNOWN";
 
-        return Race.newBuilder()
+        return Race.builder()
                 .raceId(id)
                 .raceName(name)
                 .creator(creator)
                 .raceType(type)
-                .maxPlayers(pkg.getJoinAmount())
-                .laps(pkg.getRap())
+                .joinAmount(pkg.getJoinAmount())
+                .rap(pkg.getRap())
                 .icon(pkg.getIcon() != null ? pkg.getIcon() : Material.PAPER)
                 .startPoint(pkg.getStartPoint() != null ? pkg.getStartPoint() : new ArrayList<>())
                 .checkPoint(pkg.getCheckPoint() != null ? pkg.getCheckPoint() : new ArrayList<>())
