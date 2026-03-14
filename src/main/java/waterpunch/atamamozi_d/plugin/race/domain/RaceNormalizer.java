@@ -21,23 +21,22 @@ public final class RaceNormalizer {
             return null;
 
         RaceType type = pkg.getRaceType() != null ? pkg.getRaceType() : RaceType.WALK;
-        Race race = new Race();
 
         UUID id = pkg.getID() != null ? pkg.getID() : UUID.randomUUID();
         String name = pkg.getRaceName() != null ? pkg.getRaceName() : "DEFAULT";
         String creator = pkg.getCreator() != null ? pkg.getCreator() : "UNKNOWN";
 
-        race.setRaceId(id)
-                .setRaceName(name)
-                .setCreator(creator)
-                .setRaceType(type)
-                .setMaxPlayers(pkg.getJoinAmount())
-                .setLaps(pkg.getRap())
-                .setIcon(pkg.getIcon() != null ? pkg.getIcon() : Material.PAPER)
-                .setStartPoint(pkg.getStartPoint() != null ? pkg.getStartPoint() : new ArrayList<>())
-                .setCheckPoint(pkg.getCheckPoint() != null ? pkg.getCheckPoint() : new ArrayList<>())
-                .setDamageOption(pkg.getDamageOption() != null ? pkg.getDamageOption() : DamageOption.withDefaults());
-
-        return race;
+        return Race.newBuilder()
+                .raceId(id)
+                .raceName(name)
+                .creator(creator)
+                .raceType(type)
+                .maxPlayers(pkg.getJoinAmount())
+                .laps(pkg.getRap())
+                .icon(pkg.getIcon() != null ? pkg.getIcon() : Material.PAPER)
+                .startPoint(pkg.getStartPoint() != null ? pkg.getStartPoint() : new ArrayList<>())
+                .checkPoint(pkg.getCheckPoint() != null ? pkg.getCheckPoint() : new ArrayList<>())
+                .damageOption(pkg.getDamageOption() != null ? pkg.getDamageOption() : DamageOption.withDefaults())
+                .build();
     }
 }

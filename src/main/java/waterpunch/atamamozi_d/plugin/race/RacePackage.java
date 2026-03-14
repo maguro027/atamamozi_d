@@ -7,6 +7,7 @@ import org.bukkit.Material;
 
 import com.google.gson.annotations.SerializedName;
 
+import lombok.Getter;
 import waterpunch.atamamozi_d.plugin.race.checkpoint.CheckPoint;
 import waterpunch.atamamozi_d.plugin.race.domain.DamageOption;
 import waterpunch.atamamozi_d.plugin.race.enums.RaceType;
@@ -16,6 +17,7 @@ import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
  * 最小互換性スタブ: 主に JSON の入出力に使います。
  */
 
+@Getter
 public class RacePackage {
     /**
      * JSON の入出力に使う DTO。既存 JSON が snake_case の場合にも対応できるよう
@@ -70,42 +72,6 @@ public class RacePackage {
 
     public UUID getID() {
         return raceId;
-    }
-
-    public String getRaceName() {
-        return raceName;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public int getJoinAmount() {
-        return joinAmount;
-    }
-
-    public int getRap() {
-        return rap;
-    }
-
-    public RaceType getRaceType() {
-        return raceType;
-    }
-
-    public Material getIcon() {
-        return icon;
-    }
-
-    public List<LocParts> getStartPoint() {
-        return startPoint;
-    }
-
-    public List<CheckPoint> getCheckPoint() {
-        return checkPoint;
-    }
-
-    public DamageOption getDamageOption() {
-        return damageOption;
     }
 
 }

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+
 /**
  * プレイヤースコアデータベース管理クラス
  * SQLiteを使用してプレイヤーのレーススコアを管理します
@@ -253,6 +255,7 @@ public class PlayerScoreDatabase {
     /**
      * ランキングエントリー
      */
+    @Getter
     public static class RankingEntry {
         private final String playerName;
         private final double bestTime;
@@ -260,14 +263,6 @@ public class PlayerScoreDatabase {
         public RankingEntry(String playerName, double bestTime) {
             this.playerName = playerName;
             this.bestTime = bestTime;
-        }
-
-        public String getPlayerName() {
-            return playerName;
-        }
-
-        public double getBestTime() {
-            return bestTime;
         }
     }
 }

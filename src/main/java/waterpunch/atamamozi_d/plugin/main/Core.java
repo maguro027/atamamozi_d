@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -28,6 +30,8 @@ public class Core extends JavaPlugin {
     public static final File FILE_RACE_MENU = FILE_LOC;
 
     private PlayerScoreDatabase database;
+    private BukkitTask scoreBatchTask;
+    private final AtomicBoolean scoreBatchRunning = new AtomicBoolean(false);
 
     @Override
     public void onEnable() {
@@ -37,6 +41,7 @@ public class Core extends JavaPlugin {
         loadConfig();
         getLogger().info("Loading Race...");
         getRaces();
+        scheduleScoreBatchImport();
     }
 
     private void loadConfig() {
@@ -106,9 +111,49 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (scoreBatchTask != null) {
+            scoreBatchTask.cancel();
+            scoreBatchTask = null;
+        }
         if (database != null) {
             database.close();
         }
+    }
+
+    private void scheduleScoreBatchImport() {
+        double intervalHours = getConfig().getDouble("Setting.scoreBatchHours", 5.0);
+        if (intervalHours <= 0) {
+            getLogger().info("Score batch import is disabled (Setting.scoreBatchHours <= 0).");
+            return;
+        }
+
+        long intervalTicks = Math.max(1L, (long) (intervalHours * 60 * 60 * 20));
+        long initialDelayTicks = 20L;
+
+        scoreBatchTask = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+            if (!scoreBatchRunning.compareAndSet(false, true)) {
+                return;
+            }
+            try {
+                if (database == null) {
+                    return;
+                }
+
+                if (!FILE_SCORE.exists()) {
+                    getLogger().warning("Player_Scores directory not found — skipping batch import.");
+                    return;
+                }
+
+                getLogger().info("Starting score batch import...");
+                PlayerScoreMigration migration = new PlayerScoreMigration(database);
+                migration.migrateFromDirectory(FILE_SCORE);
+                getLogger().info("Score batch import completed.");
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING, "Score batch import failed", e);
+            } finally {
+                scoreBatchRunning.set(false);
+            }
+        }, initialDelayTicks, intervalTicks);
     }
 
     private void getRaces() {

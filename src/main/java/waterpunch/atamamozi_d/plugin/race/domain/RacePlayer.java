@@ -7,10 +7,13 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import lombok.Getter;
+
 /**
  * レース参加プレイヤーの情報とタイム計測を担当。
  * 進行状況（チェックポイント、周回数）はRaceSessionが管理。
  */
+@Getter
 public class RacePlayer {
 
      private final Player player;
@@ -87,22 +90,6 @@ public class RacePlayer {
           long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60;
           long ms = millis % 1000;
           return String.format("%02d:%02d.%03d", minutes, seconds, ms);
-     }
-
-     public Player getPlayer() {
-          return player;
-     }
-     
-     public Location getOriginalLocation() {
-          return originalLocation;
-     }
-
-     public long getStartTime() {
-          return startTime;
-     }
-
-     public long getFinishTime() {
-          return finishTime;
      }
 
 }

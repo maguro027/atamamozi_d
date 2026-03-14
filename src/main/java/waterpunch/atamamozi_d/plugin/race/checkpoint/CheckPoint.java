@@ -4,8 +4,10 @@ import org.bukkit.Location;
 
 import com.google.gson.annotations.SerializedName;
 
+import lombok.Getter;
 import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
 
+@Getter
 public class CheckPoint {
 
      @SerializedName("loc_parts")
@@ -34,28 +36,8 @@ public class CheckPoint {
           this.abcd = new double[] { a, b, c, d };
      }
 
-     public LocParts getLocParts() {
-          return locParts;
-     }
-
      public Location getLocation() {
           return this.locParts == null ? null : this.locParts.getLocation();
      }
 
-     public int getR() {
-          return this.r;
-     }
-
-     public double[] getAbcd() {
-          return this.abcd;
-     }
-
-     // legacy-style accessors
-     public int getr() {
-          return getR();
-     }
-
-     public double[] getabcd() {
-          return getAbcd();
-     }
 }

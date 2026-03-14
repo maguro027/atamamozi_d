@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import lombok.Getter;
 import waterpunch.atamamozi_d.plugin.main.RaceCore;
 import waterpunch.atamamozi_d.plugin.tool.LangManager;
 
@@ -27,7 +28,9 @@ import waterpunch.atamamozi_d.plugin.tool.LangManager;
  */
 public class RaceSession {
 
+    @Getter
     private final UUID sessionId = UUID.randomUUID();
+    @Getter
     private final Race race;
     private final Map<UUID, RacePlayer> players;
 
@@ -35,6 +38,7 @@ public class RaceSession {
     private final Map<UUID, PlayerProgress> playerProgress; // プレイヤーID → 進行状況
     private final Map<UUID, Integer> playerJoinOrders; // プレイヤーID → 参加順序
 
+    @Getter
     private RaceState state;
     private boolean rankingDirty; // ランキングキャッシュ無効化フラグ
     private List<RacePlayer> rankingCache;
@@ -43,10 +47,6 @@ public class RaceSession {
     private int countdownRemaining; // 残りカウントダウン秒数
     private static final int COUNTDOWN_SECONDS = 30; // TODO: 設定ファイルから読み込み
     private static final int COUNTDOWN_LOCK_SECONDS = 5; // この秒数以下で参加ロック
-
-    public UUID getSessionId() {
-        return sessionId;
-    }
 
     public enum RaceState {
         WAITING, // 参加者待ち
@@ -343,21 +343,12 @@ public class RaceSession {
         }
     }
 
-    // Getters
-    public Race getRace() {
-        return race;
-    }
-
     public RacePlayer getPlayer(UUID playerId) {
         return players.get(playerId);
     }
 
     public int getPlayerCount() {
         return players.size();
-    }
-
-    public RaceState getState() {
-        return state;
     }
 
     public Map<UUID, RacePlayer> getPlayers() {

@@ -41,8 +41,10 @@ public class RaceSessionManager {
         if (session == null) {
             session = getSession(raceID);
         }
-        addPlayerToSession(player, session);
-        session.addPlayer(player);
+
+        if (session.addPlayer(player)) {
+            addPlayerToSession(player, session);
+        }
 
     }
 

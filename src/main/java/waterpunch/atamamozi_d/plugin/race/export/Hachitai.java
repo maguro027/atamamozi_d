@@ -59,7 +59,7 @@ public class Hachitai {
 
      static float PCalc(RacePlayer runner, RaceSession session, Location location, Race race) {
           int currentCheckpoint = session.getCurrentCheckpoint(runner.getPlayer());
-          double[] abcd = race.getCheckPoint(currentCheckpoint).getabcd();
+          double[] abcd = race.getCheckPoint(currentCheckpoint).getAbcd();
           return (float) (((abcd[0] * location.getX()) + (abcd[1] * location.getY()) + (abcd[2] * location.getZ()))
                     + abcd[3]);
      }
@@ -84,7 +84,7 @@ public class Hachitai {
           double dirVecZ = to.getZ() - from.getZ();
 
           int currentCheckpoint = session.getCurrentCheckpoint(runner.getPlayer());
-          double[] abcd = race.getCheckPoint(currentCheckpoint).getabcd();
+          double[] abcd = race.getCheckPoint(currentCheckpoint).getAbcd();
 
           double length = (-abcd[3] - GetDot(abcd[0], abcd[1], abcd[2], to.getX(), to.getY(), to.getZ()));
           length /= GetDot(abcd[0], abcd[1], abcd[2], dirVecX, dirVecY, dirVecZ);

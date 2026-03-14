@@ -2,6 +2,10 @@ Setting:
      #チェックポイントparticleの表示間隔(seconds)
      particle:0.5
 
+     #スコアをSQLiteへバッチ取り込みする間隔(hours)
+     #0以下で無効
+     scoreBatchHours: 5.0
+
      CountDown:
 
           #最初のプレーヤーが参加してからカウントダウン開始までの時間(seconds)

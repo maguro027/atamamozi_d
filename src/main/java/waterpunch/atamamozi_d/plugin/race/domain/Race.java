@@ -22,6 +22,72 @@ import waterpunch.atamamozi_d.plugin.tool.Location.LocParts;
  * @author waterpunch
  */
 public class Race extends RacePackage {
+     public static Builder newBuilder() {
+          return new Builder();
+     }
+
+     public static class Builder {
+          private final Race race;
+
+          private Builder() {
+               this.race = new Race();
+          }
+
+          public Builder raceId(UUID raceId) {
+               race.raceId = raceId;
+               return this;
+          }
+
+          public Builder raceName(String raceName) {
+               race.raceName = raceName;
+               return this;
+          }
+
+          public Builder creator(String creator) {
+               race.creator = creator;
+               return this;
+          }
+
+          public Builder raceType(RaceType raceType) {
+               race.raceType = raceType;
+               return this;
+          }
+
+          public Builder maxPlayers(int joinAmount) {
+               race.joinAmount = joinAmount;
+               return this;
+          }
+
+          public Builder laps(int rap) {
+               race.rap = rap;
+               return this;
+          }
+
+          public Builder icon(Material icon) {
+               race.icon = icon;
+               return this;
+          }
+
+          public Builder startPoint(List<LocParts> startPoint) {
+               race.startPoint = startPoint;
+               return this;
+          }
+
+          public Builder checkPoint(List<CheckPoint> checkPoint) {
+               race.checkPoint = checkPoint;
+               return this;
+          }
+
+          public Builder damageOption(DamageOption damageOption) {
+               race.damageOption = damageOption;
+               return this;
+          }
+
+          public Race build() {
+               return race;
+          }
+     }
+
      /** JSON 読み込み用やファクトリ用のデフォルトコンストラクタ。 */
      protected Race() {
      }
@@ -179,10 +245,6 @@ public class Race extends RacePackage {
           if (checkPoint == null || idx < 0 || idx >= checkPoint.size())
                return null;
           return checkPoint.get(idx);
-     }
-
-     public DamageOption getDamageOption() {
-          return damageOption;
      }
 
 }
