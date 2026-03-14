@@ -17,6 +17,7 @@ import waterpunch.atamamozi_d.plugin.database.PlayerScoreDatabase;
 import waterpunch.atamamozi_d.plugin.race.RacePackage;
 import waterpunch.atamamozi_d.plugin.race.domain.Race;
 import waterpunch.atamamozi_d.plugin.race.domain.RaceNormalizer;
+import waterpunch.atamamozi_d.plugin.tool.LangManager;
 import waterpunch.atamamozi_d.plugin.tool.RaceSystem;
 import waterpunch.atamamozi_d.plugin.tools.LegacyRaceConverter;
 import waterpunch.atamamozi_d.plugin.tools.PlayerScoreMigration;
@@ -34,11 +35,11 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        loadConfig();
         initializeDataFolders();
         initializeDatabase();
-        waterpunch.atamamozi_d.plugin.tool.LangManager.initialize(this);
-        loadConfig();
-        RaceSystem.logInfo(getLogger(), "Loading Race...");
+        LangManager.initialize(this);
+        RaceSystem.logInfoKey(getLogger(), "core.race.loading");
         getRaces();
         scheduleScoreBatchImport();
     }
@@ -51,12 +52,12 @@ public class Core extends JavaPlugin {
         long particleMillis = (long) (particleSeconds * 1000);
         waterpunch.atamamozi_d.plugin.race.export.Hachitai.setParticleInterval(particleMillis);
 
-        RaceSystem.logInfo(getLogger(), String.format("Particle interval: %.1f seconds", particleSeconds));
+        RaceSystem.logInfoKey(getLogger(), "core.particle.interval", particleSeconds);
     }
 
     private void initializeDataFolders() {
         if (!getDataFolder().exists()) {
-            RaceSystem.logInfo(getLogger(), "Welcome to the Atamamozi_D plugin");
+            RaceSystem.logInfoKey(getLogger(), "core.welcome");
             getDataFolder().mkdirs();
         }
         if (!FILE_RACE.exists()) {
@@ -76,12 +77,12 @@ public class Core extends JavaPlugin {
             boolean dbExists = dbFile.exists();
 
             if (dbExists) {
-                RaceSystem.logInfo(getLogger(), "Database already exists. Skipping JSON migration.");
+                RaceSystem.logInfoKey(getLogger(), "core.database.exists");
                 return;
             }
 
             // 初回のみJSONからマイグレーション
-            RaceSystem.logInfo(getLogger(), "Database not found. Creating new database and importing JSON scores...");
+            RaceSystem.logInfoKey(getLogger(), "core.database.createAndImport");
 
             PlayerScoreMigration migration = new PlayerScoreMigration(database);
 
@@ -89,18 +90,18 @@ public class Core extends JavaPlugin {
             if (FILE_SCORE.exists()) {
                 migration.migrateFromDirectory(FILE_SCORE);
             } else {
-                RaceSystem.logWarn(getLogger(), "Player_Scores directory not found — skipping migration.");
+                RaceSystem.logWarnKey(getLogger(), "core.database.playerScoresMissing");
             }
 
             // 開発用: testdataが存在すれば移行（任意）
             File testdataDir = new File(new File("").getAbsolutePath() + "/testdata/Player_Scores");
             if (testdataDir.exists()) {
-                RaceSystem.logInfo(getLogger(), "Found testdata directory, starting migration (dev only)...");
+                RaceSystem.logInfoKey(getLogger(), "core.database.testdataFound");
                 migration.migrateFromDirectory(testdataDir);
             }
 
         } catch (SQLException e) {
-            RaceSystem.logError(getLogger(), "Failed to initialize database", e);
+            RaceSystem.logError(getLogger(), RaceSystem.text("core.database.initFailed"), e);
         }
     }
 
@@ -123,7 +124,7 @@ public class Core extends JavaPlugin {
     private void scheduleScoreBatchImport() {
         double intervalHours = getConfig().getDouble("Setting.scoreBatchHours", 5.0);
         if (intervalHours <= 0) {
-            RaceSystem.logInfo(getLogger(), "Score batch import is disabled (Setting.scoreBatchHours <= 0).");
+            RaceSystem.logInfoKey(getLogger(), "core.batch.disabled");
             return;
         }
 
@@ -140,16 +141,16 @@ public class Core extends JavaPlugin {
                 }
 
                 if (!FILE_SCORE.exists()) {
-                    RaceSystem.logWarn(getLogger(), "Player_Scores directory not found — skipping batch import.");
+                    RaceSystem.logWarnKey(getLogger(), "core.batch.playerScoresMissing");
                     return;
                 }
 
-                RaceSystem.logInfo(getLogger(), "Starting score batch import...");
+                RaceSystem.logInfoKey(getLogger(), "core.batch.started");
                 PlayerScoreMigration migration = new PlayerScoreMigration(database);
                 migration.migrateFromDirectory(FILE_SCORE);
-                RaceSystem.logInfo(getLogger(), "Score batch import completed.");
+                RaceSystem.logInfoKey(getLogger(), "core.batch.completed");
             } catch (Exception e) {
-                RaceSystem.logWarn(getLogger(), "Score batch import failed", e);
+                RaceSystem.logWarn(getLogger(), RaceSystem.text("core.batch.failed"), e);
             } finally {
                 scoreBatchRunning.set(false);
             }
@@ -189,7 +190,7 @@ public class Core extends JavaPlugin {
                 // ノーマライズ & バリデーション
                 Race r = RaceNormalizer.fromPackage(pkg);
                 if (r == null) {
-                    RaceSystem.logWarn(getLogger(), "Race validation failed (null): " + tmpFile.getName());
+                    RaceSystem.logWarnKey(getLogger(), "core.race.validationNull", tmpFile.getName());
                     continue;
                 }
 
@@ -203,9 +204,9 @@ public class Core extends JavaPlugin {
                 // RaceCoreに登録
                 RaceCore.addRace(r);
             } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                RaceSystem.logWarn(getLogger(), "Race Data Broken..." + tmpFile.getName());
+                RaceSystem.logWarnKey(getLogger(), "core.race.dataBroken", tmpFile.getName());
                 RaceSystem.logWarn(getLogger(),
-                        "Failed to parse race JSON: " + tmpFile.getName() + " — attempting conversion", e);
+                        RaceSystem.text("core.race.parseFailedAttemptConversion", tmpFile.getName()), e);
 
                 // 例外が発生したら該当ファイルを変換を試み、変換後に再読み込み
                 try {
@@ -224,10 +225,12 @@ public class Core extends JavaPlugin {
                             }
                         }
                     } catch (Exception re) {
-                        RaceSystem.logWarn(getLogger(), "Re-parse failed after conversion: " + tmpFile.getName(), re);
+                        RaceSystem.logWarn(getLogger(), RaceSystem.text("core.race.reparseFailed", tmpFile.getName()),
+                                re);
                     }
                 } catch (Exception convEx) {
-                    RaceSystem.logWarn(getLogger(), "Conversion failed for: " + tmpFile.getName(), convEx);
+                    RaceSystem.logWarn(getLogger(), RaceSystem.text("core.race.conversionFailed", tmpFile.getName()),
+                            convEx);
                 }
             }
         }
@@ -243,18 +246,18 @@ public class Core extends JavaPlugin {
     private String validateRace(Race race, String fileName) {
         // チェックポイントが空
         if (race.getCheckPoint() == null || race.getCheckPoint().isEmpty()) {
-            return "Race validation failed (no checkpoints): " + fileName;
+            return RaceSystem.text("core.race.validationNoCheckpoints", fileName);
         }
 
         // スタートポイントが空
         if (race.getStartPoint() == null || race.getStartPoint().isEmpty()) {
-            return "Race validation failed (no start points): " + fileName;
+            return RaceSystem.text("core.race.validationNoStartPoints", fileName);
         }
 
         // スタートポイント数とjoinAmountが不一致
         if (race.getStartPoint().size() != race.getJoinAmount()) {
-            return String.format(
-                    "Race validation failed (start points: %d != joinAmount: %d): %s",
+            return RaceSystem.text(
+                    "core.race.validationStartPointMismatch",
                     race.getStartPoint().size(), race.getJoinAmount(), fileName);
         }
 

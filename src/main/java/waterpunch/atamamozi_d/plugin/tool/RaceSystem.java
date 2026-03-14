@@ -16,26 +16,36 @@ public final class RaceSystem {
     }
 
     public enum MessageType {
-        ERROR(ChatColor.RED, "ERROR", Level.SEVERE),
-        INFO(ChatColor.BLUE, "INFO", Level.INFO),
-        WARN(ChatColor.YELLOW, "WARN", Level.WARNING);
+        ERROR(ChatColor.RED, "system.labels.error", "ERROR", Level.SEVERE),
+        INFO(ChatColor.BLUE, "system.labels.info", "INFO", Level.INFO),
+        WARN(ChatColor.YELLOW, "system.labels.warn", "WARN", Level.WARNING);
 
         private final ChatColor color;
-        private final String label;
+        private final String labelKey;
+        private final String fallbackLabel;
         private final Level logLevel;
 
-        MessageType(ChatColor color, String label, Level logLevel) {
+        MessageType(ChatColor color, String labelKey, String fallbackLabel, Level logLevel) {
             this.color = color;
-            this.label = label;
+            this.labelKey = labelKey;
+            this.fallbackLabel = fallbackLabel;
             this.logLevel = logLevel;
         }
 
+        private String resolvedLabel() {
+            String label = LangManager.getMessage(labelKey);
+            if (labelKey.equals(label)) {
+                return fallbackLabel;
+            }
+            return label;
+        }
+
         public String coloredPrefix() {
-            return color + "[" + label + "]";
+            return color + "[" + resolvedLabel() + "]";
         }
 
         public String plainPrefix() {
-            return "[" + label + "]";
+            return "[" + resolvedLabel() + "]";
         }
 
         public Level logLevel() {
@@ -52,6 +62,18 @@ public final class RaceSystem {
 
     public static void sendMessage(MessageType type, String message) {
         sendMessage(type, Bukkit.getConsoleSender(), message);
+    }
+
+    public static String text(String key, Object... params) {
+        return LangManager.getMessage(key, params);
+    }
+
+    public static void sendMessageKey(MessageType type, CommandSender target, String key, Object... params) {
+        sendMessage(type, target, text(key, params));
+    }
+
+    public static void sendMessageKey(MessageType type, String key, Object... params) {
+        sendMessage(type, text(key, params));
     }
 
     // 既存提案の呼び名を残す（スペル互換）
@@ -72,12 +94,28 @@ public final class RaceSystem {
         log(null, MessageType.INFO, message, null);
     }
 
+    public static void logInfoKey(Logger logger, String key, Object... params) {
+        logInfo(logger, text(key, params));
+    }
+
+    public static void logInfoKey(String key, Object... params) {
+        logInfo(text(key, params));
+    }
+
     public static void logWarn(Logger logger, String message) {
         log(logger, MessageType.WARN, message, null);
     }
 
     public static void logWarn(String message) {
         log(null, MessageType.WARN, message, null);
+    }
+
+    public static void logWarnKey(Logger logger, String key, Object... params) {
+        logWarn(logger, text(key, params));
+    }
+
+    public static void logWarnKey(String key, Object... params) {
+        logWarn(text(key, params));
     }
 
     public static void logWarn(Logger logger, String message, Throwable throwable) {
@@ -94,6 +132,14 @@ public final class RaceSystem {
 
     public static void logError(String message) {
         log(null, MessageType.ERROR, message, null);
+    }
+
+    public static void logErrorKey(Logger logger, String key, Object... params) {
+        logError(logger, text(key, params));
+    }
+
+    public static void logErrorKey(String key, Object... params) {
+        logError(text(key, params));
     }
 
     public static void logError(Logger logger, String message, Throwable throwable) {

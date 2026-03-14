@@ -1,9 +1,50 @@
+system:
+  labels:
+    error: "ERROR"
+    info: "INFO"
+    warn: "WARN"
+
+core:
+  welcome: "Atamamozi_D プラグインへようこそ"
+  particle:
+    interval: "パーティクル間隔: %.1f 秒"
+  database:
+    exists: "データベースは既に存在するためJSON移行をスキップします。"
+    createAndImport: "データベースが見つからないため作成し、JSONスコアを取り込みます..."
+    playerScoresMissing: "Player_Scores ディレクトリが見つからないため移行をスキップします。"
+    testdataFound: "testdata ディレクトリを検出したため移行を開始します（開発用）。"
+    initFailed: "データベースの初期化に失敗しました"
+  batch:
+    disabled: "スコアのバッチ取り込みは無効です (Setting.scoreBatchHours <= 0)。"
+    playerScoresMissing: "Player_Scores ディレクトリが見つからないためバッチ取り込みをスキップします。"
+    started: "スコアのバッチ取り込みを開始します..."
+    completed: "スコアのバッチ取り込みが完了しました。"
+    failed: "スコアのバッチ取り込みに失敗しました"
+  race:
+    loading: "レースを読み込み中..."
+    dataBroken: "レースデータが壊れています: %s"
+    parseFailedAttemptConversion: "レースJSONの解析に失敗しました: %s（変換を試行します）"
+    reparseFailed: "変換後の再解析に失敗しました: %s"
+    conversionFailed: "変換に失敗しました: %s"
+    validationNull: "レース検証に失敗しました（null）: %s"
+    validationNoCheckpoints: "レース検証に失敗しました（チェックポイントなし）: %s"
+    validationNoStartPoints: "レース検証に失敗しました（スタート地点なし）: %s"
+    validationStartPointMismatch: "レース検証に失敗しました（スタート地点数: %d != joinAmount: %d）: %s"
+
+raceCore:
+  duplicateRaceId: "重複したraceIdを検出したため登録をスキップしました: %s"
+
+racePlayer:
+  originalLocationMissing: "参加地点が参照できません。スポーン地点へ移動します。"
+  countdown:
+    go: "GO!"
+
 race:
-	countdown: "レース開始まで %s 秒"
+  countdown: "レース開始まで %s 秒"
   started: "レースを開始しました！"
-	joined: "%s がレースに参加しました。"
-	left: "%s がレースから離脱しました。"
-	finished: "%s がゴールしました！"
+  joined: "%s がレースに参加しました。"
+  left: "%s がレースから離脱しました。"
+  finished: "%s がゴールしました！"
   countlock: "%sが開始間近のため、レースへの参加ができません。"
 
 

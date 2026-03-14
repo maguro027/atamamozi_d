@@ -1,4 +1,7 @@
 Setting:
+     #使用する言語ファイル（JPN / ENG）
+     language: JPN
+
      #チェックポイントparticleの表示間隔(seconds)
      particle:0.5
 

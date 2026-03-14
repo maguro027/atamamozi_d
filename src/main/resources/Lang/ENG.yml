@@ -1,0 +1,48 @@
+system:
+  labels:
+    error: "ERROR"
+    info: "INFO"
+    warn: "WARN"
+
+core:
+  welcome: "Welcome to the Atamamozi_D plugin"
+  particle:
+    interval: "Particle interval: %.1f seconds"
+  database:
+    exists: "Database already exists. Skipping JSON migration."
+    createAndImport: "Database not found. Creating a new database and importing JSON scores..."
+    playerScoresMissing: "Player_Scores directory not found. Skipping migration."
+    testdataFound: "Found testdata directory. Starting migration (dev only)."
+    initFailed: "Failed to initialize database"
+  batch:
+    disabled: "Score batch import is disabled (Setting.scoreBatchHours <= 0)."
+    playerScoresMissing: "Player_Scores directory not found. Skipping batch import."
+    started: "Starting score batch import..."
+    completed: "Score batch import completed."
+    failed: "Score batch import failed"
+  race:
+    loading: "Loading races..."
+    dataBroken: "Race data is broken: %s"
+    parseFailedAttemptConversion: "Failed to parse race JSON: %s (trying conversion)"
+    reparseFailed: "Re-parse failed after conversion: %s"
+    conversionFailed: "Conversion failed for: %s"
+    validationNull: "Race validation failed (null): %s"
+    validationNoCheckpoints: "Race validation failed (no checkpoints): %s"
+    validationNoStartPoints: "Race validation failed (no start points): %s"
+    validationStartPointMismatch: "Race validation failed (start points: %d != joinAmount: %d): %s"
+
+raceCore:
+  duplicateRaceId: "Duplicate raceId detected. Registration skipped: %s"
+
+racePlayer:
+  originalLocationMissing: "Unable to reference your join location. Moving to spawn point."
+  countdown:
+    go: "GO!"
+
+race:
+  countdown: "%s seconds until race start"
+  started: "The race has started!"
+  joined: "%s joined the race."
+  left: "%s left the race."
+  finished: "%s finished the race!"
+  countlock: "%s is about to start, so joining is locked."

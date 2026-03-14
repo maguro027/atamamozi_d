@@ -29,7 +29,7 @@ public class RacePlayer {
 
           Location currentLocation = player.getLocation();
           if (currentLocation == null) {
-               RaceSystem.sendMessage(MessageType.ERROR, player, "参加地点が参照できません");
+               RaceSystem.sendMessageKey(MessageType.ERROR, player, "racePlayer.originalLocationMissing");
 
                Location respawnLocation = player.getWorld().getSpawnLocation();
                player.teleport(respawnLocation);
@@ -49,7 +49,7 @@ public class RacePlayer {
                player.sendTitle(ChatColor.RED + String.valueOf(i), "", 0, 20, 0);
                player.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 0.9f);
           } else if (i == 0) {
-               player.sendTitle(ChatColor.GREEN + "GO!", "", 0, 20, 20);
+               player.sendTitle(ChatColor.GREEN + RaceSystem.text("racePlayer.countdown.go"), "", 0, 20, 20);
                player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.2f);
           }
      }
