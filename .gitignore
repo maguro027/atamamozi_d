@@ -1,3 +1,14 @@
+# ドキュメント・不要ファイル
+*.md
+deploy.bat
+testdata/
+*.log
+*.bak
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
 target/
 *.log
 .idea/
